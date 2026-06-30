@@ -14,6 +14,7 @@
  */
 import { supabase } from '../lib/supabase'
 import { chat } from '../lib/llm'
+import { log } from '../lib/logger'
 import { env } from '../env'
 import {
   messagesForTranscription,
@@ -123,6 +124,10 @@ export async function extractInvoice(
 
   // 1. Best-effort raw image storage. Proceeds even if storage is down.
   const rawImagePath = await storeRawImage(imageDataUrl, userId)
+  const imgBytes = imageDataUrl.startsWith('data:')
+    ? Math.round((imageDataUrl.split(',')[1]?.length ?? 0) * 0.75)
+    : 0
+  log.info('extract', 'start', { user: userId.slice(0, 8), img_bytes: imgBytes, raw_stored: rawImagePath != null })
 
   // 2. Two-stage extraction, sharing one hard 60s deadline (mobile clients
   // can't wait on retries). The deadline aborts BOTH stages cooperatively.
@@ -137,6 +142,7 @@ export async function extractInvoice(
 
   // Stage A — vision transcription.
   let ocrText: string
+  const tA = Date.now()
   try {
     const a = await chat({
       messages: messagesForTranscription(imageDataUrl),
@@ -151,19 +157,28 @@ export async function extractInvoice(
       signal: deadline,
     })
     ocrText = a.content
+    log.info('extract', 'stage=A done', {
+      ms: Date.now() - tA,
+      model: a.model,
+      ocr_len: ocrText.length,
+      preview: ocrText.slice(0, 160),
+    })
   } catch (e) {
     const msg = String((e as Error)?.message ?? e)
+    log.error('extract', 'stage=A failed', { ms: Date.now() - tA, err: msg.slice(0, 200) })
     if (/abort|timeout|deadline/i.test(msg)) {
       throw new ExternalError('llm', 'OCR transcription took too long. Try a smaller image.', 504)
     }
     throw new ExternalError('llm', `OCR transcription failed: ${msg}`, 502)
   }
   if (!ocrText.trim()) {
+    log.error('extract', 'stage=A empty', { ms: Date.now() - tA })
     throw new ExternalError('llm', 'OCR transcription returned no text.', 502)
   }
 
   // Stage B — text structuring.
   let extracted: ExtractedInvoice
+  const tB = Date.now()
   try {
     const b = await chat({
       messages: messagesForStructuring(ocrText),
@@ -181,8 +196,19 @@ export async function extractInvoice(
       signal: deadline,
     })
     extracted = parseExtracted(b.content)
+    log.info('extract', 'stage=B done', {
+      ms: Date.now() - tB,
+      model: b.model,
+      items: extracted.items.length,
+      subtotal: extracted.subtotal ?? '-',
+      tax: extracted.tax_total ?? '-',
+      total: extracted.total ?? '-',
+      seller: extracted.seller?.name ?? '-',
+      inv_no: extracted.invoice_number ?? '-',
+    })
   } catch (e) {
     const msg = String((e as Error)?.message ?? e)
+    log.error('extract', 'stage=B failed', { ms: Date.now() - tB, ocr_len: ocrText.length, err: msg.slice(0, 200) })
     if (/abort|timeout|deadline/i.test(msg)) {
       throw new ExternalError('llm', 'Structuring took too long. Try a smaller image.', 504)
     }
@@ -218,6 +244,7 @@ export async function extractInvoice(
     return { ok: true, invoiceId: inv.id, rawImagePath, ocrText, extracted, createdAt: inv.createdAt }
   } catch (e) {
     const msg = String((e as Error)?.message ?? e)
+    log.error('extract', 'persist failed', { err: msg.slice(0, 200), items: extracted.items.length, total: extracted.total ?? '-' })
     return { ok: false, rawImagePath, ocrText, extracted, error: msg }
   }
 }

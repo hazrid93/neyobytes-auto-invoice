@@ -38,6 +38,11 @@ const schema = z.object({
   LLM_MAX_RETRIES: z.coerce.number().int().min(0).default(3),
   LLM_TIMEOUT_MS: z.coerce.number().int().positive().default(300_000),
 
+  // Log level for the leveled logger (src/lib/logger.ts).
+  // debug|info|warn|error — default 'info'. Lower to 'debug' to see per-LLM-call
+  // timings + token usage; raise to 'warn' for quieter prod logs.
+  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
+
   // ── LHDN MyInvois e-Invoicing ──
   // mock:    no network — submit/validate return deterministic canned responses.
   //          Use this for local dev & tests. Client id/secret NOT required.

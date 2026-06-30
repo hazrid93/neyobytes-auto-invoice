@@ -1,5 +1,6 @@
 import type { ExtractedInvoice } from './extraction'
 import { ExtractedInvoiceSchema } from './extraction'
+import { log } from './logger'
 
 // Vision models often wrap JSON in ```json ... ``` fences despite the prompt
 // asking for raw JSON. Strip fences + trailing prose before JSON.parse.
@@ -21,6 +22,11 @@ export function parseExtracted(content: string): ExtractedInvoice {
   try {
     parsed = JSON.parse(cleaned)
   } catch (e) {
+    log.error('extract', 'JSON.parse failed', {
+      content_len: content.length,
+      err: String((e as Error).message).slice(0, 160),
+      head: content.slice(0, 160),
+    })
     throw new Error(
       `extraction returned non-JSON: ${String((e as Error).message).slice(0, 160)}`,
     )
@@ -31,6 +37,10 @@ export function parseExtracted(content: string): ExtractedInvoice {
       .slice(0, 5)
       .map((i) => `${i.path.join('.')}: ${i.message}`)
       .join('; ')
+    log.error('extract', 'schema validation failed', {
+      issues,
+      head: cleaned.slice(0, 160),
+    })
     throw new Error(`extraction schema validation failed: ${issues}`)
   }
   return result.data

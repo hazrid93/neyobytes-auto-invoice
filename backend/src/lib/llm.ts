@@ -1,4 +1,5 @@
 import { env } from '../env'
+import { log } from './logger'
 
 // OpenAI-compatible chat-completions client for the litellm gateway.
 // Modeled on neyobytes-whatsapp-agent's LLMService: retry with exponential
@@ -187,6 +188,7 @@ export async function chat(opts: {
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     if (opts.signal?.aborted) throw new Error('chat aborted by caller')
+    const t0 = Date.now()
     try {
       const result = await callOnce(opts.messages, {
         model: primary,
@@ -204,10 +206,25 @@ export async function chat(opts: {
             (opts.structured ? ' (structured output empty — the model likely exhausted its token budget on reasoning before producing JSON; raise max_tokens)' : ''),
         )
       }
+      const u = result.json?.usage ?? {}
+      log.info('llm', 'ok', {
+        model: result.model,
+        ms: Date.now() - t0,
+        tok_in: u.prompt_tokens ?? '-',
+        tok_out: u.completion_tokens ?? '-',
+        content_len: text.length,
+      })
       return { content: text, model: result.model, usage: result.json?.usage }
     } catch (e) {
       lastErr = e
       const status = (e as { status?: number })?.status
+      log.warn('llm', 'attempt failed', {
+        model: primary,
+        attempt: attempt + 1,
+        of: maxRetries + 1,
+        status: status ?? 'network/timeout',
+        ms: Date.now() - t0,
+      })
       if (attempt >= maxRetries || !retryable(status, e)) {
         // Non-retryable on primary → try fallback model (once) if allowed.
         break
@@ -217,15 +234,13 @@ export async function chat(opts: {
       const exp = initial * Math.pow(2, attempt)
       const jitter = exp * (0.5 + Math.random() * 0.5)
       const delay = Math.min(Math.round(jitter), maxDelay)
-      console.warn(
-        `[llm] ${primary} failed (attempt ${attempt + 1}/${maxRetries}, status ${status ?? 'network/timeout'}). retry in ${delay}ms`,
-      )
       await sleep(delay, opts.signal)
     }
   }
 
   if (fallback && fallback !== primary) {
-    console.warn(`[llm] primary ${primary} exhausted; trying fallback ${fallback}`)
+    log.warn('llm', 'primary exhausted, trying fallback', { from: primary, to: fallback })
+    const t0 = Date.now()
     try {
       const result = await callOnce(opts.messages, {
         model: fallback,
@@ -237,13 +252,25 @@ export async function chat(opts: {
         structured: opts.structured,
       })
       const text = pickContent(result.json, opts.structured)
-      if (text) return { content: text, model: result.model, usage: result.json?.usage }
+      if (text) {
+        const u = result.json?.usage ?? {}
+        log.info('llm', 'ok (fallback)', {
+          model: result.model,
+          ms: Date.now() - t0,
+          tok_in: u.prompt_tokens ?? '-',
+          tok_out: u.completion_tokens ?? '-',
+          content_len: text.length,
+        })
+        return { content: text, model: result.model, usage: result.json?.usage }
+      }
       throw new Error('malformed response: no message.content')
     } catch (e) {
       lastErr = e
+      log.error('llm', 'fallback failed', { model: fallback, err: String((e as Error)?.message ?? e).slice(0, 200) })
     }
   }
 
+  log.error('llm', 'request failed', { model: primary, err: String((lastErr as Error)?.message ?? lastErr).slice(0, 200) })
   throw new Error(
     `LLM request failed: ${String((lastErr as Error)?.message ?? lastErr)}`,
   )
