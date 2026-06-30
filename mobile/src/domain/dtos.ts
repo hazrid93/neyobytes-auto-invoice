@@ -127,6 +127,11 @@ export interface MyInvoisConnection {
   connectedAt: string | null
 }
 
+/** Which credential flow the backend is configured for.
+ *  taxpayer     → user pastes their own ERP key (Login as Taxpayer System)
+ *  intermediary → user appoints our company by TIN (Login as Intermediary System) */
+export type MyInvoisCredMode = 'taxpayer' | 'intermediary'
+
 export interface SubmitResult {
   mode: 'mock' | 'sandbox' | 'prod'
   submissionUid: string

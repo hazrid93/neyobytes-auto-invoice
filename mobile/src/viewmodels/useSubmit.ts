@@ -12,6 +12,7 @@ import type { SubmitResult } from '../domain/dtos'
 
 export interface SubmitView {
   mode: myinvoisService.MyInvoisStatus['mode'] | null
+  status: myinvoisService.MyInvoisStatus | null
   submitting: boolean
   error: string | null
   lastResult: SubmitResult | null
@@ -24,6 +25,7 @@ export interface SubmitView {
 
 export function useSubmit(): SubmitView {
   const [mode, setMode] = useState<SubmitView['mode']>(null)
+  const [status, setStatus] = useState<myinvoisService.MyInvoisStatus | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastResult, setLastResult] = useState<SubmitResult | null>(null)
@@ -32,7 +34,9 @@ export function useSubmit(): SubmitView {
 
   const loadStatus = useCallback(async () => {
     try {
-      setMode((await myinvoisService.getStatus()).mode)
+      const s = await myinvoisService.getStatus()
+      setStatus(s)
+      setMode(s.mode)
     } catch {
       // Non-fatal: status banner is informational; default to unknown.
     }
@@ -77,6 +81,7 @@ export function useSubmit(): SubmitView {
 
   return {
     mode,
+    status,
     submitting,
     error,
     lastResult,

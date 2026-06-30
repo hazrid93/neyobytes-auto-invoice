@@ -50,15 +50,40 @@ const schema = z.object({
   //          taxpayer registers their own ERP on the MyInvois portal).
   // prod:    api.myinvois.hasil.gov.my. Same per-user model + a prod cert.
   //
-  // Credential model: PER-USER (Login as Taxpayer System). The user pastes
-  // their own client_id/client_secret in the app; we store them encrypted and
-  // fetch a per-user OAuth2 token. The env-level client id/secret below are an
-  // OPTIONAL fallback for a single-tenant deployment — per-user creds take
-  // priority when present. Submit is additionally gated by the POS
-  // Digicert/LHDNM signing cert (MYINVOIS_CERT_PEM/KEY_PEM) in sandbox/prod.
+  // Credential model (MYINVOIS_CRED_MODE):
+  //   taxpayer     — PER-USER (Login as Taxpayer System, 07). Each taxpayer
+  //                 generates their own ERP client_id/client_secret on the portal
+  //                 and pastes it in the app; we fetch a token with THOSE creds
+  //                 (no onbehalfof). Stored encrypted per profile. Default.
+  //   intermediary — PLATFORM (Login as Intermediary System, 08). OUR company has
+  //                 ONE ERP key (env MYINVOIS_CLIENT_ID/SECRET). Each taxpayer
+  //                 appoints us as intermediary in their portal (by our TIN),
+  //                 and we fetch a per-taxpayer token with header
+  //                 onbehalfof: <taxpayer TIN> (the SDK's intermediary login).
+  //                 Requires MYINVOIS_INTERMEDIARY_TIN (our company TIN, shown
+  //                 to users in the appointment instructions).
+  // Submit is additionally gated by the POS Digicert/LHDNM signing cert
+  // (MYINVOIS_CERT_PEM/KEY_PEM) in sandbox/prod.
   MYINVOIS_ENV: z.enum(['mock', 'sandbox', 'prod']).default('mock'),
+  MYINVOIS_CRED_MODE: z.enum(['taxpayer', 'intermediary']).default('taxpayer'),
   MYINVOIS_CLIENT_ID: z.string().optional(), // optional global fallback (single-tenant)
   MYINVOIS_CLIENT_SECRET: z.string().optional(),
+  // Our company's TIN (+ optional ROB) shown to users in the intermediary
+  // appointment instructions. Required when MYINVOIS_CRED_MODE=intermediary.
+  MYINVOIS_INTERMEDIARY_TIN: z.string().optional(),
+  MYINVOIS_INTERMEDIARY_ROB: z.string().optional(),
+  // The taxpayer profile portal (where users log in, generate ERP, and appoint
+  // intermediaries). Defaulted to the prod portal; override for sandbox.
+  // Used by the frontend's "open portal" link + the native WebView auto-appoint.
+  MYINVOIS_PORTAL_URL: z
+    .string()
+    .url()
+    .default('https://profile.myinvois.hasil.gov.my/TaxpayerProfile'),
+  // Base URL for the portal's INTERNAL /iapi/ API (the auto-appoint PUT). The
+  // /iapi endpoints are NOT part of the public /api/v1.0 e-invoicing API; they
+  // require the taxpayer's live session token. Defaulted to prod; override
+  // for sandbox. Only used by the native WebView auto-appoint (Option B).
+  MYINVOIS_IAPI_BASE: z.string().url().default('https://api.myinvois.hasil.gov.my'),
   // PEM-encoded signing cert + private key (for sandbox/prod submit). Leave empty
   // in mock mode. See docs/myinvois/RESEARCH.md §6 — the signing cert must come
   // from POS Digicert (posdigicert.com.my) under LHDNM's Sub CA.
@@ -75,13 +100,26 @@ const parsed = schema.safeParse(process.env)
 
 // When targeting a real LHDN environment, the per-user encryption key is
 // required (we store each taxpayer's secret encrypted). The global client
-// creds are NOT required — they're an optional single-tenant fallback.
+// creds are NOT required — they're an optional single-tenant fallback in
+// taxpayer mode, and the platform creds in intermediary mode.
 if (parsed.success && parsed.data.MYINVOIS_ENV !== 'mock') {
   if (!parsed.data.PROFILE_SECRET_KEY || parsed.data.PROFILE_SECRET_KEY.length < 32) {
     console.error(`❌ MYINVOIS_ENV=${parsed.data.MYINVOIS_ENV} requires PROFILE_SECRET_KEY (>=32 chars) to encrypt per-user LHDN secrets at rest.`)
     console.error('   Generate one, e.g.:  openssl rand -base64 48')
     console.error('   Set MYINVOIS_ENV=mock for local development without LHDN credentials.')
     process.exit(1)
+  }
+  // Intermediary mode needs the platform ERP key + our company TIN.
+  if (parsed.data.MYINVOIS_CRED_MODE === 'intermediary') {
+    const missing: string[] = []
+    if (!parsed.data.MYINVOIS_CLIENT_ID) missing.push('MYINVOIS_CLIENT_ID')
+    if (!parsed.data.MYINVOIS_CLIENT_SECRET) missing.push('MYINVOIS_CLIENT_SECRET')
+    if (!parsed.data.MYINVOIS_INTERMEDIARY_TIN) missing.push('MYINVOIS_INTERMEDIARY_TIN')
+    if (missing.length) {
+      console.error(`❌ MYINVOIS_CRED_MODE=intermediary requires ${missing.join(', ')}.`)
+      console.error('   Set MYINVOIS_CRED_MODE=taxpayer for the per-user paste flow.')
+      process.exit(1)
+    }
   }
 }
 

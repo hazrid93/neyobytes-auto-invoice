@@ -4,11 +4,24 @@
  * responses so the UI can show a banner.
  */
 import { request } from '../http/client'
-import type { TinValidationResult, SubmitResult, MyInvoisConnection } from '../domain/dtos'
+import type { TinValidationResult, SubmitResult, MyInvoisConnection, MyInvoisCredMode } from '../domain/dtos'
 
 export interface MyInvoisStatus {
   mode: 'mock' | 'sandbox' | 'prod'
   signing: 'not_required' | 'configured' | 'missing'
+  // Which credential flow the frontend should present:
+  //   taxpayer     → "Connect LHDN account" (paste the user's own ERP key)
+  //   intermediary → "Add Neyobytes as intermediary" (user appoints us by TIN)
+  credMode: MyInvoisCredMode
+  // Intermediary mode only: our company's TIN (+ optional ROB) for the user to
+  // add in their portal. null in taxpayer/mock mode.
+  intermediaryTin: string | null
+  intermediaryRob: string | null
+  // The taxpayer profile portal (login / ERP generation / appointment) + the
+  // internal /iapi base (native auto-appoint only). Surfaced so the frontend
+  // doesn't hardcode hosts (sandbox vs prod differ).
+  portalUrl: string
+  iapiBase: string
 }
 
 export async function getStatus(): Promise<MyInvoisStatus> {

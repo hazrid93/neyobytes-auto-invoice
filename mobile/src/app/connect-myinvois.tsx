@@ -8,7 +8,7 @@
  * are ever returned. Submit/validate-tin use this pair to fetch a per-user
  * OAuth2 token, so a user MUST connect before any real (non-mock) LHDN call.
  */
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import {
   View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator,
   ScrollView, Linking, Platform,
@@ -26,12 +26,17 @@ import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { useSafeInsets } from '../theme/useSafeInsets'
 import { apiErrorMessage } from '../http/client'
 
-const PORTAL_URL = 'https://profile.myinvois.hasil.gov.my/TaxpayerProfile'
+const PORTAL_URL_FALLBACK = 'https://profile.myinvois.hasil.gov.my/TaxpayerProfile'
 
 export default function ConnectMyInvoisScreen() {
   const { top } = useSafeInsets()
   const session = useSession()
   const p = session.profile
+
+  const [portalUrl, setPortalUrl] = useState(PORTAL_URL_FALLBACK)
+  useEffect(() => {
+    myinvoisService.getStatus().then((s) => setPortalUrl(s.portalUrl || PORTAL_URL_FALLBACK)).catch(() => {})
+  }, [])
 
   const [clientId, setClientId] = useState(p?.myinvoisClientId ?? '')
   const [clientSecret, setClientSecret] = useState('')
@@ -136,7 +141,7 @@ export default function ConnectMyInvoisScreen() {
             <Text style={styles.stepEmph}>Client Secret</Text> shown (the secret
             is only visible once — copy it now).
           </Text>
-          <Pressable style={styles.portalBtn} onPress={() => Linking.openURL(PORTAL_URL)}>
+          <Pressable style={styles.portalBtn} onPress={() => Linking.openURL(portalUrl)}>
             <Ionicons name="open-outline" size={16} color={colors.azure} />
             <Text style={styles.portalText}>
               {Platform.OS === 'web' ? 'Open profile.myinvois.hasil.gov.my' : 'Open MyInvois portal'}

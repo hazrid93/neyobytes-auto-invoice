@@ -108,6 +108,25 @@ Generate a JWT secret: `openssl rand -hex 32`
 Generate the per-user-secret encryption key (required for sandbox/prod):
 `openssl rand -base64 48`
 
+## LHDN credential modes (`MYINVOIS_CRED_MODE`)
+
+The app supports two compliant ways to submit to LHDN, selectable in `.env`:
+
+- **`taxpayer`** (default) — per-user, *Login as Taxpayer System* (07). Each
+  taxpayer generates their own ERP `client_id`/`client_secret` on the MyInvois
+  portal and pastes it in the app (Settings → Connect LHDN). Stored encrypted
+  per profile; the token is fetched with those creds (no `onbehalfof`).
+- **`intermediary`** — platform, *Login as Intermediary System* (08). Our
+  company holds ONE ERP key (`MYINVOIS_CLIENT_ID`/`SECRET`) + its TIN
+  (`MYINVOIS_INTERMEDIARY_TIN`). Each taxpayer appoints us as intermediary in
+  their portal (Settings → Appoint intermediary); we then submit with header
+  `onbehalfof: <taxpayer TIN>` on the token request. The taxpayer must set
+  their own TIN in their profile first.
+
+Both flows share the same post-token API logic; only the token fetch differs.
+Switch by editing `MYINVOIS_CRED_MODE` in `.env.*` and restarting — the
+frontend Settings adapts automatically (`/myinvois/status` reports the mode).
+
 ## Security note
 
 All secrets (Supabase service key, DB password, JWT secret, LITELLM key) live

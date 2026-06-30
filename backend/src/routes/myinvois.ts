@@ -27,11 +27,24 @@ export const myinvois = new Hono<AppEnv>()
  * simple reads.)
  */
 
-// GET /myinvois/status — which environment are we hitting?
+// GET /myinvois/status — which environment + credential mode are active?
 myinvois.get('/status', requireAuth, (c) =>
   c.json({
     mode: isMock ? 'mock' : env.MYINVOIS_ENV,
     signing: isMock ? 'not_required' : env.MYINVOIS_CERT_PEM ? 'configured' : 'missing',
+    // Which credential flow the frontend should present:
+    //   taxpayer     → "Connect LHDN account" (paste the user's own ERP key)
+    //   intermediary → "Add Neyobytes as intermediary" (user appoints us by TIN)
+    credMode: isMock ? 'taxpayer' : env.MYINVOIS_CRED_MODE,
+    // Intermediary mode only: our company's TIN (+ optional ROB) for the user
+    // to add in their portal. Omitted in taxpayer mode.
+    intermediaryTin: isMock || env.MYINVOIS_CRED_MODE !== 'intermediary' ? null : env.MYINVOIS_INTERMEDIARY_TIN ?? null,
+    intermediaryRob: isMock || env.MYINVOIS_CRED_MODE !== 'intermediary' ? null : env.MYINVOIS_INTERMEDIARY_ROB ?? null,
+    // The taxpayer profile portal (for login / ERP generation / appointment) +
+    // the internal /iapi base (native auto-appoint only). Surfaced so the
+    // frontend doesn't hardcode hosts (sandbox vs prod differ).
+    portalUrl: env.MYINVOIS_PORTAL_URL,
+    iapiBase: env.MYINVOIS_IAPI_BASE,
   }),
 )
 

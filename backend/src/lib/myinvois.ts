@@ -1,6 +1,6 @@
 import { env } from '../env'
-import { getMyInvoisCredentials } from '../repositories/profileRepo'
-import { MyInvoisNotConnectedError } from '../domain/errors'
+import { getMyInvoisCredentials, getTaxpayerTin } from '../repositories/profileRepo'
+import { MyInvoisNotConnectedError, ValidationError } from '../domain/errors'
 
 /**
  * LHDN MyInvois e-Invoicing client.
@@ -37,21 +37,56 @@ interface TokenCache {
   access_token: string
   expires_at: number // epoch ms
 }
-// Per-user cache: each taxpayer's OAuth2 token is fetched with their OWN
-// client_id/client_secret (Login as Taxpayer System). The special key
-// '__global__' caches a token fetched from the optional env-level fallback
-// creds (single-tenant deployments). Mock mode never touches this map.
+// Per-user/per-taxpayer token cache. The key depends on the credential mode:
+//   - taxpayer mode: the userId (creds come from that user's stored pair)
+//   - intermediary mode: `interm:<taxpayerTIN>` (creds come from the env-level
+//     platform pair, but the token is scoped per taxpayer via onbehalfof).
+// '__global__' is the optional single-tenant fallback in taxpayer mode. Mock
+// mode never touches this map.
 const tokenCache = new Map<string, TokenCache>()
 
-// Sentinel key for the env-level fallback credential pair.
+// Sentinel key for the env-level fallback credential pair (taxpayer mode).
 const GLOBAL_KEY = '__global__'
 
-/** Resolve the OAuth2 credential pair to use for a user.
- *  Priority: 1) the user's own stored LHDN creds, 2) the env-level fallback,
- *  3) none → MyInvoisNotConnectedError. Returns the cache key alongside. */
+/** The credential mode the backend is configured for (see env.ts). */
+export const credMode = env.MYINVOIS_CRED_MODE // 'taxpayer' | 'intermediary'
+
+/** Resolve the OAuth2 credentials + onbehalfof to use for a user, by mode.
+ *
+ *  taxpayer (default): use the user's OWN stored client_id/secret (Login as
+ *    Taxpayer System, 07). No onbehalfof — the token is already scoped to them.
+ *    Falls back to the env-level global pair (single-tenant) if set.
+ *
+ *  intermediary: use the PLATFORM's env client_id/secret (Login as
+ *    Intermediary System, 08) + header `onbehalfof: <taxpayer TIN>`. Requires
+ *    the user's supplier TIN (profiles.tin) to be set, since onbehalfof must
+ *    identify the taxpayer we represent. (Per the SDK, onbehalfof is sent on the
+ *    /connect/token request; the resulting token embeds the taxpayer binding.)
+ */
 async function resolveCreds(
   userId: string,
-): Promise<{ key: string; clientId: string; clientSecret: string }> {
+): Promise<{ key: string; clientId: string; clientSecret: string; onbehalfof?: string }> {
+  if (credMode === 'intermediary') {
+    // Platform ERP key (env) — required for this mode (env.ts enforces it).
+    if (!env.MYINVOIS_CLIENT_ID || !env.MYINVOIS_CLIENT_SECRET) {
+      throw new MyInvoisNotConnectedError(
+        'Intermediary mode is misconfigured: platform LHDN credentials are not set. Ask the admin to set MYINVOIS_CLIENT_ID/SECRET.',
+      )
+    }
+    // onbehalfof needs the taxpayer's TIN. Without it, the intermediary token
+    // can't be scoped — the user must set their TIN in their profile first.
+    const tin = await getTaxpayerTin(userId)
+    if (!tin) {
+      throw new ValidationError('Set your TIN in your profile first so we can submit on your behalf.')
+    }
+    return {
+      key: `interm:${tin}`,
+      clientId: env.MYINVOIS_CLIENT_ID,
+      clientSecret: env.MYINVOIS_CLIENT_SECRET,
+      onbehalfof: tin,
+    }
+  }
+  // taxpayer mode: user's own stored creds first, then the env global fallback.
   const userCreds = await getMyInvoisCredentials(userId)
   if (userCreds.clientId && userCreds.clientSecret) {
     return { key: userId, clientId: userCreds.clientId, clientSecret: userCreds.clientSecret }
@@ -69,16 +104,16 @@ async function resolveCreds(
 }
 
 /**
- * Get an OAuth2 client-credentials bearer token from LHDN, scoped to the user's
- * own ERP credentials (per-user Login-as-Taxpayer-System). Mock mode returns a
- * fake token and ignores `userId` entirely.
+ * Get an OAuth2 client-credentials bearer token from LHDN, scoped to the user
+ * (taxpayer mode: their own creds; intermediary mode: platform creds +
+ * onbehalfof). Mock mode returns a fake token and ignores `userId` entirely.
  */
 export async function getToken(userId: string): Promise<string> {
   if (isMock) {
     return `mock-token.${Buffer.from('auto-invoice-mock').toString('base64')}`
   }
 
-  const { key, clientId, clientSecret } = await resolveCreds(userId)
+  const { key, clientId, clientSecret, onbehalfof } = await resolveCreds(userId)
 
   // Return cached token if it has >60s of life left.
   const cached = tokenCache.get(key)
@@ -93,9 +128,17 @@ export async function getToken(userId: string): Promise<string> {
     scope: 'InvoicingAPI',
   })
 
+  // Intermediary mode: add the onbehalfof header on the token request (per the
+  // SDK's Login-as-Intermediary-System docs). The resulting token embeds the
+  // taxpayer binding; subsequent API calls use Bearer only — no per-call header.
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+  }
+  if (onbehalfof) headers.onbehalfof = onbehalfof
+
   const res = await fetch(`https://${host()}/connect/token`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers,
     body,
   })
   if (!res.ok) {
@@ -111,9 +154,14 @@ export async function getToken(userId: string): Promise<string> {
 }
 
 /** Drop a user's cached token (e.g. after they update or disconnect their
- *  credentials, so the next call re-fetches with the new pair). */
+ *  credentials, so the next call re-fetches with the new pair). Clears both the
+ *  taxpayer-mode key (userId) and any intermediary-mode key (interm:<tin>) since
+ *  the latter is derived from the user's TIN, which may have changed. */
 export function invalidateToken(userId: string): void {
   tokenCache.delete(userId)
+  for (const k of [...tokenCache.keys()]) {
+    if (k.startsWith('interm:')) tokenCache.delete(k)
+  }
 }
 
 // ─── TIN validation (Taxpayer Identification Number) ──────────────────────

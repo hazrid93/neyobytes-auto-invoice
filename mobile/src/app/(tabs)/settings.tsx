@@ -101,22 +101,34 @@ export default function SettingsScreen() {
             value={submitVm.mode ? submitVm.mode.toUpperCase() : '—'}
           />
           <Divider />
-          <Row
-            icon="key-outline"
-            label="LHDN account"
-            value={p?.myinvoisClientId ? 'Connected' : 'Not connected'}
-            muted={!p?.myinvoisClientId}
-            action={() => router.push('/connect-myinvois')}
-          />
+          {submitVm.status?.credMode === 'intermediary' ? (
+            <Row
+              icon="people-outline"
+              label="Intermediary"
+              value={p?.tin ? 'Add us in your portal' : 'Set your TIN first'}
+              muted={!p?.tin}
+              action={() => router.push('/appoint-intermediary')}
+            />
+          ) : (
+            <Row
+              icon="key-outline"
+              label="LHDN account"
+              value={p?.myinvoisClientId ? 'Connected' : 'Not connected'}
+              muted={!p?.myinvoisClientId}
+              action={() => router.push('/connect-myinvois')}
+            />
+          )}
           <Divider />
           <View style={styles.noteRow}>
             <Ionicons name="information-circle-outline" size={18} color={colors.slate} />
             <Text style={styles.note}>
               {submitVm.mode === 'mock'
                 ? 'Submissions return canned responses. Switch to sandbox or prod in the backend .env once you have LHDN credentials + a signing cert.'
-                : p?.myinvoisClientId
-                  ? 'Live LHDN mode — submissions go to the real government API using your linked ERP key.'
-                  : 'Live LHDN mode — connect your ERP key (generated on the MyInvois portal) to submit.'}
+                : submitVm.status?.credMode === 'intermediary'
+                  ? 'Intermediary mode — you appoint our company in your MyInvois portal (by our TIN), then we submit on your behalf. Set your TIN in your profile first.'
+                  : p?.myinvoisClientId
+                    ? 'Live LHDN mode — submissions go to the real government API using your linked ERP key.'
+                    : 'Live LHDN mode — connect your ERP key (generated on the MyInvois portal) to submit.'}
             </Text>
           </View>
         </GlassCard>

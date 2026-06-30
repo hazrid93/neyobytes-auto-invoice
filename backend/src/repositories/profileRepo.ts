@@ -180,3 +180,19 @@ export async function clearMyInvoisCredentials(userId: string): Promise<void> {
     throw classifyDbError(e, 'clearMyInvoisCredentials')
   }
 }
+
+/** The taxpayer's own TIN (profiles.tin) — used as the `onbehalfof` value in
+ *  intermediary mode (Login as Intermediary System). null if not set. */
+export async function getTaxpayerTin(userId: string): Promise<string | null> {
+  const q = requireDb()
+  try {
+    const [row] = await q
+      .select({ tin: profilesTable.tin })
+      .from(profilesTable)
+      .where(eq(profilesTable.id, userId))
+      .limit(1)
+    return row?.tin ?? null
+  } catch (e) {
+    throw classifyDbError(e, 'getTaxpayerTin')
+  }
+}
