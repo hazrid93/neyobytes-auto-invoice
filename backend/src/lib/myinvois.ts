@@ -224,8 +224,14 @@ export async function validateTin(tin: string, userId: string): Promise<TinValid
 export interface SubmitDocumentInput {
   // The invoice UUID (our DB id) — used to build a stable submission UID in mock.
   invoiceId: string
-  // UBL 2.1 XML document, base64-encoded.
-  invoiceXmlBase64: string
+  // Signed UBL 2.1 document (JSON variant), base64-encoded. The submit body
+  // carries format:"JSON"; documentHash is the SHA256 of the TRANSFORMED
+  // (stripped+minified) document per the signing guide Step 2 — supplied by
+  // the caller (invoiceSubmissionService) alongside the signed doc so both
+  // agree on what was hashed.
+  documentBase64: string
+  // base64( SHA256( UTF8( transformDocument( signedJson ) ) ) ) — Step 2 digest.
+  documentHash: string
 }
 
 export interface SubmitDocumentResult {
@@ -280,9 +286,9 @@ export async function submitDocument(
   const body = {
     documents: [
       {
-        format: 'XML',
-        document: input.invoiceXmlBase64, // base64-encoded UBL
-        documentHash: await sha256Base64(Buffer.from(input.invoiceXmlBase64, 'base64')),
+        format: 'JSON',
+        document: input.documentBase64, // base64-encoded signed UBL JSON
+        documentHash: input.documentHash,
         codeNumber: input.invoiceId,
       },
     ],
@@ -390,9 +396,11 @@ export interface BuildUblInput {
 /**
  * Build a minimal-but-valid UBL 2.1 Invoice XML.
  *
- * This is the *unsigned* document. For sandbox/prod, the XML must be
- * enveloped-XMlDSig-signed with the POS Digicert cert before submission
- * (see docs/myinvois/RESEARCH.md §6). Mock mode does not require signing.
+ * ⚠️ RETIRED from the submit path. The submit flow now uses the JSON variant
+ * (buildUblJson) + format:"JSON" because the only LHDN signing documentation
+ * operates on JSON; on XML the signing mechanism is undocumented. This XML
+ * builder is retained for reference/fallback only and has NO live caller.
+ * See lib/ublJson.ts + lib/signing.ts + docs/myinvois/RESEARCH.md §6.
  */
 export function buildUbl(input: BuildUblInput): string {
   const items = input.items
@@ -485,14 +493,6 @@ function esc(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-}
-
-async function sha256Base64(buf: Buffer): Promise<string> {
-  const { createHash } = await import('node:crypto')
-  // LHDN documentHash: base64(SHA256(UTF8(document))) — see docs/myinvois/RESEARCH.md
-  // §6 line 223 and signature-creation-json.md lines 965–968
-  // (Convert.ToBase64String in the reference C#). NOT hex.
-  return createHash('sha256').update(buf).digest('base64')
 }
 
 /** Thrown by real-mode calls; caught by the route and logged to the audit row. */

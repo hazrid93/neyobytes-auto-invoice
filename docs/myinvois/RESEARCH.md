@@ -109,6 +109,24 @@ Document type versions: invoice/credit/debit/refund + self-billed variants, each
 
 ## 6. Digital signature & documentHash — algorithm known; **signing target: prose (bare doc digest) likely correct, not crypto-proven** ⚠️
 
+> **UPDATE (2026-06-30):** The deterministic, cert-independent signing primitives
+> are now IMPLEMENTED + BYTE-EXACT-VERIFIED by working unit tests
+> (`backend/scripts/verify-signing.ts`, `npm run signing:verify`, 14/14 pass):
+>   - **Step 4** `certDigest` reproduces `KKBSTy…` ; **Step 6** `signedPropertiesDigest`
+>     reproduces `Rzuzz+70…` — both byte-exact against the official trial-cert sample.
+>   - **Step 3 `docdigest` candidate** round-trips self-consistently (sign→verify
+>     passes, tampered doc fails) with a throwaway self-signed key — proves the
+>     primitive is correct, NOT that LHDN accepts it. `signedinfo` throws
+>     `PendingImplementationError`; an empty/unknown target throws
+>     `SigningTargetUnverifiedError` (defensive — no silent signing).
+> Two blockers REMAIN (co-equal, both cert-gated): (1) cert procurement (POS
+> Digicert), (2) which signing target LHDN accepts + the exact minified-doc byte
+> serialization. The submit path was **pivoted to the JSON UBL variant**
+> (`buildUblJson` + `format:"JSON"`) because the only signing doc operates on JSON;
+> on XML the signing mechanism is undocumented. The submit service refuses to
+> sign until `MYINVOIS_SIGN_TARGET` is set after a real round-trip — see
+> `docs/myinvois/TESTING-FLOWS.md §4`. Original analysis preserved below.
+
 > Full 7-step algorithm + code + signed-properties/signed-info shape:
 > `docs/myinvois/signature-creation-json.md` (34 KB, complete — verified to contain
 > Steps 1-7, `SignHash`, `Pkcs1`, `SignedInfo`, `SignatureValue`, `rsa-sha256`). The static

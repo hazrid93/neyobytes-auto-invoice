@@ -89,6 +89,13 @@ const schema = z.object({
   // from POS Digicert (posdigicert.com.my) under LHDNM's Sub CA.
   MYINVOIS_CERT_PEM: z.string().optional(),
   MYINVOIS_KEY_PEM: z.string().optional(),
+  // The LHDN signing target — which value SignatureValue signs. UNVERIFIED until
+  // a real round-trip (see docs/myinvois/RESEARCH.md §6 + TESTING-FLOWS.md §4b):
+  //   docdigest  → Sign(SHA256(transformed document))  [prose-literal]
+  //   signedinfo → Sign(c14n(SignedInfo))              [standard XAdES]
+  // If unset, the submit service throws SigningTargetUnverifiedError rather
+  // than ship a guessed signature. Set it ONLY after a round-trip confirms.
+  MYINVOIS_SIGN_TARGET: z.enum(['docdigest', 'signedinfo']).optional(),
   // Key used to AES-256-GCM-encrypt each user's stored LHDN client_secret at
   // rest (lib/crypto.ts). MUST be stable across restarts or stored secrets
   // become undecryptable. Required for sandbox/prod (where per-user creds live
