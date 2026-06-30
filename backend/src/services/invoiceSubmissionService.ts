@@ -13,6 +13,7 @@
  */
 import { env } from '../env'
 import {
+  AppError,
   NotFoundError,
   ValidationError,
   SigningNotConfiguredError,
@@ -104,8 +105,12 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
   try {
     result = await submitDocument({ invoiceId, invoiceXmlBase64: xmlBase64 }, userId)
   } catch (e) {
-    // Audit-on-failure side-effect: write the error row BEFORE rethrowing so the
-    // trail is complete even when the route returns 502.
+    // A friendly AppError (e.g. MyInvoisNotConnectedError 409, or the signing
+    // gate above) means NO LHDN call was made — rethrow it as-is so the route
+    // returns its real status/code, and skip the audit row (nothing was sent).
+    if (e instanceof AppError) throw e
+    // Otherwise this is a MyInvoisError — a real LHDN call failed. Audit the
+    // failure BEFORE rethrowing so the trail is complete even on 502.
     const msg = String((e as Error)?.message ?? e)
     await insertSubmission({
       invoiceId,
@@ -156,6 +161,9 @@ export async function validateTinString(
   try {
     return await validateTin(tin, userId)
   } catch (e) {
+    // Preserve friendly AppErrors (e.g. MyInvoisNotConnectedError 409); only
+    // wrap genuine LHDN/network failures (MyInvoisError) as 502.
+    if (e instanceof AppError) throw e
     throw new ExternalError('lhdn', String((e as Error)?.message ?? e))
   }
 }
@@ -182,6 +190,7 @@ export async function getDocumentStatus(uuid: string, userId: string) {
   try {
     return await getDocumentDetails(uuid, userId)
   } catch (e) {
+    if (e instanceof AppError) throw e
     throw new ExternalError('lhdn', String((e as Error)?.message ?? e))
   }
 }
