@@ -5,13 +5,14 @@
  * and a floating Capture CTA. Reads the dashboard + submit view models.
  */
 import { useEffect, useMemo } from 'react'
-import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, Alert } from 'react-native'
+import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useSession } from '../../viewmodels/useSession'
 import { useDashboard } from '../../viewmodels/useDashboard'
 import { useSubmit } from '../../viewmodels/useSubmit'
 import { GradientBackground, GlassCard } from '../../theme/glass'
+import { SwipeToDelete } from '../../components/SwipeToDelete'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
 import type { InvoiceSummary } from '../../domain/dtos'
 
@@ -129,15 +130,11 @@ function StatTile({ label, value, accent }: { label: string; value: string; acce
 
 function InvoiceCard({ invoice, onDelete }: { invoice: InvoiceSummary; onDelete: (id: string) => Promise<boolean> }) {
   const isDraft = invoice.status === 'draft'
-  // Drafts → review (edit / delete / then submit). Submitted → submit (audit trail).
+  // Drafts → review (edit / submit). Submitted → submit (audit trail).
   const open = () =>
     router.push({ pathname: isDraft ? '/review' : '/submit', params: { id: invoice.id } })
-  const confirmDelete = () =>
-    Alert.alert('Delete invoice?', 'This invoice and its items will be permanently removed.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: () => onDelete(invoice.id) },
-    ])
-  return (
+
+  const card = (
     <Pressable onPress={open}>
       <GlassCard style={styles.card}>
         <View style={styles.cardHead}>
@@ -148,18 +145,21 @@ function InvoiceCard({ invoice, onDelete }: { invoice: InvoiceSummary; onDelete:
         </View>
         <View style={styles.cardRow}>
           <Text style={styles.cardMeta}>{invoice.issueDate ?? 'No date'}</Text>
-          <Text style={styles.cardTotal}>RM {(invoice.total ?? 0).toFixed(2)}</Text>
-        </View>
-        <View style={styles.cardActions}>
-          {isDraft && (
-            <Pressable onPress={confirmDelete} hitSlop={8} style={styles.cardActionBtn}>
-              <Ionicons name="trash-outline" size={16} color={colors.danger} />
-            </Pressable>
-          )}
-          <Ionicons name="chevron-forward" size={16} color={colors.silver} />
+          <View style={styles.cardRight}>
+            <Text style={styles.cardTotal}>RM {(invoice.total ?? 0).toFixed(2)}</Text>
+            <Ionicons name="chevron-forward" size={16} color={colors.silver} />
+          </View>
         </View>
       </GlassCard>
     </Pressable>
+  )
+
+  // Only drafts are drag-to-delete; submitted invoices keep their audit trail.
+  if (!isDraft) return card
+  return (
+    <SwipeToDelete onDelete={() => onDelete(invoice.id)}>
+      {card}
+    </SwipeToDelete>
   )
 }
 
@@ -199,10 +199,9 @@ const styles = StyleSheet.create({
   statusDone: { backgroundColor: colors.success + '22' },
   statusText: { fontFamily: font.bodyMedium, fontSize: 11, color: colors.slate, textTransform: 'uppercase' },
   cardRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.sm },
+  cardRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardMeta: { fontFamily: font.body, fontSize: 13, color: colors.slate },
   cardTotal: { fontFamily: font.displayBold, fontSize: 15, color: colors.ink },
-  cardActions: { flexDirection: 'row', alignItems: 'center', gap: space.sm, position: 'absolute', right: space.md, top: '50%', marginTop: -10 },
-  cardActionBtn: { padding: 4 },
   fab: {
     position: 'absolute',
     bottom: 100,
