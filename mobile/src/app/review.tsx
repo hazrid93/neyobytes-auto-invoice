@@ -11,10 +11,11 @@
  * Actions: Edit/Save (toggle), Delete (DELETE → home), Confirm & submit.
  */
 import { useEffect, useMemo, useState } from 'react'
-import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, ActivityIndicator, Alert, Platform } from 'react-native'
+import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { getInvoice, updateInvoice, deleteInvoice } from '../services/invoiceService'
+import { ConfirmDialog, type ConfirmOptions } from '../components/ConfirmDialog'
 import { apiErrorMessage, type ApiError } from '../http/client'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
@@ -31,6 +32,7 @@ export default function ReviewScreen() {
   const [form, setForm] = useState<EditForm | null>(null)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [confirm, setConfirm] = useState<ConfirmOptions | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -82,7 +84,13 @@ export default function ReviewScreen() {
       setEditing(false)
       setForm(null)
     } catch (e) {
-      Alert.alert('Save failed', apiErrorMessage(e as ApiError))
+      setConfirm({
+        title: 'Save failed',
+        message: apiErrorMessage(e as ApiError),
+        confirmText: 'OK',
+        hideCancel: true,
+        onConfirm: () => setConfirm(null),
+      })
     } finally {
       setSaving(false)
     }
@@ -90,24 +98,29 @@ export default function ReviewScreen() {
 
   const remove = () => {
     if (!draft) return
-    Alert.alert('Delete draft?', 'This invoice and its items will be permanently removed.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          setDeleting(true)
-          try {
-            await deleteInvoice(draft.id)
-            router.replace('/home')
-          } catch (e) {
-            Alert.alert('Delete failed', apiErrorMessage(e as ApiError))
-          } finally {
-            setDeleting(false)
-          }
-        },
+    setConfirm({
+      title: 'Delete draft?',
+      message: 'This invoice and its items will be permanently removed.',
+      confirmText: 'Delete',
+      destructive: true,
+      onConfirm: async () => {
+        setDeleting(true)
+        try {
+          await deleteInvoice(draft.id)
+          router.replace('/home')
+        } catch (e) {
+          setConfirm({
+            title: 'Delete failed',
+            message: apiErrorMessage(e as ApiError),
+            confirmText: 'OK',
+            hideCancel: true,
+            onConfirm: () => setConfirm(null),
+          })
+        } finally {
+          setDeleting(false)
+        }
       },
-    ])
+    })
   }
 
   if (loading) {
@@ -231,6 +244,9 @@ export default function ReviewScreen() {
           )}
         </View>
       </ScrollView>
+      {confirm && (
+        <ConfirmDialog open {...confirm} busy={deleting} onClose={() => setConfirm(null)} />
+      )}
     </GradientBackground>
   )
 }

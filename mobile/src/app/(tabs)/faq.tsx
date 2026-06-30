@@ -1,6 +1,6 @@
 /**
  * FAQ — accordion-less Q/A cards answering the real questions an SME owner has
- * about e-invoicing with this app: what LHDN is, mock vs live, what invoices
+ * about e-invoicing with this app: what LHDN is, what invoices
  * are supported, data privacy, and how OCR works. Real content, no filler.
  */
 import { useState } from 'react'
@@ -18,10 +18,6 @@ const FAQS: QA[] = [
     a: 'LHDN (Lembaga Hasil Dalam Negeri) is Malaysia’s Inland Revenue Board. Its e-invoicing system lets businesses submit structured electronic invoices for validation. Validated invoices receive a unique ID and are considered compliant for tax purposes.',
   },
   {
-    q: 'What does “Mock mode” mean?',
-    a: 'In mock mode, submissions never reach the government API — they return canned, deterministic responses. Use it to try the full flow without LHDN credentials. Switch to sandbox or production in the backend configuration once you have credentials and a signing certificate.',
-  },
-  {
     q: 'What kinds of invoices can I capture?',
     a: 'Any Malaysian SME invoice or receipt — sales invoices, purchase receipts, expense invoices. Photograph the paper document or upload an image. The model reads the seller, buyer, line items, totals, and tax, then drafts an e-invoice for you to confirm.',
   },
@@ -31,7 +27,7 @@ const FAQS: QA[] = [
   },
   {
     q: 'What do I need before submitting to LHDN?',
-    a: 'A TIN and company name on your supplier profile, plus LHDN client credentials and a POS Digicert signing certificate for sandbox or production. Without these, stay in mock mode — the submit button stays disabled until your profile is complete.',
+    a: 'A TIN and company name on your supplier profile, plus LHDN client credentials and a POS Digicert signing certificate for sandbox or production. The submit button stays disabled until your supplier profile is complete.',
   },
   {
     q: 'Where are my invoice images stored?',
@@ -39,7 +35,7 @@ const FAQS: QA[] = [
   },
   {
     q: 'Is my data shared?',
-    a: 'No. Your invoices live in your own Supabase project. The only external calls are to the LHDN API (when not in mock mode) and to the LLM gateway that reads the invoice photo. Nothing is shared with third parties.',
+    a: 'No. Your invoices live in your own Supabase project. The only external calls are to the LHDN API and to the LLM gateway that reads the invoice photo. Nothing is shared with third parties.',
   },
 ]
 
