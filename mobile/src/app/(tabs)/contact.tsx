@@ -3,10 +3,12 @@
  * the device handler (mailto / tel / WhatsApp). Plain verbs, real addresses,
  * no marketing copy.
  */
+import { useRef } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
+import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space, radius } from '../../theme/tokens'
 
 const SUPPORT_EMAIL = 'support@neyobytes.com'
@@ -14,10 +16,27 @@ const SUPPORT_PHONE = '+60312345678'
 const WHATSAPP_NUMBER = '60123456789' // no +, for wa.me
 
 export default function ContactScreen() {
+  const headerRef = useRef<View>(null)
+  const hoursRef = useRef<View>(null)
+  const tourSteps: TourStep[] = [
+    {
+      id: 'contact', targetRef: headerRef, badge: 'Contact',
+      title: 'Three ways to reach us',
+      description: 'Email, phone, or WhatsApp — pick whichever suits you. Each card opens the right app.',
+    },
+    {
+      id: 'hours', targetRef: hoursRef,
+      title: 'Response times',
+      description: 'Expect a reply within one business day; urgent submission issues are prioritized.',
+    },
+  ]
   return (
     <GradientBackground>
       <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} ref={headerRef}>
         <Text style={styles.title}>Contact</Text>
+        <TourButton steps={tourSteps} />
+      </View>
         <Text style={styles.sub}>We usually reply within one business day.</Text>
 
         <ContactCard
@@ -45,6 +64,7 @@ export default function ContactScreen() {
           onPress={() => Linking.openURL(`https://wa.me/${WHATSAPP_NUMBER}`)}
         />
 
+        <View ref={hoursRef}>
         <GlassCard style={styles.hoursCard}>
           <Text style={styles.hoursTitle}>Response times</Text>
           <Text style={styles.hoursText}>
@@ -52,6 +72,7 @@ export default function ContactScreen() {
             business hours. Critical submission issues are prioritized.
           </Text>
         </GlassCard>
+      </View>
       </ScrollView>
     </GradientBackground>
   )

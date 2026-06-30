@@ -10,12 +10,13 @@
  *
  * Actions: Edit/Save (toggle), Delete (DELETE → home), Confirm & submit.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { getInvoice, updateInvoice, deleteInvoice } from '../services/invoiceService'
 import { ConfirmDialog, type ConfirmOptions } from '../components/ConfirmDialog'
+import { TourButton, type TourStep } from '../components/TourButton'
 import { apiErrorMessage, type ApiError } from '../http/client'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
@@ -33,6 +34,21 @@ export default function ReviewScreen() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirm, setConfirm] = useState<ConfirmOptions | null>(null)
+
+  const headerRef = useRef<View>(null)
+  const actionsRef = useRef<View>(null)
+  const tourSteps: TourStep[] = [
+    {
+      id: 'review', targetRef: headerRef, badge: 'Review',
+      title: 'Check the extracted draft',
+      description: 'The model filled these fields from your photo. Scroll through seller, buyer, items, and totals — confirm they’re right.',
+    },
+    {
+      id: 'actions', targetRef: actionsRef,
+      title: 'Edit, delete, or submit',
+      description: 'Tap Edit to fix a field, Delete to discard the draft (you’ll get a confirm popup), or Submit to send it to LHDN.',
+    },
+  ]
 
   useEffect(() => {
     let cancelled = false
@@ -156,14 +172,17 @@ export default function ReviewScreen() {
   return (
     <GradientBackground>
       <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 140 }]}>
-        <View style={styles.header}>
+        <View style={styles.header} ref={headerRef}>
           <Pressable onPress={() => (editing ? cancelEdit() : router.back())} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />
           </Pressable>
           <Text style={styles.title}>Review</Text>
-          <Pressable onPress={editing ? cancelEdit : startEdit} hitSlop={10} style={styles.editBtn}>
-            <Ionicons name={editing ? 'close-outline' : 'create-outline'} size={22} color={colors.azure} />
-          </Pressable>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+            <TourButton steps={tourSteps} />
+            <Pressable onPress={editing ? cancelEdit : startEdit} hitSlop={10} style={styles.editBtn}>
+              <Ionicons name={editing ? 'close-outline' : 'create-outline'} size={22} color={colors.azure} />
+            </Pressable>
+          </View>
         </View>
         <Text style={styles.subtitle}>
           {editing ? 'Edit the extracted fields, then save.' : 'Confirm the extracted invoice before submitting to LHDN.'}
@@ -190,7 +209,7 @@ export default function ReviewScreen() {
           />
         )}
 
-        <View style={styles.actions}>
+        <View style={styles.actions} ref={actionsRef}>
           {editing ? (
             <>
               <Pressable

@@ -3,11 +3,12 @@
  * about e-invoicing with this app: what LHDN is, what invoices
  * are supported, data privacy, and how OCR works. Real content, no filler.
  */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
+import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space } from '../../theme/tokens'
 
 interface QA { q: string; a: string }
@@ -41,10 +42,27 @@ const FAQS: QA[] = [
 
 export default function FaqScreen() {
   const [open, setOpen] = useState<number | null>(0)
+  const headerRef = useRef<View>(null)
+  const tipRef = useRef<View>(null) // intentionally unattached → centered bubble
+  const tourSteps: TourStep[] = [
+    {
+      id: 'faq', targetRef: headerRef, badge: 'FAQ',
+      title: 'Common questions',
+      description: 'Tap any question to expand its answer. Everything here is about e-invoicing with auto-invoice.',
+    },
+    {
+      id: 'tip', targetRef: tipRef,
+      title: 'Still stuck?',
+      description: 'If your question isn’t here, the Contact tab has email, phone, and WhatsApp.',
+    },
+  ]
   return (
     <GradientBackground>
       <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} ref={headerRef}>
         <Text style={styles.title}>FAQ</Text>
+        <TourButton steps={tourSteps} />
+      </View>
         <Text style={styles.sub}>Common questions about e-invoicing with auto-invoice.</Text>
 
         {FAQS.map((qa, i) => {

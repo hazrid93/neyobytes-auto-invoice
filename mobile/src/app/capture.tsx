@@ -3,7 +3,7 @@
  * image as a data URL, run extraction via the dashboard view model, then route
  * to the review screen with the draft invoice id.
  */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
 import { router } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
@@ -11,11 +11,33 @@ import { Ionicons } from '@expo/vector-icons'
 import { useDashboard } from '../viewmodels/useDashboard'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { PageContainer } from '../theme/page'
+import { TourButton, type TourStep } from '../components/TourButton'
 import { colors, font, space } from '../theme/tokens'
 
 export default function CaptureScreen() {
   const dash = useDashboard()
   const [busy, setBusy] = useState(false)
+
+  const headerRef = useRef<View>(null)
+  const cameraRef = useRef<View>(null)
+  const libraryRef = useRef<View>(null)
+  const tourSteps: TourStep[] = [
+    {
+      id: 'intro', targetRef: headerRef, badge: 'Capture',
+      title: 'Turn a photo into a draft',
+      description: 'Photograph a paper receipt or invoice. The model OCRs it into a draft e-invoice you can review.',
+    },
+    {
+      id: 'camera', targetRef: cameraRef,
+      title: 'Take a photo',
+      description: 'Open the camera and snap the invoice in good light — fill the frame with the document.',
+    },
+    {
+      id: 'library', targetRef: libraryRef,
+      title: 'Or pick an image',
+      description: 'Already have a photo? Choose it from your library instead.',
+    },
+  ]
 
   const handleImage = async (uri: string) => {
     setBusy(true)
@@ -68,19 +90,19 @@ export default function CaptureScreen() {
     <GradientBackground>
       <View style={styles.wrap}>
         <PageContainer gap={space.md}>
-          <View style={styles.header}>
+          <View style={styles.header} ref={headerRef}>
             <Pressable onPress={() => router.back()} hitSlop={10}>
               <Ionicons name="chevron-back" size={26} color={colors.azure} />
             </Pressable>
             <Text style={styles.title}>Capture invoice</Text>
-            <View style={{ width: 26 }} />
+            <TourButton steps={tourSteps} />
           </View>
           <Text style={styles.subtitle}>
             Photograph a paper receipt or invoice — the model will OCR it into a draft e-invoice.
           </Text>
 
           <GlassCard style={styles.optionCard}>
-            <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={takePhoto}>
+            <Pressable ref={cameraRef} style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={takePhoto}>
               <Ionicons name="camera-outline" size={24} color={colors.azure} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.optionText}>Take photo</Text>
@@ -91,7 +113,7 @@ export default function CaptureScreen() {
           </GlassCard>
 
           <GlassCard style={styles.optionCard}>
-            <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={pickFromLibrary}>
+            <Pressable ref={libraryRef} style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={pickFromLibrary}>
               <Ionicons name="images-outline" size={24} color={colors.azure} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.optionText}>Choose from library</Text>

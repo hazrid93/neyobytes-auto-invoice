@@ -4,7 +4,7 @@
  * the signed-in account, and a destructive sign-out. Reads the session +
  * submit view models.
  */
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -12,6 +12,7 @@ import { useSession } from '../../viewmodels/useSession'
 import { useSubmit } from '../../viewmodels/useSubmit'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { PageContainer } from '../../theme/page'
+import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space, radius } from '../../theme/tokens'
 
 export default function SettingsScreen() {
@@ -25,12 +26,43 @@ export default function SettingsScreen() {
 
   const p = session.profile
 
+  const headerRef = useRef<View>(null)
+  const profileRef = useRef<View>(null)
+  const modeRef = useRef<View>(null)
+  const signOutRef = useRef<View>(null)
+  const tourSteps: TourStep[] = [
+    {
+      id: 'settings', targetRef: headerRef, badge: 'Settings',
+      title: 'Account & LHDN config',
+      description: 'Manage your supplier profile, your LHDN connection, and your account here.',
+    },
+    {
+      id: 'profile', targetRef: profileRef,
+      title: 'Supplier profile',
+      description: 'Name, company, and TIN. Tap a row to edit — company + TIN are required before you can submit.',
+    },
+    {
+      id: 'mode', targetRef: modeRef,
+      title: 'MyInvois (LHDN)',
+      description: 'Shows whether submissions go to the real LHDN API or run in mock mode.',
+    },
+    {
+      id: 'signout', targetRef: signOutRef,
+      title: 'Sign out',
+      description: 'Ends your session on this device.',
+    },
+  ]
+
   return (
     <GradientBackground>
       <ScrollView contentContainerStyle={{ paddingTop: space.xxxl, paddingBottom: 150 }}>
         <PageContainer>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} ref={headerRef}>
           <Text style={styles.title}>Settings</Text>
+          <TourButton steps={tourSteps} />
+        </View>
 
+        <View ref={profileRef}>
         <SectionLabel>Supplier profile</SectionLabel>
         <GlassCard style={styles.card}>
           <Row
@@ -56,7 +88,9 @@ export default function SettingsScreen() {
             action={() => router.push('/profile')}
           />
         </GlassCard>
+      </View>
 
+        <View ref={modeRef}>
         <SectionLabel>MyInvois (LHDN)</SectionLabel>
         <GlassCard style={styles.card}>
           <Row
@@ -74,6 +108,7 @@ export default function SettingsScreen() {
             </Text>
           </View>
         </GlassCard>
+      </View>
 
         <SectionLabel>Account</SectionLabel>
         <GlassCard style={styles.card}>
@@ -81,6 +116,7 @@ export default function SettingsScreen() {
         </GlassCard>
 
         <Pressable
+          ref={signOutRef}
           style={({ pressed }) => [styles.signOut, pressed && styles.signOutPressed]}
           onPress={() => session.logout()}
         >

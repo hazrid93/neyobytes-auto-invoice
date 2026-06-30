@@ -3,7 +3,7 @@
  * These fields are mandatory for LHDN submission, so the home tab gates submit
  * on this being filled. Glass form over the gradient.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -11,6 +11,7 @@ import { updateProfile } from '../services/authService'
 import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
+import { TourButton, type TourStep } from '../components/TourButton'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function ProfileScreen() {
@@ -22,6 +23,27 @@ export default function ProfileScreen() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [ok, setOk] = useState(false)
+
+  const headerRef = useRef<View>(null)
+  const formRef = useRef<View>(null)
+  const saveRef = useRef<View>(null)
+  const tourSteps: TourStep[] = [
+    {
+      id: 'profile', targetRef: headerRef, badge: 'Profile',
+      title: 'Your supplier details',
+      description: 'These details go on every e-invoice you submit to LHDN. Fill them in once.',
+    },
+    {
+      id: 'form', targetRef: formRef,
+      title: 'Required fields',
+      description: 'Company name and TIN are mandatory — submit stays disabled until both are set.',
+    },
+    {
+      id: 'save', targetRef: saveRef,
+      title: 'Save',
+      description: 'Tap to save. Your profile is used on the next submission.',
+    },
+  ]
 
   // Sign-out happens here; route to login ourselves.
   useEffect(() => {
@@ -46,22 +68,24 @@ export default function ProfileScreen() {
   return (
     <GradientBackground>
       <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
-        <View style={styles.header}>
+        <View style={styles.header} ref={headerRef}>
           <Pressable onPress={() => router.back()} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />
           </Pressable>
           <Text style={styles.title}>Profile</Text>
-          <View style={{ width: 26 }} />
+          <TourButton steps={tourSteps} />
         </View>
         <Text style={styles.subtitle}>
           Your TIN & company name are required in the e-invoice submitted to LHDN.
         </Text>
 
+        <View ref={formRef}>
         <GlassCard strong style={styles.form}>
           <Field label="Full name" icon="person-outline" value={fullName} onChange={setFullName} />
           <Field label="Company name" icon="business-outline" value={companyName} onChange={setCompanyName} placeholder="Neyobytes Solutions Sdn Bhd" />
           <Field label="TIN" icon="ribbon-outline" value={tin} onChange={setTin} placeholder="C1234567899" autoCap="characters" />
         </GlassCard>
+      </View>
 
         {error ? (
           <View style={styles.errorRow}>
@@ -77,6 +101,7 @@ export default function ProfileScreen() {
         ) : null}
 
         <Pressable
+          ref={saveRef}
           style={({ pressed }) => [styles.saveBtn, pressed && styles.savePressed]}
           onPress={save}
           disabled={saving}

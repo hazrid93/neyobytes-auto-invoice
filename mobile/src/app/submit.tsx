@@ -4,7 +4,7 @@
  * accept/reject outcome, and the submission history (including error rows
  * the backend writes on failure, so the trail is always complete).
  */
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -12,12 +12,34 @@ import { useSubmit } from '../viewmodels/useSubmit'
 import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
+import { TourButton, type TourStep } from '../components/TourButton'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function SubmitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const vm = useSubmit()
   const session = useSession()
+
+  const headerRef = useRef<View>(null)
+  const submitRef = useRef<View>(null)
+  const historyRef = useRef<Text>(null)
+  const tourSteps: TourStep[] = [
+    {
+      id: 'submit', targetRef: headerRef, badge: 'Submit',
+      title: 'Send to LHDN',
+      description: 'This screen validates your invoice against LHDN and records every attempt.',
+    },
+    {
+      id: 'button', targetRef: submitRef,
+      title: 'Submit button',
+      description: 'Tap to submit. You’ll see whether LHDN accepted or rejected it, plus a submission UID.',
+    },
+    {
+      id: 'history', targetRef: historyRef,
+      title: 'Audit trail',
+      description: 'Every attempt is logged here — including failures — so there’s always a record of what happened.',
+    },
+  ]
 
   useEffect(() => {
     if (id) vm.loadSubmissions(id)
@@ -31,12 +53,12 @@ export default function SubmitScreen() {
   return (
     <GradientBackground>
       <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
-        <View style={styles.header}>
+        <View style={styles.header} ref={headerRef}>
           <Pressable onPress={() => router.back()} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />
           </Pressable>
           <Text style={styles.title}>Submit</Text>
-          <View style={{ width: 26 }} />
+          <TourButton steps={tourSteps} />
         </View>
         <Text style={styles.subtitle}>Send this invoice to LHDN for validation.</Text>
 
@@ -60,6 +82,7 @@ export default function SubmitScreen() {
         ) : null}
 
         <Pressable
+          ref={submitRef}
           style={({ pressed }) => [
             styles.submitBtn,
             !supplierReady && styles.disabled,
@@ -98,7 +121,7 @@ export default function SubmitScreen() {
           </GlassCard>
         ) : null}
 
-        <Text style={styles.sectionTitle}>Submission history</Text>
+        <Text style={styles.sectionTitle} ref={historyRef}>Submission history</Text>
         {vm.loadingSubmissions ? (
           <ActivityIndicator color={colors.slate} style={{ marginVertical: space.lg }} />
         ) : vm.submissions.length === 0 ? (

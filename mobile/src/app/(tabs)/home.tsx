@@ -4,7 +4,7 @@
  * stat tiles (total / drafts / submitted), the invoice list as glass cards,
  * and a floating Capture CTA. Reads the dashboard + submit view models.
  */
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -13,6 +13,7 @@ import { useDashboard } from '../../viewmodels/useDashboard'
 import { useSubmit } from '../../viewmodels/useSubmit'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
+import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
 import type { InvoiceSummary } from '../../domain/dtos'
 
@@ -20,6 +21,55 @@ export default function HomeScreen() {
   const session = useSession()
   const dash = useDashboard()
   const submitVm = useSubmit()
+
+  // ── Tour targets ──
+  const headerRef = useRef<View>(null)
+  const avatarRef = useRef<View>(null)
+  const modeRef = useRef<View>(null)
+  const statsRef = useRef<View>(null)
+  const listRef = useRef<View>(null)
+  const fabRef = useRef<View>(null)
+
+  const tourSteps: TourStep[] = [
+    {
+      id: 'welcome',
+      targetRef: headerRef,
+      badge: 'Welcome',
+      title: 'Your invoice dashboard',
+      description: 'This is home base — every invoice you capture or submit lives here. Let’s walk through it.',
+    },
+    {
+      id: 'capture',
+      targetRef: fabRef,
+      badge: 'Start here',
+      title: 'Capture an invoice',
+      description: 'Tap this button to photograph a paper invoice. The app reads it with OCR and drafts an e-invoice for you to confirm.',
+    },
+    {
+      id: 'mode',
+      targetRef: modeRef,
+      title: 'LHDN connection',
+      description: 'This banner shows your MyInvois environment. Submitting stays disabled until your supplier profile is complete.',
+    },
+    {
+      id: 'stats',
+      targetRef: statsRef,
+      title: 'At a glance',
+      description: 'Quick counts of total, draft, and submitted invoices.',
+    },
+    {
+      id: 'list',
+      targetRef: listRef,
+      title: 'Your invoices',
+      description: 'Tap a draft to review, edit, or delete it. Tap a submitted one to see its LHDN audit trail.',
+    },
+    {
+      id: 'profile',
+      targetRef: avatarRef,
+      title: 'Your supplier profile',
+      description: 'Tap your avatar to set the company name and TIN required for LHDN submission.',
+    },
+  ]
 
   useEffect(() => {
     dash.refresh()
@@ -46,19 +96,20 @@ export default function HomeScreen() {
         refreshControl={<RefreshControl refreshing={dash.loading} onRefresh={dash.refresh} tintColor={colors.azure} />}
         ListHeaderComponent={
           <>
-            <View style={styles.topRow}>
+            <View style={styles.topRow} ref={headerRef}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.greeting}>Halo, {session.profile?.fullName?.split(' ')[0] ?? 'there'}</Text>
                 <Text style={styles.sub}>
                   {supplierReady ? 'Ready to submit to LHDN' : 'Set your TIN & company to enable submit'}
                 </Text>
               </View>
-              <Pressable onPress={() => router.push('/profile')} hitSlop={10} style={styles.avatarBtn}>
+              <TourButton steps={tourSteps} style={{ marginRight: space.sm }} />
+              <Pressable onPress={() => router.push('/profile')} hitSlop={10} style={styles.avatarBtn} ref={avatarRef}>
                 <Ionicons name="person-circle-outline" size={34} color={colors.azure} />
               </Pressable>
             </View>
 
-            <View style={styles.modeRow}>
+            <View style={styles.modeRow} ref={modeRef}>
               <View style={[styles.modeDot, submitVm.mode === 'mock' ? styles.modeMock : styles.modeProd]} />
               <Text style={styles.modeText}>
                 {submitVm.mode === 'mock'
@@ -69,7 +120,7 @@ export default function HomeScreen() {
               </Text>
             </View>
 
-            <View style={styles.stats}>
+            <View style={styles.stats} ref={statsRef}>
               <StatTile label="Total invoices" value={String(stats.total)} />
               <StatTile label="Drafts" value={String(stats.drafts)} accent />
               <StatTile label="Submitted" value={String(stats.submitted)} />
@@ -87,7 +138,7 @@ export default function HomeScreen() {
               </GlassCard>
             )}
 
-            <View style={styles.listHeader}>
+            <View style={styles.listHeader} ref={listRef}>
               <Text style={styles.listTitle}>Invoices</Text>
               {stats.outstanding > 0 && (
                 <Text style={styles.listMeta}>RM {stats.outstanding.toFixed(2)} unsubmitted</Text>
@@ -111,6 +162,7 @@ export default function HomeScreen() {
       <Pressable
         style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
         onPress={() => router.push('/capture')}
+        ref={fabRef}
       >
         <Ionicons name="scan-outline" size={20} color={colors.snow} />
         <Text style={styles.fabText}>Capture invoice</Text>
