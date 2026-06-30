@@ -4,7 +4,7 @@
  * responses so the UI can show a banner.
  */
 import { request } from '../http/client'
-import type { TinValidationResult, SubmitResult } from '../domain/dtos'
+import type { TinValidationResult, SubmitResult, MyInvoisConnection } from '../domain/dtos'
 
 export interface MyInvoisStatus {
   mode: 'mock' | 'sandbox' | 'prod'
@@ -13,6 +13,28 @@ export interface MyInvoisStatus {
 
 export async function getStatus(): Promise<MyInvoisStatus> {
   return request<MyInvoisStatus>('/myinvois/status')
+}
+
+// ── Per-user LHDN connection (Login as Taxpayer System) ────────────────────
+// The taxpayer generates an ERP client_id/client_secret on the MyInvois portal
+// (profile.myinvois.hasil.gov.my → Generate ERP), then pastes them here.
+
+export async function getConnection(): Promise<MyInvoisConnection> {
+  return request<MyInvoisConnection>('/myinvois/connection')
+}
+
+export async function connectMyInvois(
+  clientId: string,
+  clientSecret: string,
+): Promise<MyInvoisConnection> {
+  return request<MyInvoisConnection>('/myinvois/connection', {
+    method: 'PUT',
+    body: { clientId, clientSecret },
+  })
+}
+
+export async function disconnectMyInvois(): Promise<MyInvoisConnection> {
+  return request<MyInvoisConnection>('/myinvois/connection', { method: 'DELETE' })
 }
 
 export async function validateTin(tin: string): Promise<TinValidationResult> {

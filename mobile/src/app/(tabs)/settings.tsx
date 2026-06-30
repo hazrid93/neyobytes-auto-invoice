@@ -101,12 +101,22 @@ export default function SettingsScreen() {
             value={submitVm.mode ? submitVm.mode.toUpperCase() : '—'}
           />
           <Divider />
+          <Row
+            icon="key-outline"
+            label="LHDN account"
+            value={p?.myinvoisClientId ? 'Connected' : 'Not connected'}
+            muted={!p?.myinvoisClientId}
+            action={() => router.push('/connect-myinvois')}
+          />
+          <Divider />
           <View style={styles.noteRow}>
             <Ionicons name="information-circle-outline" size={18} color={colors.slate} />
             <Text style={styles.note}>
               {submitVm.mode === 'mock'
                 ? 'Submissions return canned responses. Switch to sandbox or prod in the backend .env once you have LHDN credentials + a signing cert.'
-                : 'Live LHDN mode. Submissions go to the real government API.'}
+                : p?.myinvoisClientId
+                  ? 'Live LHDN mode — submissions go to the real government API using your linked ERP key.'
+                  : 'Live LHDN mode — connect your ERP key (generated on the MyInvois portal) to submit.'}
             </Text>
           </View>
         </GlassCard>

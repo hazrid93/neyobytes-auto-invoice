@@ -21,6 +21,11 @@ export interface AuthResult {
 export interface Profile extends AuthUser {
   companyName: string | null
   tin: string | null
+  // Per-user LHDN MyInvois ERP credentials (Login as Taxpayer System).
+  // Only the public client_id half + the connection timestamp are surfaced;
+  // the secret never leaves the backend.
+  myinvoisClientId: string | null
+  myinvoisConnectedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -113,6 +118,13 @@ export interface TinValidationResult {
   valid: boolean
   taxpayerName?: string
   raw: Record<string, unknown>
+}
+
+/** Per-user LHDN connection state (GET/PUT/DELETE /myinvois/connection). */
+export interface MyInvoisConnection {
+  connected: boolean
+  clientId: string | null
+  connectedAt: string | null
 }
 
 export interface SubmitResult {

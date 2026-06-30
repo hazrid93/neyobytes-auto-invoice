@@ -1,4 +1,6 @@
 import { env } from '../env'
+import { getMyInvoisCredentials } from '../repositories/profileRepo'
+import { MyInvoisNotConnectedError } from '../domain/errors'
 
 /**
  * LHDN MyInvois e-Invoicing client.
@@ -35,26 +37,59 @@ interface TokenCache {
   access_token: string
   expires_at: number // epoch ms
 }
-let tokenCache: TokenCache | null = null
+// Per-user cache: each taxpayer's OAuth2 token is fetched with their OWN
+// client_id/client_secret (Login as Taxpayer System). The special key
+// '__global__' caches a token fetched from the optional env-level fallback
+// creds (single-tenant deployments). Mock mode never touches this map.
+const tokenCache = new Map<string, TokenCache>()
+
+// Sentinel key for the env-level fallback credential pair.
+const GLOBAL_KEY = '__global__'
+
+/** Resolve the OAuth2 credential pair to use for a user.
+ *  Priority: 1) the user's own stored LHDN creds, 2) the env-level fallback,
+ *  3) none → MyInvoisNotConnectedError. Returns the cache key alongside. */
+async function resolveCreds(
+  userId: string,
+): Promise<{ key: string; clientId: string; clientSecret: string }> {
+  const userCreds = await getMyInvoisCredentials(userId)
+  if (userCreds.clientId && userCreds.clientSecret) {
+    return { key: userId, clientId: userCreds.clientId, clientSecret: userCreds.clientSecret }
+  }
+  if (env.MYINVOIS_CLIENT_ID && env.MYINVOIS_CLIENT_SECRET) {
+    return {
+      key: GLOBAL_KEY,
+      clientId: env.MYINVOIS_CLIENT_ID,
+      clientSecret: env.MYINVOIS_CLIENT_SECRET,
+    }
+  }
+  throw new MyInvoisNotConnectedError(
+    'Connect your LHDN MyInvois account in Settings first, then retry.',
+  )
+}
 
 /**
- * Get an OAuth2 client-credentials bearer token from LHDN.
- * Mock mode returns a fake token that never expires for this session.
+ * Get an OAuth2 client-credentials bearer token from LHDN, scoped to the user's
+ * own ERP credentials (per-user Login-as-Taxpayer-System). Mock mode returns a
+ * fake token and ignores `userId` entirely.
  */
-export async function getToken(): Promise<string> {
+export async function getToken(userId: string): Promise<string> {
   if (isMock) {
     return `mock-token.${Buffer.from('auto-invoice-mock').toString('base64')}`
   }
 
+  const { key, clientId, clientSecret } = await resolveCreds(userId)
+
   // Return cached token if it has >60s of life left.
-  if (tokenCache && tokenCache.expires_at - Date.now() > 60_000) {
-    return tokenCache.access_token
+  const cached = tokenCache.get(key)
+  if (cached && cached.expires_at - Date.now() > 60_000) {
+    return cached.access_token
   }
 
   const body = new URLSearchParams({
     grant_type: 'client_credentials',
-    client_id: env.MYINVOIS_CLIENT_ID!,
-    client_secret: env.MYINVOIS_CLIENT_SECRET!,
+    client_id: clientId,
+    client_secret: clientSecret,
     scope: 'InvoicingAPI',
   })
 
@@ -68,11 +103,17 @@ export async function getToken(): Promise<string> {
     throw new MyInvoisError('token_failed', `LHDN token endpoint ${res.status}: ${text}`, res.status)
   }
   const json = (await res.json()) as { access_token: string; expires_in: number }
-  tokenCache = {
+  tokenCache.set(key, {
     access_token: json.access_token,
     expires_at: Date.now() + (json.expires_in ?? 3600) * 1000,
-  }
-  return tokenCache.access_token
+  })
+  return json.access_token
+}
+
+/** Drop a user's cached token (e.g. after they update or disconnect their
+ *  credentials, so the next call re-fetches with the new pair). */
+export function invalidateToken(userId: string): void {
+  tokenCache.delete(userId)
 }
 
 // ─── TIN validation (Taxpayer Identification Number) ──────────────────────
@@ -88,8 +129,9 @@ export interface TinValidationResult {
 /**
  * Validate a TIN against LHDN. In mock mode, TINs matching the Malaysian format
  * (10–14 digits/letters) are reported valid with a canned taxpayer name.
+ * `userId` selects the caller's own LHDN credentials for the token (ignored in mock).
  */
-export async function validateTin(tin: string): Promise<TinValidationResult> {
+export async function validateTin(tin: string, userId: string): Promise<TinValidationResult> {
   const clean = tin.replace(/[\s-]/g, '').toUpperCase()
 
   if (isMock) {
@@ -109,7 +151,7 @@ export async function validateTin(tin: string): Promise<TinValidationResult> {
     }
   }
 
-  const token = await getToken()
+  const token = await getToken(userId)
   const res = await fetch(`https://${host()}/api/v1.0/taxpayer/validate/${encodeURIComponent(clean)}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },
@@ -155,10 +197,14 @@ export interface SubmitDocumentResult {
 /**
  * Submit a signed UBL document to LHDN.
  *
- * Mock mode: returns a deterministic "accepted" result with a submission UID
- * derived from the invoice id, so re-submits are traceable.
+ * `userId` selects the caller's own LHDN credentials (per-user Login-as-
+ * Taxpayer-System). Mock mode: returns a deterministic "accepted" result with a
+ * submission UID derived from the invoice id, so re-submits are traceable.
  */
-export async function submitDocument(input: SubmitDocumentInput): Promise<SubmitDocumentResult> {
+export async function submitDocument(
+  input: SubmitDocumentInput,
+  userId: string,
+): Promise<SubmitDocumentResult> {
   if (isMock) {
     // Derive a stable-ish submission UID from the invoice id so the audit row
     // is traceable across re-submits within the same mock session.
@@ -182,7 +228,7 @@ export async function submitDocument(input: SubmitDocumentInput): Promise<Submit
     }
   }
 
-  const token = await getToken()
+  const token = await getToken(userId)
   const body = {
     documents: [
       {
@@ -238,7 +284,10 @@ export interface DocumentDetailsResult {
   raw: Record<string, unknown>
 }
 
-export async function getDocumentDetails(uuid: string): Promise<DocumentDetailsResult> {
+export async function getDocumentDetails(
+  uuid: string,
+  userId: string,
+): Promise<DocumentDetailsResult> {
   if (isMock) {
     return {
       uuid,
@@ -248,7 +297,7 @@ export async function getDocumentDetails(uuid: string): Promise<DocumentDetailsR
     }
   }
 
-  const token = await getToken()
+  const token = await getToken(userId)
   const res = await fetch(`https://${host()}/api/v1.0/documents/${encodeURIComponent(uuid)}/details`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },

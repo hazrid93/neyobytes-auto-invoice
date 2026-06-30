@@ -14,8 +14,10 @@ import {
   getProfile,
   upsertProfileOnRegister,
   updateProfile,
+  setMyInvoisCredentials,
+  clearMyInvoisCredentials,
   type ProfilePatch,
-  type ProfileRow,
+  type SafeProfile,
 } from '../repositories/profileRepo'
 import {
   ConflictError,
@@ -111,15 +113,30 @@ export async function login(input: LoginInput): Promise<AuthResult> {
   return { token, user }
 }
 
-export async function getMe(userId: string): Promise<ProfileRow | null> {
+export async function getMe(userId: string): Promise<SafeProfile | null> {
   return (await getProfile(userId)) ?? null
 }
 
 export async function updateMe(
   userId: string,
   patch: ProfilePatch,
-): Promise<ProfileRow | undefined> {
+): Promise<SafeProfile | undefined> {
   return updateProfile(userId, patch)
+}
+
+/** Store the user's LHDN MyInvois ERP credentials (per-user, encrypted). */
+export async function connectMyInvois(
+  userId: string,
+  clientId: string,
+  clientSecret: string,
+): Promise<SafeProfile | null> {
+  await setMyInvoisCredentials(userId, clientId, clientSecret)
+  return (await getProfile(userId)) ?? null
+}
+
+/** Remove the user's stored LHDN MyInvois credentials. */
+export async function disconnectMyInvois(userId: string): Promise<void> {
+  await clearMyInvoisCredentials(userId)
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {

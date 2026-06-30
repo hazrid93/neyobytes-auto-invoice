@@ -23,6 +23,13 @@ export const profiles = pgTable('profiles', {
   fullName: text('full_name'),
   companyName: text('company_name'),
   tin: text('tin'),
+  // Per-user LHDN MyInvois ERP credentials (Login as Taxpayer System). The
+  // taxpayer generates this pair on the MyInvois portal; the secret half is
+  // AES-256-GCM encrypted at rest (see lib/crypto.ts). Mirrors migration
+  // 0003_myinvois_credentials.sql. NEVER select *_enc columns for API responses.
+  myinvoisClientId: text('myinvois_client_id'),
+  myinvoisClientSecretEnc: text('myinvois_client_secret_enc'),
+  myinvoisConnectedAt: timestamp('myinvois_connected_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })

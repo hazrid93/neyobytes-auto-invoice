@@ -46,29 +46,40 @@ const schema = z.object({
   // ── LHDN MyInvois e-Invoicing ──
   // mock:    no network — submit/validate return deterministic canned responses.
   //          Use this for local dev & tests. Client id/secret NOT required.
-  // sandbox: preprod-api.myinvois.hasil.gov.my (needs client creds + a trial cert).
-  // prod:    api.myinvois.hasil.gov.my (needs client creds + prod cert).
-  // Submit is blocked by the POS Digicert/LHDNM signing cert in both sandbox/prod;
-  // mock mode lets the whole flow be exercised without it.
+  // sandbox: preprod-api.myinvois.hasil.gov.my. Per-user creds required (each
+  //          taxpayer registers their own ERP on the MyInvois portal).
+  // prod:    api.myinvois.hasil.gov.my. Same per-user model + a prod cert.
+  //
+  // Credential model: PER-USER (Login as Taxpayer System). The user pastes
+  // their own client_id/client_secret in the app; we store them encrypted and
+  // fetch a per-user OAuth2 token. The env-level client id/secret below are an
+  // OPTIONAL fallback for a single-tenant deployment — per-user creds take
+  // priority when present. Submit is additionally gated by the POS
+  // Digicert/LHDNM signing cert (MYINVOIS_CERT_PEM/KEY_PEM) in sandbox/prod.
   MYINVOIS_ENV: z.enum(['mock', 'sandbox', 'prod']).default('mock'),
-  MYINVOIS_CLIENT_ID: z.string().optional(),
+  MYINVOIS_CLIENT_ID: z.string().optional(), // optional global fallback (single-tenant)
   MYINVOIS_CLIENT_SECRET: z.string().optional(),
   // PEM-encoded signing cert + private key (for sandbox/prod submit). Leave empty
   // in mock mode. See docs/myinvois/RESEARCH.md §6 — the signing cert must come
   // from POS Digicert (posdigicert.com.my) under LHDNM's Sub CA.
   MYINVOIS_CERT_PEM: z.string().optional(),
   MYINVOIS_KEY_PEM: z.string().optional(),
+  // Key used to AES-256-GCM-encrypt each user's stored LHDN client_secret at
+  // rest (lib/crypto.ts). MUST be stable across restarts or stored secrets
+  // become undecryptable. Required for sandbox/prod (where per-user creds live
+  // in the DB); unused in mock mode.
+  PROFILE_SECRET_KEY: z.string().optional(),
 })
 
 const parsed = schema.safeParse(process.env)
 
-// When targeting a real LHDN environment, client creds are required.
+// When targeting a real LHDN environment, the per-user encryption key is
+// required (we store each taxpayer's secret encrypted). The global client
+// creds are NOT required — they're an optional single-tenant fallback.
 if (parsed.success && parsed.data.MYINVOIS_ENV !== 'mock') {
-  const missing: string[] = []
-  if (!parsed.data.MYINVOIS_CLIENT_ID) missing.push('MYINVOIS_CLIENT_ID')
-  if (!parsed.data.MYINVOIS_CLIENT_SECRET) missing.push('MYINVOIS_CLIENT_SECRET')
-  if (missing.length) {
-    console.error(`❌ MYINVOIS_ENV=${parsed.data.MYINVOIS_ENV} requires ${missing.join(', ')}.`)
+  if (!parsed.data.PROFILE_SECRET_KEY || parsed.data.PROFILE_SECRET_KEY.length < 32) {
+    console.error(`❌ MYINVOIS_ENV=${parsed.data.MYINVOIS_ENV} requires PROFILE_SECRET_KEY (>=32 chars) to encrypt per-user LHDN secrets at rest.`)
+    console.error('   Generate one, e.g.:  openssl rand -base64 48')
     console.error('   Set MYINVOIS_ENV=mock for local development without LHDN credentials.')
     process.exit(1)
   }

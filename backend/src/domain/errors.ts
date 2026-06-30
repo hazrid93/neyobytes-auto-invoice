@@ -75,6 +75,17 @@ export class SigningNotConfiguredError extends AppError {
   }
 }
 
+// The user has not linked their LHDN MyInvois ERP credentials (per-user
+// Login-as-Taxpayer-System model). Maps to 409 — the resource state (their
+// profile) must change before the action can proceed; tells the frontend to
+// route to Connect MyInvois.
+export class MyInvoisNotConnectedError extends AppError {
+  constructor(message = 'Connect your LHDN MyInvois account in Settings first.') {
+    super('myinvois_not_connected', 409, message)
+    this.name = 'MyInvoisNotConnectedError'
+  }
+}
+
 // Thrown by repositories when the pooler isn't configured (db === null) OR
 // when a query fails on a connection-class (auth/ENOTFOUND/ECONN…) error.
 export class DbUnavailableError extends AppError {

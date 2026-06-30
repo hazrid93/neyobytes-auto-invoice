@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { requireAuth } from '../middleware/auth'
-import { isMock } from '../lib/myinvois'
+import { isMock, invalidateToken } from '../lib/myinvois'
 import { listSubmissionsForInvoice } from '../repositories/submissionRepo'
+import { getProfile } from '../repositories/profileRepo'
 import * as submissionService from '../services/invoiceSubmissionService'
+import * as authService from '../services/authService'
 import { env } from '../env'
 import type { AppEnv } from '../types'
 
@@ -14,8 +16,13 @@ export const myinvois = new Hono<AppEnv>()
  *   mock    → no network, canned responses (local dev default)
  *   sandbox → preprod-api.myinvois.hasil.gov.my
  *   prod    → api.myinvois.hasil.gov.my
- * Every response includes the active mode so the frontend can show a banner.
  *
+ * Credential model is PER-USER (Login as Taxpayer System): each user pastes
+ * their own LHDN client_id/client_secret (see /connection below); the token is
+ * fetched with those and cached per user. The env-level client creds are an
+ * optional single-tenant fallback.
+ *
+ * Every response includes the active mode so the frontend can show a banner.
  * (Thrown errors propagate to app.onError → mapDomainError; no try/catch on the
  * simple reads.)
  */
@@ -28,6 +35,54 @@ myinvois.get('/status', requireAuth, (c) =>
   }),
 )
 
+// ── Connection management (per-user LHDN ERP credentials) ─────────────────
+//
+// The taxpayer generates an ERP client_id/client_secret pair on the MyInvois
+// portal (profile.myinvois.hasil.gov.my → Generate ERP), then pastes it here.
+// The secret is AES-256-GCM-encrypted at rest; only client_id + connectedAt
+// are ever returned.
+
+// GET /myinvois/connection — is the user linked? (never returns the secret)
+myinvois.get('/connection', requireAuth, async (c) => {
+  const profile = await getProfile(c.get('user').sub)
+  return c.json({
+    connected: Boolean(profile?.myinvoisClientId),
+    clientId: profile?.myinvoisClientId ?? null,
+    connectedAt: profile?.myinvoisConnectedAt ?? null,
+  })
+})
+
+// PUT /myinvois/connection  { clientId, clientSecret } — store (and encrypt).
+myinvois.put('/connection', requireAuth, async (c) => {
+  const parsed = z
+    .object({
+      clientId: z.string().trim().min(1, 'Client ID is required').max(200),
+      clientSecret: z.string().min(1, 'Client Secret is required').max(400),
+    })
+    .safeParse(await c.req.json().catch(() => ({})))
+  if (!parsed.success) {
+    return c.json({ error: 'invalid_input', issues: parsed.error.issues }, 400)
+  }
+  const userId = c.get('user').sub
+  await authService.connectMyInvois(userId, parsed.data.clientId, parsed.data.clientSecret)
+  // Drop any cached token so the next call re-fetches with the new pair.
+  if (!isMock) invalidateToken(userId)
+  const profile = await getProfile(userId)
+  return c.json({
+    connected: true,
+    clientId: profile?.myinvoisClientId ?? parsed.data.clientId,
+    connectedAt: profile?.myinvoisConnectedAt ?? null,
+  })
+})
+
+// DELETE /myinvois/connection — clear stored credentials + cached token.
+myinvois.delete('/connection', requireAuth, async (c) => {
+  const userId = c.get('user').sub
+  await authService.disconnectMyInvois(userId)
+  if (!isMock) invalidateToken(userId)
+  return c.json({ connected: false, clientId: null, connectedAt: null })
+})
+
 // POST /myinvois/validate-tin — validate a taxpayer number against LHDN.
 //   body: { "tin": "SG1234567890" } → { valid, taxpayerName?, raw }
 // In mock mode: format-based heuristic, no network.
@@ -38,7 +93,7 @@ myinvois.post('/validate-tin', requireAuth, async (c) => {
   if (!parsed.success) {
     return c.json({ error: 'invalid_input', issues: parsed.error.issues }, 400)
   }
-  const result = await submissionService.validateTinString(parsed.data.tin)
+  const result = await submissionService.validateTinString(parsed.data.tin, c.get('user').sub)
   return c.json(result)
 })
 
@@ -78,6 +133,9 @@ myinvois.get('/submissions/:invoiceId', requireAuth, async (c) => {
 
 // GET /myinvois/document/:uuid — fresh status from LHDN for a submitted doc.
 myinvois.get('/document/:uuid', requireAuth, async (c) => {
-  const details = await submissionService.getDocumentStatus(c.req.param('uuid'))
+  const details = await submissionService.getDocumentStatus(
+    c.req.param('uuid'),
+    c.get('user').sub,
+  )
   return c.json(details)
 })

@@ -102,7 +102,7 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
   // ── 4. Submit (LHDN or mock) ──
   let result: SubmitDocumentResult
   try {
-    result = await submitDocument({ invoiceId, invoiceXmlBase64: xmlBase64 })
+    result = await submitDocument({ invoiceId, invoiceXmlBase64: xmlBase64 }, userId)
   } catch (e) {
     // Audit-on-failure side-effect: write the error row BEFORE rethrowing so the
     // trail is complete even when the route returns 502.
@@ -149,9 +149,12 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
 }
 
 /** Validate a bare TIN string against LHDN (or mock heuristic). */
-export async function validateTinString(tin: string): Promise<TinValidationResult> {
+export async function validateTinString(
+  tin: string,
+  userId: string,
+): Promise<TinValidationResult> {
   try {
-    return await validateTin(tin)
+    return await validateTin(tin, userId)
   } catch (e) {
     throw new ExternalError('lhdn', String((e as Error)?.message ?? e))
   }
@@ -169,15 +172,15 @@ export async function validateCustomerTin(
   if (!customer) throw new NotFoundError('customer_not_found')
   if (!customer.tin) throw new ValidationError('customer_has_no_tin')
 
-  const result = await validateTinString(customer.tin)
+  const result = await validateTinString(customer.tin, userId)
   if (result.valid) await markTinValidated(customerId)
   return { ...result, customerId, customerName: customer.name }
 }
 
 /** Fresh document status from LHDN (or mock) for a submitted doc uuid. */
-export async function getDocumentStatus(uuid: string) {
+export async function getDocumentStatus(uuid: string, userId: string) {
   try {
-    return await getDocumentDetails(uuid)
+    return await getDocumentDetails(uuid, userId)
   } catch (e) {
     throw new ExternalError('lhdn', String((e as Error)?.message ?? e))
   }
