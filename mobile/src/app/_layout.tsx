@@ -10,6 +10,7 @@ import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter'
 import * as SplashScreen from 'expo-splash-screen'
 import { SessionProvider } from '../viewmodels/useSession'
 import { GlassStyleInjector } from '../theme/glass'
+import { ErrorBoundary } from '../components/ErrorBoundary'
 import { font } from '../theme/tokens'
 
 SplashScreen.preventAutoHideAsync()
@@ -35,7 +36,9 @@ export default function RootLayout() {
   return (
     <SessionProvider>
       <GlassStyleInjector />
-      <Stack screenOptions={{ headerShown: false }} />
+      <ErrorBoundary>
+        <Stack screenOptions={{ headerShown: false }} />
+      </ErrorBoundary>
     </SessionProvider>
   )
 }
