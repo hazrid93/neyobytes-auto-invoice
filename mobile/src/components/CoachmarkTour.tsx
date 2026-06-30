@@ -7,8 +7,8 @@
  *                       app content — so the tour sits above tabs + headers.
  *   • Spotlight       → a dep-free 4-strip overlay. Four dark rectangles cover
  *                       everything EXCEPT the target rect, "punching" a clean
- *                       hole with a rounded azure border frame. No react-native-svg
- *                       dependency (avoids a native rebuild for the web deploy).
+ *                       hole (no border frame). No react-native-svg dependency
+ *                       (avoids a native rebuild for the web deploy).
  *   • Bubble          → frosted glass card with title + description + arrow,
  *                       auto-placed in the side with the most room (port + clamp).
  *   • Stepper         → Back / Next / Done, "Step x / n", dismiss-on-overlay-tap.
@@ -310,8 +310,6 @@ const styles = StyleSheet.create({
   frame: {
     position: 'absolute',
     borderRadius: radius.sm,
-    borderWidth: 2,
-    borderColor: colors.azure + 'AA',
   },
   bubble: {
     backgroundColor: colors.snow,
