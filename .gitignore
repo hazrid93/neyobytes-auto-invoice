@@ -1,0 +1,30 @@
+# env (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# dependencies
+node_modules/
+
+# expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+
+# native builds (we use Expo prebuild on demand)
+ios/
+android/
+
+# logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# os / editor
+.DS_Store
+.vscode/
+.idea/
+backend/scripts/verify-invoice.png
