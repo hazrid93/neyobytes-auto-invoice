@@ -1,16 +1,16 @@
 /**
  * Profile screen — edit the supplier's own profile (name, company name, TIN).
- * These fields are mandatory for LHDN submission (the UBL document requires
- * the supplier TIN + company name), so the dashboard gates the submit button
- * on this being filled. Uses the session view model's refresh to keep the
- * shared profile state in sync.
+ * These fields are mandatory for LHDN submission, so the home tab gates submit
+ * on this being filled. Glass form over the gradient.
  */
-import { useState } from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
+import { useEffect, useState } from 'react'
+import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView } from 'react-native'
 import { router } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
 import { updateProfile } from '../services/authService'
 import { useSession } from '../viewmodels/useSession'
-import { colors, font, space, radius } from '../theme/tokens'
+import { GradientBackground, GlassCard } from '../theme/glass'
+import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function ProfileScreen() {
   const session = useSession()
@@ -21,6 +21,11 @@ export default function ProfileScreen() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [ok, setOk] = useState(false)
+
+  // Sign-out happens here; route to login ourselves.
+  useEffect(() => {
+    if (session.status === 'anonymous') router.replace('/login')
+  }, [session.status])
 
   const save = async () => {
     setSaving(true)
@@ -38,75 +43,94 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.wrap}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Profile</Text>
-        <Pressable onPress={() => session.logout()} hitSlop={8}>
-          <Text style={styles.logout}>Sign out</Text>
+    <GradientBackground>
+      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 120 }}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} hitSlop={10}>
+            <Ionicons name="chevron-back" size={26} color={colors.azure} />
+          </Pressable>
+          <Text style={styles.title}>Profile</Text>
+          <View style={{ width: 26 }} />
+        </View>
+        <Text style={styles.subtitle}>
+          Your TIN & company name are required in the e-invoice submitted to LHDN.
+        </Text>
+
+        <GlassCard strong style={styles.form}>
+          <Field label="Full name" icon="person-outline" value={fullName} onChange={setFullName} />
+          <Field label="Company name" icon="business-outline" value={companyName} onChange={setCompanyName} placeholder="Neyobytes Solutions Sdn Bhd" />
+          <Field label="TIN" icon="ribbon-outline" value={tin} onChange={setTin} placeholder="C1234567899" autoCap="characters" />
+        </GlassCard>
+
+        {error ? (
+          <View style={styles.errorRow}>
+            <Ionicons name="alert-circle" size={15} color={colors.danger} />
+            <Text style={styles.error}>{error}</Text>
+          </View>
+        ) : null}
+        {ok ? (
+          <View style={styles.okRow}>
+            <Ionicons name="checkmark-circle" size={15} color={colors.success} />
+            <Text style={styles.ok}>Saved</Text>
+          </View>
+        ) : null}
+
+        <Pressable
+          style={({ pressed }) => [styles.saveBtn, pressed && styles.savePressed]}
+          onPress={save}
+          disabled={saving}
+        >
+          {saving ? <ActivityIndicator color={colors.snow} /> : <Text style={styles.saveText}>Save changes</Text>}
         </Pressable>
-      </View>
-      <Text style={styles.subtitle}>
-        Your TIN & company name are required in the e-invoice submitted to LHDN.
-      </Text>
-
-      <Field label="Full name" value={fullName} onChange={setFullName} />
-      <Field label="Company name" value={companyName} onChange={setCompanyName} placeholder="Neyobytes Solutions Sdn Bhd" />
-      <Field label="TIN" value={tin} onChange={setTin} placeholder="C1234567899" autoCap="characters" />
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      {ok ? <Text style={styles.ok}>Saved ✓</Text> : null}
-
-      <Pressable
-        style={({ pressed }) => [styles.saveBtn, pressed && styles.savePressed]}
-        onPress={save}
-        disabled={saving}
-      >
-        {saving ? <ActivityIndicator color={colors.ink} /> : <Text style={styles.saveText}>Save</Text>}
-      </Pressable>
-
-      <Pressable onPress={() => router.push('/dashboard')} style={styles.back}>
-        <Text style={styles.backText}>Back</Text>
-      </Pressable>
-    </View>
+      </ScrollView>
+    </GradientBackground>
   )
 }
 
 function Field({
-  label, value, onChange, placeholder, autoCap,
-}: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; autoCap?: 'characters' | 'none' | 'words' }) {
+  label, icon, value, onChange, placeholder, autoCap,
+}: { label: string; icon: keyof typeof Ionicons.glyphMap; value: string; onChange: (v: string) => void; placeholder?: string; autoCap?: 'characters' | 'none' | 'words' }) {
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={styles.input}
-        value={value}
-        onChangeText={onChange}
-        placeholder={placeholder}
-        placeholderTextColor={colors.arang}
-        autoCapitalize={autoCap ?? 'none'}
-      />
+      <View style={styles.inputWrap}>
+        <Ionicons name={icon} size={18} color={colors.slate} style={styles.fieldIcon} />
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={onChange}
+          placeholder={placeholder}
+          placeholderTextColor={colors.slate}
+          autoCapitalize={autoCap ?? 'none'}
+        />
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: colors.paper, padding: space.xxl, paddingTop: space.xxl },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  scroll: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.sm },
   title: { fontFamily: font.displayBold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
-  logout: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.merah },
-  subtitle: { fontFamily: font.body, fontSize: 14, color: colors.arang, marginTop: space.xs, marginBottom: space.xl },
-  field: { marginBottom: space.lg, gap: space.xs },
-  label: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.arang },
-  input: {
-    fontFamily: font.body, fontSize: 16, color: colors.ink,
-    borderWidth: 1, borderColor: colors.arang + '40', borderRadius: radius.md,
-    paddingHorizontal: space.md, paddingVertical: space.md,
+  subtitle: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginBottom: space.lg, lineHeight: 20 },
+  form: { padding: space.xl, gap: space.lg },
+  field: { gap: space.xs },
+  label: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
+  inputWrap: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: colors.snow + 'CC', borderColor: colors.silver, borderWidth: 1,
+    borderRadius: radius.md, paddingHorizontal: space.md,
   },
-  error: { fontFamily: font.body, fontSize: 14, color: colors.merah },
-  ok: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.hijau },
-  saveBtn: { backgroundColor: colors.kuning, borderRadius: radius.md, paddingVertical: space.lg, alignItems: 'center', marginTop: space.sm },
-  savePressed: { opacity: 0.88 },
-  saveText: { fontFamily: font.displayBold, fontSize: 16, color: colors.ink },
-  back: { paddingVertical: space.md, alignItems: 'center', marginTop: space.lg },
-  backText: { fontFamily: font.body, fontSize: 14, color: colors.arang },
+  fieldIcon: { marginRight: space.sm },
+  input: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink, paddingVertical: space.md },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.md },
+  error: { fontFamily: font.body, fontSize: 13, color: colors.danger },
+  okRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.md },
+  ok: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.success },
+  saveBtn: {
+    backgroundColor: colors.azure, borderRadius: radius.md, paddingVertical: space.lg,
+    alignItems: 'center', marginTop: space.lg, ...shadow.card,
+  },
+  savePressed: { opacity: 0.9 },
+  saveText: { fontFamily: font.displayBold, fontSize: 16, color: colors.snow },
 })

@@ -62,6 +62,15 @@ async function callOnce(
     signal?: AbortSignal
     extraBody?: Record<string, unknown>
     structured?: boolean
+    /**
+     * Reasoning/thinking effort for reasoning-capable models ('low' | 'medium' |
+     * 'high' | 'none'). Sent as the top-level `reasoning_effort` field — the
+     * pattern the neyobytes-whatsapp-agent uses for these same models. Probed
+     * on the litellm gateway (2026-06-30): both kimi-k2.7 and glm-5.2 accept it
+     * at the top level. `none` is best-effort — some models still emit
+     * `reasoning_content` — so for a hard 'minimal reasoning' intent use 'low'.
+     */
+    reasoningEffort?: 'low' | 'medium' | 'high' | 'none'
   },
 ): Promise<{ json: any; model: string }> {
   const controller = new AbortController()
@@ -79,12 +88,14 @@ async function callOnce(
       temperature: opts.temperature ?? 0.2,
     }
     if (opts.maxTokens) body.max_tokens = opts.maxTokens
+    if (opts.reasoningEffort) body.reasoning_effort = opts.reasoningEffort
     if (opts.extraBody) Object.assign(body, opts.extraBody)
     // NOTE: we deliberately do NOT send chat_template_kwargs.enable_reasoning=false
     // — litellm's passthrough rejects it with HTTP 500 for some model groups
     // (kimi-k2.7: "unexpected keyword argument 'chat_template_kwargs'"). Reasoning
-    // is controlled instead by a generous max_tokens budget so the model
-    // transitions from reasoning_content to content on its own.
+    // depth is controlled instead via the top-level `reasoning_effort` field
+    // (the whatsapp-agent pattern), with a generous max_tokens budget so the
+    // model transitions from reasoning_content to content on its own.
     // `structured: true` only affects CONTENT SELECTION on the response side
     // (never return reasoning_content as the answer, to keep JSON.parse safe).
 
@@ -146,16 +157,20 @@ export async function chat(opts: {
   /** Extra body fields (e.g. chat_template_kwargs for vLLM backends). */
   extraBody?: Record<string, unknown>
   /**
+   * Reasoning/thinking effort for reasoning-capable models ('low' | 'medium' |
+   * 'high' | 'none'). Probed on the litellm gateway (2026-06-30): both
+   * kimi-k2.7 and glm-5.2 accept the top-level `reasoning_effort` field — the
+   * pattern the neyobytes-whatsapp-agent uses for these same models.
+   */
+  reasoningEffort?: 'low' | 'medium' | 'high' | 'none'
+  /**
    * Structured-output mode: the caller will JSON.parse the result.
    * RESPONSE-SIDE ONLY: `pickContent` returns '' (a clear, retryable error)
    * instead of falling back to `reasoning_content` (chain-of-thought that
    * would break JSON.parse). It does NOT disable reasoning server-side — the
-   * model still spends tokens on CoT first. Robustness comes from a generous
-   * `max_tokens` budget (so reasoning completes and `content` fills) plus
-   * retry on empty content. We also send `extra_body.chat_template_kwargs.
-   * enable_reasoning=false` where accepted (probed: reduced completion tokens
-   * ~21% on the same extraction; top-level `chat_template_kwargs` is rejected
-   * with HTTP 500, so we use the `extra_body` wrapper).
+   * model may still spend tokens on CoT first. Robustness comes from a generous
+   * `max_tokens` budget (so reasoning completes and `content` fills) plus retry
+   * on empty content. Reasoning depth is controlled by `reasoningEffort`.
    */
   structured?: boolean
 }): Promise<ChatResult> {
@@ -179,6 +194,7 @@ export async function chat(opts: {
         maxTokens: opts.maxTokens,
         signal: opts.signal,
         extraBody: opts.extraBody,
+        reasoningEffort: opts.reasoningEffort,
         structured: opts.structured,
       })
       const text = pickContent(result.json, opts.structured)
@@ -217,6 +233,7 @@ export async function chat(opts: {
         maxTokens: opts.maxTokens,
         signal: opts.signal,
         extraBody: opts.extraBody,
+        reasoningEffort: opts.reasoningEffort,
         structured: opts.structured,
       })
       const text = pickContent(result.json, opts.structured)

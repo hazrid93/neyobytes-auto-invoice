@@ -14,7 +14,12 @@
  */
 import { supabase } from '../lib/supabase'
 import { chat } from '../lib/llm'
-import { messagesForExtraction, type ExtractedInvoice } from '../lib/extraction'
+import { env } from '../env'
+import {
+  messagesForTranscription,
+  messagesForStructuring,
+  type ExtractedInvoice,
+} from '../lib/extraction'
 import { parseExtracted } from '../lib/extract-parse'
 import {
   listInvoicesByUser,
@@ -85,12 +90,16 @@ export interface ExtractResultOk {
   ok: true
   invoiceId: string
   rawImagePath: string | null
+  /** Stage A output — the vision model's raw OCR transcription (audit trail). */
+  ocrText: string
   extracted: ExtractedInvoice
   createdAt: Date
 }
 export interface ExtractResultPersistFailed {
   ok: false
   rawImagePath: string | null
+  /** Stage A output — the vision model's raw OCR transcription (audit trail). */
+  ocrText: string
   extracted: ExtractedInvoice
   error: string
 }
@@ -115,29 +124,69 @@ export async function extractInvoice(
   // 1. Best-effort raw image storage. Proceeds even if storage is down.
   const rawImagePath = await storeRawImage(imageDataUrl, userId)
 
-  // 2. OCR via the vision model with a hard 60s deadline (mobile clients can't
-  // wait on the model's retries). AbortSignal.timeout() collaborate-aborts the
-  // inner fetch per attempt and stops the retry loop cleanly.
+  // 2. Two-stage extraction, sharing one hard 60s deadline (mobile clients
+  // can't wait on retries). The deadline aborts BOTH stages cooperatively.
+  //
+  //   Stage A (vision): image → raw OCR transcription (requireVision:true so
+  //     the text model is never asked to read an image).
+  //   Stage B (text):   transcription → structured JSON. glm-5.2 is the
+  //     PRIMARY (model: LLM_TEXT_MODEL explicit, else chat() defaults to the
+  //     vision model); kimi-k2.7 is the fallback (it handles text fine) so a
+  //     text-model hiccup doesn't sink the whole extraction.
   const deadline = AbortSignal.timeout(60_000)
+
+  // Stage A — vision transcription.
+  let ocrText: string
+  try {
+    const a = await chat({
+      messages: messagesForTranscription(imageDataUrl),
+      requireVision: true,
+      // Vision stage = minimal reasoning ("off"). The gateway's
+      // reasoning_effort:"none" is best-effort, so "low" enforces the intent
+      // more reliably — transcription is a literal copy task, not a reasoning
+      // one, and we want the model to spend tokens on the transcript not CoT.
+      reasoningEffort: 'low',
+      temperature: 0,
+      maxTokens: 2048,
+      signal: deadline,
+    })
+    ocrText = a.content
+  } catch (e) {
+    const msg = String((e as Error)?.message ?? e)
+    if (/abort|timeout|deadline/i.test(msg)) {
+      throw new ExternalError('llm', 'OCR transcription took too long. Try a smaller image.', 504)
+    }
+    throw new ExternalError('llm', `OCR transcription failed: ${msg}`, 502)
+  }
+  if (!ocrText.trim()) {
+    throw new ExternalError('llm', 'OCR transcription returned no text.', 502)
+  }
+
+  // Stage B — text structuring.
   let extracted: ExtractedInvoice
   try {
-    const r = await chat({
-      messages: messagesForExtraction(imageDataUrl),
-      // model omitted on purpose: chat() defaults to env.LLM_VISION_MODEL,
-      // which is the single validated source for the vision model.
-      requireVision: true,
+    const b = await chat({
+      messages: messagesForStructuring(ocrText),
+      model: env.LLM_TEXT_MODEL,
+      fallbackModel: env.LLM_VISION_MODEL,
+      requireVision: false,
+      // Text stage = high reasoning. Structuring OCR text into strict JSON
+      // (currency/date normalization, null-vs-omit judgement, total
+      // reconciliation) benefits from deeper CoT; a generous max_tokens
+      // budget lets the model reason then emit `content`.
+      reasoningEffort: 'high',
       structured: true,
       temperature: 0,
       maxTokens: 4096,
       signal: deadline,
     })
-    extracted = parseExtracted(r.content)
+    extracted = parseExtracted(b.content)
   } catch (e) {
     const msg = String((e as Error)?.message ?? e)
     if (/abort|timeout|deadline/i.test(msg)) {
-      throw new ExternalError('llm', 'Extraction took too long. Try a smaller image.', 504)
+      throw new ExternalError('llm', 'Structuring took too long. Try a smaller image.', 504)
     }
-    throw new ExternalError('llm', msg, 502)
+    throw new ExternalError('llm', `Structuring failed: ${msg}`, 502)
   }
 
   // 3. Persist as a draft. Totals come from the model; the confirm step
@@ -158,12 +207,18 @@ export async function extractInvoice(
       total,
       kind: 'purchase', // expense-side upload per docs/flow/flow1.jpeg
       rawImagePath,
-      extractedData: extracted as unknown as Record<string, unknown>,
+      // Persist the Stage A OCR text alongside the structured JSON so the
+      // audit trail survives — inspect extractedData._ocrText if structuring
+      // ever disagrees with the photo.
+      extractedData: {
+        ...(extracted as unknown as Record<string, unknown>),
+        _ocrText: ocrText,
+      },
     })
-    return { ok: true, invoiceId: inv.id, rawImagePath, extracted, createdAt: inv.createdAt }
+    return { ok: true, invoiceId: inv.id, rawImagePath, ocrText, extracted, createdAt: inv.createdAt }
   } catch (e) {
     const msg = String((e as Error)?.message ?? e)
-    return { ok: false, rawImagePath, extracted, error: msg }
+    return { ok: false, rawImagePath, ocrText, extracted, error: msg }
   }
 }
 

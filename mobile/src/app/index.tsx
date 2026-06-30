@@ -8,6 +8,6 @@ import { useSession } from '../viewmodels/useSession'
 export default function Index() {
   const { status } = useSession()
   if (status === 'restoring') return null // splash still showing
-  if (status === 'authenticated') return <Redirect href="/dashboard" />
+  if (status === 'authenticated') return <Redirect href="/home" />
   return <Redirect href="/login" />
 }

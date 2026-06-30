@@ -1,17 +1,17 @@
 /**
  * Submit screen — run the LHDN submission for a confirmed invoice and show
- * the result + audit trail. Surfaces the active MyInvois mode (mock banner),
- * the accept/reject outcome, and the submission history (including error rows
+ * the result + audit trail. Surfaces the active MyInvois mode, the
+ * accept/reject outcome, and the submission history (including error rows
  * the backend writes on failure, so the trail is always complete).
- *
- * Uses the submit view model exclusively; this screen is presentation.
  */
 import { useEffect } from 'react'
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
 import { useSubmit } from '../viewmodels/useSubmit'
 import { useSession } from '../viewmodels/useSession'
-import { colors, font, space, radius } from '../theme/tokens'
+import { GradientBackground, GlassCard } from '../theme/glass'
+import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function SubmitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -28,118 +28,142 @@ export default function SubmitScreen() {
   const lastIsOk = last?.accepted
 
   return (
-    <ScrollView style={styles.wrap} contentContainerStyle={{ paddingBottom: space.xxl }}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Submit</Text>
+    <GradientBackground>
+      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 120 }}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} hitSlop={10}>
+            <Ionicons name="chevron-back" size={26} color={colors.azure} />
+          </Pressable>
+          <Text style={styles.title}>Submit</Text>
+          <View style={{ width: 26 }} />
+        </View>
+        <Text style={styles.subtitle}>Send this invoice to LHDN for validation.</Text>
+
         {vm.mode && (
           <View style={[styles.badge, vm.mode === 'mock' ? styles.badgeMock : styles.badgeProd]}>
-            <Text style={styles.badgeText}>{vm.mode.toUpperCase()}</Text>
+            <View style={[styles.badgeDot, vm.mode === 'mock' ? styles.dotMock : styles.dotProd]} />
+            <Text style={styles.badgeText}>{vm.mode.toUpperCase()} MODE</Text>
           </View>
         )}
-      </View>
-      <Text style={styles.subtitle}>Send this invoice to LHDN for validation.</Text>
 
-      {!supplierReady ? (
-        <View style={styles.warn}>
-          <Text style={styles.warnText}>
-            Your profile needs a TIN & company name before you can submit.
-          </Text>
-          <Pressable onPress={() => router.push('/profile')}>
-            <Text style={styles.warnLink}>Edit profile</Text>
-          </Pressable>
-        </View>
-      ) : null}
+        {!supplierReady ? (
+          <GlassCard style={styles.warn}>
+            <Ionicons name="warning-outline" size={20} color={colors.amber} />
+            <Text style={styles.warnText}>
+              Your profile needs a TIN & company name before you can submit.
+            </Text>
+            <Pressable onPress={() => router.push('/profile')}>
+              <Text style={styles.warnLink}>Edit profile →</Text>
+            </Pressable>
+          </GlassCard>
+        ) : null}
 
-      <Pressable
-        style={({ pressed }) => [
-          styles.submitBtn,
-          !supplierReady && styles.disabled,
-          pressed && styles.submitPressed,
-        ]}
-        disabled={!supplierReady || vm.submitting || !id}
-        onPress={() => id && vm.submit(id)}
-      >
-        {vm.submitting ? (
-          <ActivityIndicator color={colors.kuning} />
-        ) : (
-          <Text style={styles.submitText}>Submit to LHDN</Text>
-        )}
-      </Pressable>
-
-      {vm.error ? <Text style={styles.error}>{vm.error}</Text> : null}
-
-      {last ? (
-        <View
-          style={[styles.resultCard, lastIsOk ? styles.resultOk : styles.resultBad]}
+        <Pressable
+          style={({ pressed }) => [
+            styles.submitBtn,
+            !supplierReady && styles.disabled,
+            pressed && styles.submitPressed,
+          ]}
+          disabled={!supplierReady || vm.submitting || !id}
+          onPress={() => id && vm.submit(id)}
         >
-          <Text style={styles.resultStatus}>
-            {lastIsOk ? '✓ Accepted' : '✗ Rejected'}
-          </Text>
-          <Text style={styles.resultMeta}>UID: {last.submissionUid}</Text>
-          {last.documentUuid ? (
-            <Text style={styles.resultMeta}>Doc: {last.documentUuid.slice(0, 8)}…</Text>
-          ) : null}
-        </View>
-      ) : null}
+          {vm.submitting ? (
+            <ActivityIndicator color={colors.snow} />
+          ) : (
+            <>
+              <Ionicons name="paper-plane-outline" size={18} color={colors.snow} style={{ marginRight: 6 }} />
+              <Text style={styles.submitText}>Submit to LHDN</Text>
+            </>
+          )}
+        </Pressable>
 
-      <Text style={styles.sectionTitle}>Submission history</Text>
-      {vm.loadingSubmissions ? (
-        <ActivityIndicator color={colors.arang} style={{ marginVertical: space.lg }} />
-      ) : vm.submissions.length === 0 ? (
-        <Text style={styles.muted}>No attempts yet.</Text>
-      ) : (
-        vm.submissions.map((s) => (
-          <View key={s.id} style={styles.auditRow}>
-            <View style={styles.auditHead}>
-              <Text style={[styles.auditStatus, s.status === 'accepted' && styles.auditOk, s.status === 'error' && styles.auditErr]}>
-                {s.status}
-              </Text>
-              <Text style={styles.auditTime}>{new Date(s.createdAt).toLocaleString()}</Text>
-            </View>
-            {s.submissionUid ? <Text style={styles.auditMeta}>UID: {s.submissionUid}</Text> : null}
-            {s.error ? <Text style={styles.auditMeta}>err: {s.error}</Text> : null}
+        {vm.error ? (
+          <View style={styles.errorRow}>
+            <Ionicons name="alert-circle" size={15} color={colors.danger} />
+            <Text style={styles.error}>{vm.error}</Text>
           </View>
-        ))
-      )}
+        ) : null}
 
-      <Pressable style={styles.back} onPress={() => router.push('/dashboard')}>
-        <Text style={styles.backText}>Back to dashboard</Text>
-      </Pressable>
-    </ScrollView>
+        {last ? (
+          <GlassCard style={[styles.resultCard, lastIsOk ? styles.resultOk : styles.resultBad]}>
+            <View style={styles.resultHead}>
+              <Ionicons name={lastIsOk ? 'checkmark-circle' : 'close-circle'} size={26} color={lastIsOk ? colors.success : colors.danger} />
+              <Text style={styles.resultStatus}>{lastIsOk ? 'Accepted' : 'Rejected'}</Text>
+            </View>
+            <Text style={styles.resultMeta}>UID: {last.submissionUid}</Text>
+            {last.documentUuid ? (
+              <Text style={styles.resultMeta}>Doc: {last.documentUuid.slice(0, 8)}…</Text>
+            ) : null}
+          </GlassCard>
+        ) : null}
+
+        <Text style={styles.sectionTitle}>Submission history</Text>
+        {vm.loadingSubmissions ? (
+          <ActivityIndicator color={colors.slate} style={{ marginVertical: space.lg }} />
+        ) : vm.submissions.length === 0 ? (
+          <GlassCard style={styles.emptyHistory}>
+            <Text style={styles.muted}>No attempts yet.</Text>
+          </GlassCard>
+        ) : (
+          vm.submissions.map((s) => (
+            <GlassCard key={s.id} style={styles.auditRow}>
+              <View style={styles.auditHead}>
+                <Text style={[styles.auditStatus, s.status === 'accepted' && styles.auditOk, s.status === 'error' && styles.auditErr]}>
+                  {s.status}
+                </Text>
+                <Text style={styles.auditTime}>{new Date(s.createdAt).toLocaleString()}</Text>
+              </View>
+              {s.submissionUid ? <Text style={styles.auditMeta}>UID: {s.submissionUid}</Text> : null}
+              {s.error ? <Text style={styles.auditMeta}>err: {s.error}</Text> : null}
+            </GlassCard>
+          ))
+        )}
+
+        <Pressable style={styles.back} onPress={() => router.push('/home')}>
+          <Text style={styles.backText}>Back to home</Text>
+        </Pressable>
+      </ScrollView>
+    </GradientBackground>
   )
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: colors.paper, paddingHorizontal: space.xl, paddingTop: space.xxl },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  scroll: { flex: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.xs },
   title: { fontFamily: font.displayBold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
-  badge: { borderRadius: radius.sm, paddingHorizontal: space.sm, paddingVertical: space.xs },
-  badgeMock: { backgroundColor: colors.kuning + '33' },
-  badgeProd: { backgroundColor: colors.hijau + '22' },
-  badgeText: { fontFamily: font.bodyMedium, fontSize: 11, color: colors.ink },
-  subtitle: { fontFamily: font.body, fontSize: 15, color: colors.arang, marginTop: space.xs, marginBottom: space.lg },
-  warn: { backgroundColor: colors.kuning + '22', borderRadius: radius.md, padding: space.md, marginBottom: space.lg, gap: space.xs },
-  warnText: { fontFamily: font.body, fontSize: 14, color: colors.ink },
-  warnLink: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' },
-  submitBtn: { backgroundColor: colors.ink, borderRadius: radius.md, paddingVertical: space.lg, alignItems: 'center' },
+  subtitle: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginTop: space.xs, marginBottom: space.lg, lineHeight: 20 },
+  badge: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', borderRadius: radius.sm, paddingHorizontal: space.md, paddingVertical: space.xs, marginBottom: space.lg },
+  badgeMock: { backgroundColor: colors.amber + '22' },
+  badgeProd: { backgroundColor: colors.success + '22' },
+  badgeDot: { width: 7, height: 7, borderRadius: 4 },
+  dotMock: { backgroundColor: colors.amber },
+  dotProd: { backgroundColor: colors.success },
+  badgeText: { fontFamily: font.bodyMedium, fontSize: 11, color: colors.ink, letterSpacing: 0.5 },
+  warn: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8, padding: space.lg, marginBottom: space.lg },
+  warnText: { flex: 1, fontFamily: font.body, fontSize: 14, color: colors.ink, lineHeight: 20 },
+  warnLink: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.azure, textDecorationLine: 'underline' },
+  submitBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.azure, borderRadius: radius.md, paddingVertical: space.lg, ...shadow.card },
   submitPressed: { opacity: 0.9 },
   disabled: { opacity: 0.4 },
-  submitText: { fontFamily: font.displayBold, fontSize: 16, color: colors.kuning },
-  error: { fontFamily: font.body, fontSize: 14, color: colors.merah, marginTop: space.md },
-  resultCard: { borderRadius: radius.md, padding: space.lg, marginTop: space.lg },
-  resultOk: { backgroundColor: colors.hijau + '18' },
-  resultBad: { backgroundColor: colors.merah + '14' },
+  submitText: { fontFamily: font.displayBold, fontSize: 16, color: colors.snow },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.md },
+  error: { fontFamily: font.body, fontSize: 13, color: colors.danger },
+  resultCard: { padding: space.lg, marginTop: space.lg },
+  resultOk: { borderColor: colors.success + '55' },
+  resultBad: { borderColor: colors.danger + '55' },
+  resultHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   resultStatus: { fontFamily: font.displayBold, fontSize: 18, color: colors.ink },
-  resultMeta: { fontFamily: font.body, fontSize: 13, color: colors.arang, marginTop: space.xs },
-  sectionTitle: { fontFamily: font.displayBold, fontSize: 14, color: colors.arang, textTransform: 'uppercase', marginTop: space.xl, marginBottom: space.sm },
-  muted: { fontFamily: font.body, fontSize: 14, color: colors.arang },
-  auditRow: { paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.arang + '20' },
+  resultMeta: { fontFamily: font.body, fontSize: 13, color: colors.slate, marginTop: space.xs },
+  sectionTitle: { fontFamily: font.displayBold, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginTop: space.xl, marginBottom: space.sm, marginLeft: space.xs },
+  emptyHistory: { padding: space.lg, alignItems: 'center' },
+  muted: { fontFamily: font.body, fontSize: 14, color: colors.slate },
+  auditRow: { padding: space.lg, marginBottom: space.sm },
   auditHead: { flexDirection: 'row', justifyContent: 'space-between' },
-  auditStatus: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.arang, textTransform: 'uppercase' },
-  auditOk: { color: colors.hijau },
-  auditErr: { color: colors.merah },
-  auditTime: { fontFamily: font.body, fontSize: 12, color: colors.arang },
-  auditMeta: { fontFamily: font.body, fontSize: 12, color: colors.arang, marginTop: 2 },
+  auditStatus: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.slate, textTransform: 'uppercase' },
+  auditOk: { color: colors.success },
+  auditErr: { color: colors.danger },
+  auditTime: { fontFamily: font.body, fontSize: 12, color: colors.slate },
+  auditMeta: { fontFamily: font.body, fontSize: 12, color: colors.slate, marginTop: 2 },
   back: { paddingVertical: space.md, alignItems: 'center', marginTop: space.lg },
-  backText: { fontFamily: font.body, fontSize: 14, color: colors.ink, textDecorationLine: 'underline' },
+  backText: { fontFamily: font.body, fontSize: 14, color: colors.azure, textDecorationLine: 'underline' },
 })

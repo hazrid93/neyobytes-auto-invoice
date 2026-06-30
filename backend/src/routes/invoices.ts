@@ -72,12 +72,24 @@ invoices.post('/extract', requireAuth, async (c) => {
   // app.onError → mapDomainError — no route-level catch needed for that path.
   if (result.ok) {
     return c.json(
-      { invoiceId: result.invoiceId, rawImagePath: result.rawImagePath, extracted: result.extracted, createdAt: result.createdAt },
+      {
+        invoiceId: result.invoiceId,
+        rawImagePath: result.rawImagePath,
+        ocrText: result.ocrText,
+        extracted: result.extracted,
+        createdAt: result.createdAt,
+      },
       201,
     )
   }
   return c.json(
-    { error: 'persist_failed', message: result.error, extracted: result.extracted, rawImagePath: result.rawImagePath },
+    {
+      error: 'persist_failed',
+      message: result.error,
+      ocrText: result.ocrText,
+      extracted: result.extracted,
+      rawImagePath: result.rawImagePath,
+    },
     500,
   )
 })

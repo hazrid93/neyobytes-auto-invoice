@@ -1,8 +1,16 @@
 import { z } from 'zod'
 
-// The structured shape we ask the vision model to return for an invoice photo.
-// Matches the output JSON in docs/flow/flow1.jpeg (purchase/expense side) and
-// maps cleanly onto the invoices + invoice_items tables.
+// Two-stage invoice extraction:
+//   Stage A (vision model, e.g. kimi-k2.7): image  → raw OCR transcription (text)
+//   Stage B (text model, e.g. glm-5.2):     text  → structured JSON
+//
+// Separating the stages (a) lets each model do what it's best at — vision reads
+// the photo, the cheaper text model structures it; (b) produces an OCR-text
+// audit trail you can inspect when structuring is wrong; (c) activates the
+// text model (otherwise dead config behind requireVision). The final JSON
+// shape is unchanged from the old single-stage call, so downstream parsing +
+// persistence are untouched.
+
 export const InvoiceItemSchema = z.object({
   description: z.string().default(''),
   quantity: z.number().default(1),
@@ -48,9 +56,52 @@ export const ExtractedInvoiceSchema = z.object({
 })
 export type ExtractedInvoice = z.infer<typeof ExtractedInvoiceSchema>
 
-export const EXTRACTION_SYSTEM_PROMPT = `You are an invoice OCR and data-extraction engine for Malaysian SME invoices.
-You receive a photo or scan of an invoice. Extract every visible field and return
-ONLY a single JSON object — no prose, no markdown fences, no commentary — matching this shape:
+// ── Stage A: vision transcription ──────────────────────────────────────────
+// The vision model reads the invoice photo and produces a plain-text
+// transcription of every visible field. This is the audit-trail artifact fed
+// to Stage B. It must NOT be JSON — that's Stage B's job — so the two models'
+// responsibilities stay clean and the transcription is human-inspectable.
+export const VISION_TRANSCRIBE_PROMPT = `You are an invoice OCR engine for Malaysian SME invoices. You receive a photo or scan of an invoice. Transcribe EVERY visible field into plain structured text — not JSON, not markdown, no code fences.
+
+Capture, in this order, one field per line:
+- Seller: name, TIN, phone, email, address
+- Buyer: name, TIN, email, address (if present)
+- Invoice number
+- Issue date (transcribe exactly as shown, e.g. DD/MM/YYYY)
+- Due date
+- Currency
+- Line items: one per line as "description | qty | unit price | amount"
+- Subtotal
+- Tax (SST): rate and amount
+- Total
+- Payment method
+- Bank details
+- QR verification string (if present)
+- Notes
+
+Rules:
+- Be literal and complete. Transcribe numbers EXACTLY as shown, including the currency symbol and thousands separators (e.g. "RM 2,000.00").
+- If a field is unreadable, write "ILLEGIBLE" for its value. Never invent or guess a value.
+- Output only the transcription text. No commentary, no JSON, no code fences.`
+
+export function messagesForTranscription(imageDataUrl: string): import('./llm').ChatMessage[] {
+  return [
+    { role: 'system', content: VISION_TRANSCRIBE_PROMPT },
+    {
+      role: 'user',
+      content: [
+        { type: 'text', text: 'Transcribe this invoice.' },
+        { type: 'image_url', image_url: { url: imageDataUrl } },
+      ],
+    },
+  ]
+}
+
+// ── Stage B: text structuring ─────────────────────────────────────────────
+// The text model receives Stage A's OCR transcription and emits the final
+// JSON. The shape mirrors docs/flow/flow1.jpeg (purchase/expense side) and
+// maps onto the invoices + invoice_items tables.
+export const STRUCTURING_SYSTEM_PROMPT = `You are an invoice data-structuring engine for Malaysian SME invoices. You receive the OCR transcription of an invoice (plain text produced by an OCR stage). Extract every field and return ONLY a single JSON object — no prose, no markdown fences, no commentary — matching this shape:
 
 {
   "invoice_number": "string|null",
@@ -72,22 +123,19 @@ ONLY a single JSON object — no prose, no markdown fences, no commentary — ma
 }
 
 Rules:
-- Quantities and money are NUMBERS (no currency symbols, no thousands separators).
-- Dates are ISO YYYY-MM-DD. If only DD/MM/YYYY is visible, convert it.
-- TIN is the Malaysian Tax Identification Number (12 chars). If unreadable, use null.
-- Use null (not omitted) for any field you cannot read on the invoice.
-- Set confidence to your estimate (0..1) of how reliably you read the whole invoice.
+- Quantities and money are NUMBERS (strip currency symbols and thousands separators, e.g. "RM 2,000.00" → 2000).
+- Dates are ISO YYYY-MM-DD. Convert "30/06/2026" → "2026-06-30".
+- TIN is the Malaysian Tax Identification Number (12 chars). If the OCR says "ILLEGIBLE" or omits it, use null.
+- Use null (not omitted) for any field you cannot determine from the OCR text.
+- Set confidence to your estimate (0..1) of how reliably the invoice was read.
 - Output ONLY the JSON object. It will be parsed by JSON.parse.`
 
-export function messagesForExtraction(imageDataUrl: string): import('./llm').ChatMessage[] {
+export function messagesForStructuring(ocrText: string): import('./llm').ChatMessage[] {
   return [
-    { role: 'system', content: EXTRACTION_SYSTEM_PROMPT },
+    { role: 'system', content: STRUCTURING_SYSTEM_PROMPT },
     {
       role: 'user',
-      content: [
-        { type: 'text', text: 'Extract this invoice into the JSON schema.' },
-        { type: 'image_url', image_url: { url: imageDataUrl } },
-      ],
+      content: `OCR transcription:\n"""\n${ocrText}\n"""`,
     },
   ]
 }

@@ -1,15 +1,16 @@
 /**
  * Capture screen — launch the camera (with a photo-library fallback), read the
  * image as a data URL, run extraction via the dashboard view model, then route
- * to the review screen with the draft invoice id. The view model owns loading/
- * error state; this screen is purely presentation + image acquisition.
+ * to the review screen with the draft invoice id.
  */
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
 import { router } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
+import { Ionicons } from '@expo/vector-icons'
 import { useDashboard } from '../viewmodels/useDashboard'
-import { colors, font, space, radius } from '../theme/tokens'
+import { GradientBackground, GlassCard } from '../theme/glass'
+import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function CaptureScreen() {
   const dash = useDashboard()
@@ -30,10 +31,7 @@ export default function CaptureScreen() {
 
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
-    if (status !== 'granted') {
-      // Fall back to the library if camera permission is denied.
-      return pickFromLibrary()
-    }
+    if (status !== 'granted') return pickFromLibrary()
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
@@ -53,59 +51,89 @@ export default function CaptureScreen() {
 
   if (busy || dash.extracting) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.kuning} />
-        <Text style={styles.busyText}>Extracting invoice…</Text>
-        <Text style={styles.busySub}>The model is reading the photo</Text>
-      </View>
+      <GradientBackground>
+        <View style={styles.center}>
+          <GlassCard strong style={styles.busyCard}>
+            <ActivityIndicator size="large" color={colors.azure} />
+            <Text style={styles.busyText}>Extracting invoice…</Text>
+            <Text style={styles.busySub}>The model is reading the photo</Text>
+          </GlassCard>
+        </View>
+      </GradientBackground>
     )
   }
 
   return (
-    <View style={styles.wrap}>
-      <Text style={styles.title}>Capture invoice</Text>
-      <Text style={styles.subtitle}>
-        Photograph a paper receipt or invoice — the model will OCR it into a draft e-invoice.
-      </Text>
-      <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={takePhoto}>
-        <Text style={styles.optionText}>📷 Take photo</Text>
-      </Pressable>
-      <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={pickFromLibrary}>
-        <Text style={styles.optionText}>🖼 Choose from library</Text>
-      </Pressable>
-      {dash.extractError ? <Text style={styles.error}>{dash.extractError}</Text> : null}
-      <Pressable style={styles.cancel} onPress={() => router.back()}>
-        <Text style={styles.cancelText}>Cancel</Text>
-      </Pressable>
-    </View>
+    <GradientBackground>
+      <View style={styles.wrap}>
+        <View style={styles.header}>
+          <Pressable onPress={() => router.back()} hitSlop={10}>
+            <Ionicons name="chevron-back" size={26} color={colors.azure} />
+          </Pressable>
+          <Text style={styles.title}>Capture invoice</Text>
+          <View style={{ width: 26 }} />
+        </View>
+        <Text style={styles.subtitle}>
+          Photograph a paper receipt or invoice — the model will OCR it into a draft e-invoice.
+        </Text>
+
+        <GlassCard style={styles.optionCard}>
+          <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={takePhoto}>
+            <Ionicons name="camera-outline" size={24} color={colors.azure} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.optionText}>Take photo</Text>
+              <Text style={styles.optionSub}>Open the camera</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.silver} />
+          </Pressable>
+        </GlassCard>
+
+        <GlassCard style={styles.optionCard}>
+          <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={pickFromLibrary}>
+            <Ionicons name="images-outline" size={24} color={colors.azure} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.optionText}>Choose from library</Text>
+              <Text style={styles.optionSub}>Pick an existing image</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.silver} />
+          </Pressable>
+        </GlassCard>
+
+        {dash.extractError ? (
+          <View style={styles.errorRow}>
+            <Ionicons name="alert-circle" size={15} color={colors.danger} />
+            <Text style={styles.error}>{dash.extractError}</Text>
+          </View>
+        ) : null}
+        <Pressable style={styles.cancel} onPress={() => router.back()}>
+          <Text style={styles.cancelText}>Cancel</Text>
+        </Pressable>
+      </View>
+    </GradientBackground>
   )
 }
 
-// Read a content:// / file:// uri into a base64 data URL the backend accepts.
-// ImagePicker already returns base64 when requested, so prefer that path.
 async function uriToDataUrl(uri: string): Promise<string> {
-  // If the picker already handed us a data URL, pass through.
   if (uri.startsWith('data:')) return uri
-  // For file URIs we asked base64:true on the picker; reconstruct the data URL
-  // from the base64 payload inlined in the asset. This helper is kept thin —
-  // if extension is needed (excluded platforms), fetch() + FileReader.
   throw new Error('Expected a data: URL from the image picker; got ' + uri.slice(0, 30))
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: colors.paper, padding: space.xxl, gap: space.md },
-  center: { flex: 1, backgroundColor: colors.paper, justifyContent: 'center', alignItems: 'center', gap: space.sm },
-  busyText: { fontFamily: font.display, fontSize: 18, color: colors.ink, marginTop: space.md },
-  busySub: { fontFamily: font.body, fontSize: 14, color: colors.arang },
+  wrap: { flex: 1, paddingTop: space.xxxl, paddingHorizontal: space.xl, gap: space.md },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.xs },
   title: { fontFamily: font.displayBold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
-  subtitle: { fontFamily: font.body, fontSize: 15, color: colors.arang, marginBottom: space.lg },
-  option: {
-    backgroundColor: colors.ink, borderRadius: radius.md,
-    paddingVertical: space.lg, alignItems: 'center',
-  },
-  optionPressed: { opacity: 0.88 },
-  optionText: { fontFamily: font.displayBold, fontSize: 16, color: colors.kuning },
-  error: { fontFamily: font.body, fontSize: 14, color: colors.merah },
-  cancel: { paddingVertical: space.md, alignItems: 'center', marginTop: space.md },
-  cancelText: { fontFamily: font.body, fontSize: 14, color: colors.arang },
+  subtitle: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginBottom: space.md, lineHeight: 20 },
+  optionCard: { padding: space.sm },
+  option: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, paddingHorizontal: space.md },
+  optionPressed: { opacity: 0.7 },
+  optionText: { fontFamily: font.displayBold, fontSize: 16, color: colors.ink },
+  optionSub: { fontFamily: font.body, fontSize: 12, color: colors.slate, marginTop: 2 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: space.xl },
+  busyCard: { padding: space.xxl, alignItems: 'center', gap: space.sm },
+  busyText: { fontFamily: font.display, fontSize: 18, color: colors.ink, marginTop: space.md },
+  busySub: { fontFamily: font.body, fontSize: 13, color: colors.slate },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.sm },
+  error: { fontFamily: font.body, fontSize: 13, color: colors.danger },
+  cancel: { paddingVertical: space.md, alignItems: 'center', marginTop: space.sm },
+  cancelText: { fontFamily: font.body, fontSize: 14, color: colors.slate },
 })
