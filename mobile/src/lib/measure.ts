@@ -43,3 +43,24 @@ export function measureElement(
     })
   })
 }
+
+/**
+ * Scroll the target element into the center of the viewport. Used by the
+ * coachmark tour so a step whose target is below the fold gets scrolled into
+ * view before the spotlight + bubble are positioned.
+ *
+ * Web: DOM `scrollIntoView({ block: 'center' })` — smooth, walks up all scroll
+ * containers. Returns true so the caller knows to wait + re-measure.
+ * Native: best-effort no-op (react-native View has no scrollIntoView). The tour
+ * then falls back to a centered bubble for that step instead of an off-screen
+ * spotlight — acceptable on native until a ScrollView-ref-based scroll is wired.
+ */
+export function scrollElementIntoView(
+  ref: React.RefObject<View | null>,
+): boolean {
+  if (Platform.OS !== 'web') return false
+  const el = ref.current as unknown as (HTMLElement & { scrollIntoView?: (o: unknown) => void }) | null
+  if (!el) return false
+  el.scrollIntoView?.({ behavior: 'smooth', block: 'center', inline: 'nearest' })
+  return true
+}

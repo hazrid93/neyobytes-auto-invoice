@@ -14,8 +14,10 @@ import { PageContainer } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
 import { useAuthGate } from '../components/RequireAuth'
 import { colors, font, space } from '../theme/tokens'
+import { useSafeInsets } from '../theme/useSafeInsets'
 
 export default function CaptureScreen() {
+  const { top } = useSafeInsets()
   const dash = useDashboard()
   const gate = useAuthGate()
   const [busy, setBusy] = useState(false)
@@ -93,7 +95,7 @@ export default function CaptureScreen() {
 
   return (
     <GradientBackground>
-      <View style={styles.wrap}>
+      <View style={[styles.wrap, { paddingTop: space.xxxl + top }]}>
         <PageContainer gap={space.md}>
           <View style={styles.header} ref={headerRef}>
             <Pressable onPress={() => router.back()} hitSlop={10}>
@@ -149,7 +151,7 @@ async function uriToDataUrl(uri: string): Promise<string> {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, paddingTop: space.xxxl },
+  wrap: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.xs },
   title: { fontFamily: font.displayBold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
   subtitle: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginBottom: space.md, lineHeight: 20 },

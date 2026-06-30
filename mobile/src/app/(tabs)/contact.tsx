@@ -10,12 +10,14 @@ import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
 import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space, radius } from '../../theme/tokens'
+import { useSafeInsets } from '../../theme/useSafeInsets'
 
 const SUPPORT_EMAIL = 'support@neyobytes.com'
 const SUPPORT_PHONE = '+60312345678'
 const WHATSAPP_NUMBER = '60123456789' // no +, for wa.me
 
 export default function ContactScreen() {
+  const { top } = useSafeInsets()
   const headerRef = useRef<View>(null)
   const hoursRef = useRef<View>(null)
   const tourSteps: TourStep[] = [
@@ -32,7 +34,7 @@ export default function ContactScreen() {
   ]
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl + top, paddingBottom: 150 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} ref={headerRef}>
         <Text style={styles.title}>Contact</Text>
         <TourButton steps={tourSteps} />

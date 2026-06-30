@@ -11,6 +11,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import { SessionProvider } from '../viewmodels/useSession'
 import { GlassStyleInjector } from '../theme/glass'
 import { ErrorBoundary } from '../components/ErrorBoundary'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { font } from '../theme/tokens'
 
 SplashScreen.preventAutoHideAsync()
@@ -34,11 +35,13 @@ export default function RootLayout() {
   if (!ready) return null
 
   return (
-    <SessionProvider>
-      <GlassStyleInjector />
-      <ErrorBoundary>
-        <Stack screenOptions={{ headerShown: false }} />
-      </ErrorBoundary>
-    </SessionProvider>
+    <SafeAreaProvider>
+      <SessionProvider>
+        <GlassStyleInjector />
+        <ErrorBoundary>
+          <Stack screenOptions={{ headerShown: false }} />
+        </ErrorBoundary>
+      </SessionProvider>
+    </SafeAreaProvider>
   )
 }

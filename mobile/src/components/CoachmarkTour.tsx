@@ -31,7 +31,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { measureElement, type Rect } from '../lib/measure'
+import { measureElement, scrollElementIntoView, type Rect } from '../lib/measure'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export interface TourStep {
@@ -69,6 +69,10 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
   const [bubbleH, setBubbleH] = useState(0)
   const [pos, setPos] = useState<{ top: number; left: number; placement: Placement; arrowLeft?: number; arrowTop?: number } | null>(null)
   const bubbleRef = useRef<View>(null)
+  // Guards the scroll-then-remeasure loop so an out-of-view target retries at
+  // most twice (web smooth-scroll), then gives up → centered bubble fallback.
+  const scrollTriesRef = useRef(0)
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const step = steps[index]
 
@@ -80,6 +84,8 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
   useEffect(() => {
     setPos(null)
     setSpot(null)
+    scrollTriesRef.current = 0
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current)
   }, [index, open])
 
   const recompute = useCallback(async () => {
@@ -92,13 +98,37 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
       setSpot(null)
       return
     }
+    // If the target is fully outside the viewport, scroll it into view first
+    // (web) so the spotlight + bubble can land on it. Retry a couple of times
+    // for the smooth-scroll to settle, then fall back to a centered bubble.
+    const outOfView =
+      rect.y + rect.height < 20 ||
+      rect.y > win.height - 20 ||
+      rect.x + rect.width < 0 ||
+      rect.x > win.width
+    if (outOfView) {
+      if (scrollTriesRef.current < 2 && scrollElementIntoView(step.targetRef)) {
+        scrollTriesRef.current += 1
+        setSpot(null)
+        if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current)
+        scrollTimerRef.current = setTimeout(() => {
+          void recompute()
+        }, 380)
+        return
+      }
+      // can't scroll (native) or still off-screen after retries → centered bubble
+      scrollTriesRef.current = 0
+      setSpot(null)
+      return
+    }
+    scrollTriesRef.current = 0
     setSpot({
       x: Math.max(rect.x - SPOTLIGHT_PAD, 0),
       y: Math.max(rect.y - SPOTLIGHT_PAD, 0),
       width: rect.width + SPOTLIGHT_PAD * 2,
       height: rect.height + SPOTLIGHT_PAD * 2,
     })
-  }, [open, step])
+  }, [open, step, win.width, win.height])
 
   useEffect(() => {
     void recompute()

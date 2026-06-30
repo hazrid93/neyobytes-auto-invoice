@@ -232,10 +232,21 @@ export async function deleteInvoice(invoiceId: string, userId: string): Promise<
 }
 
 // The full aggregate needed for submission: invoice + items + customer + supplier.
+// `customer` is narrowed to the four fields submission actually reads (TIN,
+// name, email, address) so we can synthesize it from the OCR-extracted buyer
+// when no `customers` row is linked — capture stores the buyer TIN/name/email
+// in `extractedData.buyer` even though no customer row is created.
+export interface SubmissionCustomer {
+  tin: string | null
+  name: string | null
+  email: string | null
+  address: string | null
+}
+
 export type InvoiceAggregate = {
   invoice: InvoiceRow
   items: InvoiceItemRow[]
-  customer: typeof customersTable.$inferSelect | null
+  customer: SubmissionCustomer | null
   supplier: {
     tin: string | null
     companyName: string | null
@@ -263,14 +274,26 @@ export async function loadInvoiceForSubmission(
       .where(eq(invoiceItems.invoiceId, invoiceId))
       .orderBy(invoiceItems.sortOrder)
 
-    let customer: typeof customersTable.$inferSelect | null = null
+    let customer: SubmissionCustomer | null = null
     if (invoice.customerId) {
       const [cust] = await q
-        .select()
+        .select({
+          tin: customersTable.tin,
+          name: customersTable.name,
+          email: customersTable.email,
+          address: customersTable.address,
+        })
         .from(customersTable)
         .where(and(eq(customersTable.id, invoice.customerId), eq(customersTable.userId, userId)))
         .limit(1)
       customer = cust ?? null
+    }
+    // Fallback: if no linked customer (or it has no TIN), use the buyer the
+    // OCR stage extracted into extractedData.buyer. This is the common path —
+    // a captured invoice has its buyer TIN in extractedData, not a customers row.
+    if (!customer?.tin) {
+      const fromExtraction = customerFromExtracted(invoice.extractedData)
+      if (fromExtraction?.tin) customer = fromExtraction
     }
 
     const [supplier] = await q
@@ -305,5 +328,35 @@ export async function markInvoiceSubmitted(invoiceId: string, myinvoisDocId: str
       .where(eq(invoicesTable.id, invoiceId))
   } catch (e) {
     throw classifyDbError(e, 'markInvoiceSubmitted')
+  }
+}
+
+/**
+ * Pull the buyer (customer) fields from an invoice's `extractedData` JSON blob.
+ * The extraction stage writes `buyer: { name, tin, email, address }`; this reads
+ * them defensively (the blob is `unknown`) and returns null if the shape is
+ * wrong or no buyer was extracted. Used as the submission customer fallback
+ * when no `customers` row is linked to the invoice.
+ */
+function customerFromExtracted(data: unknown): SubmissionCustomer | null {
+  if (!data || typeof data !== 'object') return null
+  const buyer = (data as { buyer?: unknown }).buyer
+  if (!buyer || typeof buyer !== 'object') return null
+  const b = buyer as {
+    name?: unknown
+    tin?: unknown
+    email?: unknown
+    address?: unknown
+  }
+  const str = (v: unknown): string | null =>
+    typeof v === 'string' && v.trim() ? v.trim() : null
+  const name = str(b.name)
+  const tin = str(b.tin)
+  if (!tin && !name) return null
+  return {
+    tin,
+    name,
+    email: str(b.email),
+    address: str(b.address),
   }
 }

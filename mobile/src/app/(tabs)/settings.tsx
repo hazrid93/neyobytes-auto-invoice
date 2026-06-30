@@ -14,8 +14,10 @@ import { GradientBackground, GlassCard } from '../../theme/glass'
 import { PageContainer } from '../../theme/page'
 import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space, radius } from '../../theme/tokens'
+import { useSafeInsets } from '../../theme/useSafeInsets'
 
 export default function SettingsScreen() {
+  const { top } = useSafeInsets()
   const session = useSession()
   const submitVm = useSubmit()
 
@@ -55,7 +57,7 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView contentContainerStyle={{ paddingTop: space.xxxl, paddingBottom: 150 }}>
+      <ScrollView contentContainerStyle={{ paddingTop: space.xxxl + top, paddingBottom: 150 }}>
         <PageContainer>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} ref={headerRef}>
           <Text style={styles.title}>Settings</Text>

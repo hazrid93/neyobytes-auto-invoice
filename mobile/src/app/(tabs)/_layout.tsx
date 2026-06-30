@@ -4,11 +4,13 @@
  * routes (capture / review / submit / profile) live OUTSIDE this group in the
  * root Stack so they render full-screen above the tabs when pushed.
  */
-import { Tabs } from 'expo-router'
+import { Tabs, router } from 'expo-router'
 import { Pressable, Text, View, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GlassCard } from '../../theme/glass'
 import { useAuthGate } from '../../components/RequireAuth'
+import { useSafeInsets } from '../../theme/useSafeInsets'
+import { captureNavRef } from '../../theme/captureNavRef'
 import { colors, font, space, radius } from '../../theme/tokens'
 
 type TabKey = 'home' | 'settings' | 'faq' | 'contact'
@@ -38,40 +40,57 @@ export default function TabsLayout() {
   )
 }
 
-/** Floating glass tab bar — one card pinned bottom-center with 4 pill tabs.
- * Constrained to maxWidth so it stays a compact centered pill bar on desktop
- * (instead of stretching edge-to-edge), with consistent icon+label on every tab
- * so nothing clips or shifts when switching. */
+/** Bottom nav with a center Capture circle. The 4 tab destinations split
+ * 2-1-2 around a bigger circular Capture button (scan icon + label below),
+ * which navigates to the /capture stack route. Constrained to maxWidth so it
+ * stays a compact centered bar on desktop. */
 function GlassTabBar({ state, navigation }: any) {
+  const { bottom } = useSafeInsets()
+  // Split the 4 tabs around the center capture button: first 2, then capture, then last 2.
+  const leftTabs = state.routes.slice(0, 2)
+  const rightTabs = state.routes.slice(2)
+  const renderTab = (route: any, i: number) => {
+    const tab = TABS[i]
+    const active = state.index === i
+    return (
+      <Pressable
+        key={route.key}
+        style={styles.tab}
+        onPress={() => navigation.navigate(route.name)}
+        hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+      >
+        <View style={[styles.tabInner, active && styles.tabInnerActive]}>
+          <Ionicons
+            name={active ? (tab.icon.replace('-outline', '') as any) : tab.icon}
+            size={20}
+            color={active ? colors.snow : colors.slate}
+          />
+          <Text
+            style={[styles.tabLabel, active && styles.tabLabelActive]}
+            numberOfLines={1}
+          >
+            {tab.label}
+          </Text>
+        </View>
+      </Pressable>
+    )
+  }
   return (
-    <View style={styles.tabWrap} pointerEvents="box-none">
+    <View style={[styles.tabWrap, { bottom: space.lg + bottom }]} pointerEvents="box-none">
       <GlassCard strong style={styles.tabBar}>
-        {state.routes.map((route: any, i: number) => {
-          const tab = TABS[i]
-          const active = state.index === i
-          return (
-            <Pressable
-              key={route.key}
-              style={styles.tab}
-              onPress={() => navigation.navigate(route.name)}
-              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-            >
-              <View style={[styles.tabInner, active && styles.tabInnerActive]}>
-                <Ionicons
-                  name={active ? (tab.icon.replace('-outline', '') as any) : tab.icon}
-                  size={21}
-                  color={active ? colors.snow : colors.slate}
-                />
-                <Text
-                  style={[styles.tabLabel, active && styles.tabLabelActive]}
-                  numberOfLines={1}
-                >
-                  {tab.label}
-                </Text>
-              </View>
-            </Pressable>
-          )
-        })}
+        {leftTabs.map((route: any, i: number) => renderTab(route, i))}
+        <Pressable
+          ref={captureNavRef}
+          style={styles.captureTab}
+          onPress={() => router.push('/capture')}
+          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+        >
+          <View style={styles.captureCircle}>
+            <Ionicons name="scan-outline" size={26} color={colors.snow} />
+          </View>
+          <Text style={styles.captureLabel} numberOfLines={1}>Capture</Text>
+        </Pressable>
+        {rightTabs.map((route: any, i: number) => renderTab(route, i + 2))}
       </GlassCard>
     </View>
   )
@@ -88,6 +107,7 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     flexDirection: 'row',
+    alignItems: 'flex-end',
     maxWidth: 460,
     width: '100%',
     paddingHorizontal: space.xs,
@@ -110,10 +130,32 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontFamily: font.bodyMedium,
-    fontSize: 13,
+    fontSize: 12,
     color: colors.slate,
   },
   tabLabelActive: {
     color: colors.snow,
+  },
+  // ── center Capture circle ──
+  captureTab: { alignItems: 'center', justifyContent: 'flex-end', paddingHorizontal: space.xs, paddingTop: space.xs },
+  captureCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.azure,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+    shadowColor: colors.azure,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  captureLabel: {
+    fontFamily: font.bodyMedium,
+    fontSize: 11,
+    color: colors.azure,
+    marginTop: 2,
   },
 })

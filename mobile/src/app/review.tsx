@@ -22,10 +22,12 @@ import { apiErrorMessage, type ApiError } from '../http/client'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
+import { useSafeInsets } from '../theme/useSafeInsets'
 import type { ExtractedInvoice, InvoiceDetail } from '../domain/dtos'
 
 export default function ReviewScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const { top } = useSafeInsets()
   const [draft, setDraft] = useState<InvoiceDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -175,7 +177,7 @@ export default function ReviewScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 140 }]}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl + top, paddingBottom: 140 }]}>
         <View style={styles.header} ref={headerRef}>
           <Pressable onPress={() => (editing ? cancelEdit() : router.back())} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />

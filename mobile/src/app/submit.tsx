@@ -15,9 +15,11 @@ import { pageContentStyle } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
 import { useAuthGate } from '../components/RequireAuth'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
+import { useSafeInsets } from '../theme/useSafeInsets'
 
 export default function SubmitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
+  const { top } = useSafeInsets()
   const vm = useSubmit()
   const session = useSession()
   const gate = useAuthGate()
@@ -56,7 +58,7 @@ export default function SubmitScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl + top, paddingBottom: 150 }]}>
         <View style={styles.header} ref={headerRef}>
           <Pressable onPress={() => router.back()} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />

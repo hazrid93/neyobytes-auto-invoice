@@ -10,6 +10,7 @@ import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
 import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space } from '../../theme/tokens'
+import { useSafeInsets } from '../../theme/useSafeInsets'
 
 interface QA { q: string; a: string }
 
@@ -41,6 +42,7 @@ const FAQS: QA[] = [
 ]
 
 export default function FaqScreen() {
+  const { top } = useSafeInsets()
   const [open, setOpen] = useState<number | null>(0)
   const headerRef = useRef<View>(null)
   const tipRef = useRef<View>(null) // intentionally unattached → centered bubble
@@ -58,7 +60,7 @@ export default function FaqScreen() {
   ]
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl + top, paddingBottom: 150 }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }} ref={headerRef}>
         <Text style={styles.title}>FAQ</Text>
         <TourButton steps={tourSteps} />

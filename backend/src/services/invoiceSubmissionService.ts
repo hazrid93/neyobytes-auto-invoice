@@ -49,10 +49,10 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
 
   // ── Supplier & customer TINs are mandatory for LHDN submission ──
   if (!supplier.tin) {
-    throw new ValidationError('supplier_tin_missing', 'Set your TIN in your profile first.')
+    throw new ValidationError('Set your TIN in your profile first.')
   }
   if (!customer?.tin) {
-    throw new ValidationError('customer_tin_missing', 'This customer has no TIN. Validate one first.')
+    throw new ValidationError("Add the buyer's TIN on the Review screen first.")
   }
 
   const supplierName = supplier.companyName || supplier.fullName || 'Unknown Supplier'

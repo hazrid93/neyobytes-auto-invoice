@@ -15,6 +15,8 @@ import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
 import { TourButton, type TourStep } from '../../components/TourButton'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
+import { captureNavRef } from '../../theme/captureNavRef'
+import { useSafeInsets } from '../../theme/useSafeInsets'
 import type { InvoiceSummary } from '../../domain/dtos'
 
 export default function HomeScreen() {
@@ -28,7 +30,7 @@ export default function HomeScreen() {
   const modeRef = useRef<View>(null)
   const statsRef = useRef<View>(null)
   const listRef = useRef<View>(null)
-  const fabRef = useRef<View>(null)
+  const { top } = useSafeInsets()
 
   const tourSteps: TourStep[] = [
     {
@@ -40,7 +42,7 @@ export default function HomeScreen() {
     },
     {
       id: 'capture',
-      targetRef: fabRef,
+      targetRef: captureNavRef,
       badge: 'Start here',
       title: 'Capture an invoice',
       description: 'Tap this button to photograph a paper invoice. The app reads it with OCR and drafts an e-invoice for you to confirm.',
@@ -92,7 +94,7 @@ export default function HomeScreen() {
     <GradientBackground>
       <FlatList
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: 150 }]}
+        contentContainerStyle={[styles.content, { paddingTop: space.xxxl + top, paddingBottom: 150 }]}
         refreshControl={<RefreshControl refreshing={dash.loading} onRefresh={dash.refresh} tintColor={colors.azure} />}
         ListHeaderComponent={
           <>
@@ -158,15 +160,6 @@ export default function HomeScreen() {
         renderItem={({ item }) => <InvoiceCard invoice={item} />}
         ItemSeparatorComponent={() => <View style={{ height: space.md }} />}
       />
-
-      <Pressable
-        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
-        onPress={() => router.push('/capture')}
-        ref={fabRef}
-      >
-        <Ionicons name="scan-outline" size={20} color={colors.snow} />
-        <Text style={styles.fabText}>Capture invoice</Text>
-      </Pressable>
     </GradientBackground>
   )
 }
@@ -210,7 +203,7 @@ function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  content: { ...pageContentStyle, paddingTop: space.xxxl },
+  content: { ...pageContentStyle },
   topRow: { flexDirection: 'row', alignItems: 'center', marginBottom: space.md },
   greeting: { fontFamily: font.displayBold, fontSize: 30, color: colors.ink, letterSpacing: -0.5 },
   sub: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginTop: 2 },
