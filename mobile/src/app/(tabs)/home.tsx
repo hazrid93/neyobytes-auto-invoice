@@ -12,7 +12,7 @@ import { useSession } from '../../viewmodels/useSession'
 import { useDashboard } from '../../viewmodels/useDashboard'
 import { useSubmit } from '../../viewmodels/useSubmit'
 import { GradientBackground, GlassCard } from '../../theme/glass'
-import { SwipeToDelete } from '../../components/SwipeToDelete'
+import { pageContentStyle } from '../../theme/page'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
 import type { InvoiceSummary } from '../../domain/dtos'
 
@@ -42,7 +42,7 @@ export default function HomeScreen() {
     <GradientBackground>
       <FlatList
         style={styles.scroll}
-        contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 150 }}
+        contentContainerStyle={[styles.content, { paddingBottom: 150 }]}
         refreshControl={<RefreshControl refreshing={dash.loading} onRefresh={dash.refresh} tintColor={colors.azure} />}
         ListHeaderComponent={
           <>
@@ -104,7 +104,7 @@ export default function HomeScreen() {
             <Text style={styles.emptySub}>Capture a paper invoice to start your pipeline.</Text>
           </GlassCard>
         }
-        renderItem={({ item }) => <InvoiceCard invoice={item} onDelete={dash.deleteInvoice} />}
+        renderItem={({ item }) => <InvoiceCard invoice={item} />}
         ItemSeparatorComponent={() => <View style={{ height: space.md }} />}
       />
 
@@ -128,13 +128,14 @@ function StatTile({ label, value, accent }: { label: string; value: string; acce
   )
 }
 
-function InvoiceCard({ invoice, onDelete }: { invoice: InvoiceSummary; onDelete: (id: string) => Promise<boolean> }) {
+function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
   const isDraft = invoice.status === 'draft'
-  // Drafts → review (edit / submit). Submitted → submit (audit trail).
+  // Drafts → review (edit / delete / then submit). Submitted → submit (audit).
+  // The destructive action lives on the Review screen, not on the list row —
+  // one pattern on web + mobile, no accidental deletes, no overlap.
   const open = () =>
     router.push({ pathname: isDraft ? '/review' : '/submit', params: { id: invoice.id } })
-
-  const card = (
+  return (
     <Pressable onPress={open}>
       <GlassCard style={styles.card}>
         <View style={styles.cardHead}>
@@ -153,18 +154,11 @@ function InvoiceCard({ invoice, onDelete }: { invoice: InvoiceSummary; onDelete:
       </GlassCard>
     </Pressable>
   )
-
-  // Only drafts are drag-to-delete; submitted invoices keep their audit trail.
-  if (!isDraft) return card
-  return (
-    <SwipeToDelete onDelete={() => onDelete(invoice.id)}>
-      {card}
-    </SwipeToDelete>
-  )
 }
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
+  content: { ...pageContentStyle, paddingTop: space.xxxl },
   topRow: { flexDirection: 'row', alignItems: 'center', marginBottom: space.md },
   greeting: { fontFamily: font.displayBold, fontSize: 30, color: colors.ink, letterSpacing: -0.5 },
   sub: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginTop: 2 },

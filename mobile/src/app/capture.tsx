@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { Ionicons } from '@expo/vector-icons'
 import { useDashboard } from '../viewmodels/useDashboard'
 import { GradientBackground, GlassCard } from '../theme/glass'
+import { PageContainer } from '../theme/page'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function CaptureScreen() {
@@ -66,48 +67,50 @@ export default function CaptureScreen() {
   return (
     <GradientBackground>
       <View style={styles.wrap}>
-        <View style={styles.header}>
-          <Pressable onPress={() => router.back()} hitSlop={10}>
-            <Ionicons name="chevron-back" size={26} color={colors.azure} />
-          </Pressable>
-          <Text style={styles.title}>Capture invoice</Text>
-          <View style={{ width: 26 }} />
-        </View>
-        <Text style={styles.subtitle}>
-          Photograph a paper receipt or invoice — the model will OCR it into a draft e-invoice.
-        </Text>
-
-        <GlassCard style={styles.optionCard}>
-          <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={takePhoto}>
-            <Ionicons name="camera-outline" size={24} color={colors.azure} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.optionText}>Take photo</Text>
-              <Text style={styles.optionSub}>Open the camera</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.silver} />
-          </Pressable>
-        </GlassCard>
-
-        <GlassCard style={styles.optionCard}>
-          <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={pickFromLibrary}>
-            <Ionicons name="images-outline" size={24} color={colors.azure} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.optionText}>Choose from library</Text>
-              <Text style={styles.optionSub}>Pick an existing image</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color={colors.silver} />
-          </Pressable>
-        </GlassCard>
-
-        {dash.extractError ? (
-          <View style={styles.errorRow}>
-            <Ionicons name="alert-circle" size={15} color={colors.danger} />
-            <Text style={styles.error}>{dash.extractError}</Text>
+        <PageContainer gap={space.md}>
+          <View style={styles.header}>
+            <Pressable onPress={() => router.back()} hitSlop={10}>
+              <Ionicons name="chevron-back" size={26} color={colors.azure} />
+            </Pressable>
+            <Text style={styles.title}>Capture invoice</Text>
+            <View style={{ width: 26 }} />
           </View>
-        ) : null}
-        <Pressable style={styles.cancel} onPress={() => router.back()}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </Pressable>
+          <Text style={styles.subtitle}>
+            Photograph a paper receipt or invoice — the model will OCR it into a draft e-invoice.
+          </Text>
+
+          <GlassCard style={styles.optionCard}>
+            <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={takePhoto}>
+              <Ionicons name="camera-outline" size={24} color={colors.azure} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.optionText}>Take photo</Text>
+                <Text style={styles.optionSub}>Open the camera</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={colors.silver} />
+            </Pressable>
+          </GlassCard>
+
+          <GlassCard style={styles.optionCard}>
+            <Pressable style={({ pressed }) => [styles.option, pressed && styles.optionPressed]} onPress={pickFromLibrary}>
+              <Ionicons name="images-outline" size={24} color={colors.azure} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.optionText}>Choose from library</Text>
+                <Text style={styles.optionSub}>Pick an existing image</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={colors.silver} />
+            </Pressable>
+          </GlassCard>
+
+          {dash.extractError ? (
+            <View style={styles.errorRow}>
+              <Ionicons name="alert-circle" size={15} color={colors.danger} />
+              <Text style={styles.error}>{dash.extractError}</Text>
+            </View>
+          ) : null}
+          <Pressable style={styles.cancel} onPress={() => router.back()}>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+        </PageContainer>
       </View>
     </GradientBackground>
   )
@@ -119,7 +122,7 @@ async function uriToDataUrl(uri: string): Promise<string> {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, paddingTop: space.xxxl, paddingHorizontal: space.xl, gap: space.md },
+  wrap: { flex: 1, paddingTop: space.xxxl },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.xs },
   title: { fontFamily: font.displayBold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
   subtitle: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginBottom: space.md, lineHeight: 20 },

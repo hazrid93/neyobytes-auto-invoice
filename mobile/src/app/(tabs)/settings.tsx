@@ -5,12 +5,13 @@
  * submit view models.
  */
 import { useEffect } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useSession } from '../../viewmodels/useSession'
 import { useSubmit } from '../../viewmodels/useSubmit'
 import { GradientBackground, GlassCard } from '../../theme/glass'
+import { PageContainer } from '../../theme/page'
 import { colors, font, space, radius } from '../../theme/tokens'
 
 export default function SettingsScreen() {
@@ -26,8 +27,9 @@ export default function SettingsScreen() {
 
   return (
     <GradientBackground>
-      <View style={styles.wrap}>
-        <Text style={styles.title}>Settings</Text>
+      <ScrollView contentContainerStyle={{ paddingTop: space.xxxl, paddingBottom: 150 }}>
+        <PageContainer>
+          <Text style={styles.title}>Settings</Text>
 
         <SectionLabel>Supplier profile</SectionLabel>
         <GlassCard style={styles.card}>
@@ -87,7 +89,8 @@ export default function SettingsScreen() {
         </Pressable>
 
         <Text style={styles.version}>auto-invoice · v0.1.0</Text>
-      </View>
+        </PageContainer>
+      </ScrollView>
     </GradientBackground>
   )
 }
@@ -114,7 +117,7 @@ function Row({
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, paddingTop: space.xxxl, paddingHorizontal: space.xl },
+  wrap: { flex: 1 },
   title: { fontFamily: font.displayBold, fontSize: 30, color: colors.ink, letterSpacing: -0.5, marginBottom: space.xl },
   sectionLabel: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginTop: space.xl, marginBottom: space.sm, marginLeft: space.xs },
   card: { paddingHorizontal: space.lg, paddingVertical: space.xs },

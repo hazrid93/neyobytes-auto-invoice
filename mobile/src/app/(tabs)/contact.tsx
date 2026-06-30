@@ -6,6 +6,7 @@
 import { View, Text, Pressable, ScrollView, StyleSheet, Linking } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GradientBackground, GlassCard } from '../../theme/glass'
+import { pageContentStyle } from '../../theme/page'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
 
 const SUPPORT_EMAIL = 'support@neyobytes.com'
@@ -15,7 +16,7 @@ const WHATSAPP_NUMBER = '60123456789' // no +, for wa.me
 export default function ContactScreen() {
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 120 }}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
         <Text style={styles.title}>Contact</Text>
         <Text style={styles.sub}>We usually reply within one business day.</Text>
 

@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { updateProfile } from '../services/authService'
 import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
+import { pageContentStyle } from '../theme/page'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function ProfileScreen() {
@@ -44,7 +45,7 @@ export default function ProfileScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 120 }}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => router.back()} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />

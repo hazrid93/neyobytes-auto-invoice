@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GradientBackground, GlassCard } from '../../theme/glass'
+import { pageContentStyle } from '../../theme/page'
 import { colors, font, space, radius } from '../../theme/tokens'
 
 interface QA { q: string; a: string }
@@ -46,7 +47,7 @@ export default function FaqScreen() {
   const [open, setOpen] = useState<number | null>(0)
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 120 }}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 150 }]}>
         <Text style={styles.title}>FAQ</Text>
         <Text style={styles.sub}>Common questions about e-invoicing with auto-invoice.</Text>
 

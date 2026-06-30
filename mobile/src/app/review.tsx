@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { getInvoice, updateInvoice, deleteInvoice } from '../services/invoiceService'
 import { apiErrorMessage, type ApiError } from '../http/client'
 import { GradientBackground, GlassCard } from '../theme/glass'
+import { pageContentStyle } from '../theme/page'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 import type { ExtractedInvoice, InvoiceDetail } from '../domain/dtos'
 
@@ -141,7 +142,7 @@ export default function ReviewScreen() {
 
   return (
     <GradientBackground>
-      <ScrollView style={styles.scroll} contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 140 }}>
+      <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl, paddingBottom: 140 }]}>
         <View style={styles.header}>
           <Pressable onPress={() => (editing ? cancelEdit() : router.back())} hitSlop={10}>
             <Ionicons name="chevron-back" size={26} color={colors.azure} />

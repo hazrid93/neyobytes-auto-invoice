@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useAsync } from '../viewmodels/useAsync'
 import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
+import { pageContentStyle } from '../theme/page'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function LoginScreen() {
@@ -123,7 +124,7 @@ function Field({
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, justifyContent: 'center', paddingHorizontal: space.xl, paddingVertical: space.xxxl },
+  wrap: { flex: 1, justifyContent: 'center', ...pageContentStyle, paddingVertical: space.xxxl },
   brand: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.sm, marginBottom: space.xl },
   logoBadge: {
     width: 48, height: 48, borderRadius: radius.md, backgroundColor: colors.azure,
