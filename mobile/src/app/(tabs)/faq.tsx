@@ -8,7 +8,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
-import { colors, font, space, radius } from '../../theme/tokens'
+import { colors, font, space } from '../../theme/tokens'
 
 interface QA { q: string; a: string }
 

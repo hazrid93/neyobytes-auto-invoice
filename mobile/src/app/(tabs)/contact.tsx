@@ -7,7 +7,7 @@ import { View, Text, Pressable, ScrollView, StyleSheet, Linking } from 'react-na
 import { Ionicons } from '@expo/vector-icons'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
-import { colors, font, space, radius, shadow } from '../../theme/tokens'
+import { colors, font, space, radius } from '../../theme/tokens'
 
 const SUPPORT_EMAIL = 'support@neyobytes.com'
 const SUPPORT_PHONE = '+60312345678'

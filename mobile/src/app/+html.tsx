@@ -1,18 +1,17 @@
-/* eslint-disable react/no-danger */
 /**
  * Root HTML document for Expo Web (static export). Controls the <head> so we
  * can set the viewport meta — specifically disabling pinch-zoom + the iOS
  * Safari auto-zoom-on-input-focus, which the default Expo viewport didn't.
  *
- * Keep the script bootstrap EXACTLY: it loads the static bundle + hydrates
- * Expo Router. Don't add blocking scripts or reorder.
+ * IMPORTANT: `children` is the route's own server-rendered `<div id="root">…`
+ * Do NOT add another `#root` wrapper or any extra View/ScrollView around it —
+ * the client bundle calls `hydrateRoot(getElementById('root'), <App/>)`, so
+ * the DOM inside `#root` must match exactly. Wrapping it breaks hydration
+ * (white screen). Just render <html><head>…</head><body>{children}</body>.
  *
- * (This is the Expo Router way to override the default <html>; it must be
- * named `+html.tsx` at the app root and export a default component receiving
- * `props.children` — the server-rendered route shell.)
+ * (Expo Router way to override the default <html>; must be named `+html.tsx`
+ * at the app root and default-export a component receiving `children`.)
  */
-import { ScrollView, StyleSheet } from 'react-native'
-
 export default function RootHTML({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -28,24 +27,7 @@ export default function RootHTML({ children }: { children: React.ReactNode }) {
           content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
         />
       </head>
-      <body>
-        {/* Wrap in a no-scroll outer view; the app manages its own scrolling per
-            screen (ScrollViews/FlatLists). Mirrors Expo's default #root layout. */}
-        <div id="root">
-          <ScrollView
-            style={styles.htmlScroll}
-            contentContainerStyle={styles.htmlScrollContent}
-            scrollEnabled={false}
-          >
-            {children}
-          </ScrollView>
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }
-
-const styles = StyleSheet.create({
-  htmlScroll: { flex: 1, height: '100%' },
-  htmlScrollContent: { flex: 1, minHeight: '100%' },
-})

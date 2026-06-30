@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useDashboard } from '../viewmodels/useDashboard'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { PageContainer } from '../theme/page'
-import { colors, font, space, radius, shadow } from '../theme/tokens'
+import { colors, font, space } from '../theme/tokens'
 
 export default function CaptureScreen() {
   const dash = useDashboard()
