@@ -12,10 +12,12 @@ import { useDashboard } from '../viewmodels/useDashboard'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { PageContainer } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
+import { useAuthGate } from '../components/RequireAuth'
 import { colors, font, space } from '../theme/tokens'
 
 export default function CaptureScreen() {
   const dash = useDashboard()
+  const gate = useAuthGate()
   const [busy, setBusy] = useState(false)
 
   const headerRef = useRef<View>(null)
@@ -71,6 +73,9 @@ export default function CaptureScreen() {
     })
     if (!result.canceled && result.assets[0]?.uri) await handleImage(result.assets[0].uri)
   }
+
+  // Auth gate (also enforced on the home FAB's target, for direct nav).
+  if (gate) return gate
 
   if (busy || dash.extracting) {
     return (

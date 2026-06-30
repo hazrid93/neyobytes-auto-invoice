@@ -13,12 +13,14 @@ import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
+import { useAuthGate } from '../components/RequireAuth'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function SubmitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const vm = useSubmit()
   const session = useSession()
+  const gate = useAuthGate()
 
   const headerRef = useRef<View>(null)
   const submitRef = useRef<View>(null)
@@ -47,6 +49,8 @@ export default function SubmitScreen() {
   }, [id])
 
   const supplierReady = Boolean(session.profile?.tin && session.profile?.companyName)
+  // Auth gate — an anonymous user hitting /submit directly goes to /login.
+  if (gate) return gate
   const last = vm.lastResult
   const lastIsOk = last?.accepted
 

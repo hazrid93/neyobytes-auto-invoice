@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { getInvoice, updateInvoice, deleteInvoice } from '../services/invoiceService'
 import { ConfirmDialog, type ConfirmOptions } from '../components/ConfirmDialog'
 import { TourButton, type TourStep } from '../components/TourButton'
+import { useAuthGate } from '../components/RequireAuth'
 import { apiErrorMessage, type ApiError } from '../http/client'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
@@ -34,6 +35,7 @@ export default function ReviewScreen() {
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [confirm, setConfirm] = useState<ConfirmOptions | null>(null)
+  const gate = useAuthGate()
 
   const headerRef = useRef<View>(null)
   const actionsRef = useRef<View>(null)
@@ -138,6 +140,8 @@ export default function ReviewScreen() {
       },
     })
   }
+
+  if (gate) return gate
 
   if (loading) {
     return (

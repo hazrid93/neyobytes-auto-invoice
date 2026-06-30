@@ -8,6 +8,7 @@ import { Tabs } from 'expo-router'
 import { Pressable, Text, View, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { GlassCard } from '../../theme/glass'
+import { useAuthGate } from '../../components/RequireAuth'
 import { colors, font, space, radius } from '../../theme/tokens'
 
 type TabKey = 'home' | 'settings' | 'faq' | 'contact'
@@ -20,6 +21,10 @@ const TABS: { key: TabKey; icon: keyof typeof Ionicons.glyphMap; label: string; 
 ]
 
 export default function TabsLayout() {
+  // Auth gate: an anonymous user tapping any tab (Settings/Home/FAQ/Contact)
+  // is bounced to /login instead of seeing the authenticated screens.
+  const gate = useAuthGate()
+  if (gate) return gate
   return (
     <Tabs
       screenOptions={{ headerShown: false }}

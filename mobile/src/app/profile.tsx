@@ -3,7 +3,7 @@
  * These fields are mandatory for LHDN submission, so the home tab gates submit
  * on this being filled. Glass form over the gradient.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -12,6 +12,7 @@ import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
+import { useAuthGate } from '../components/RequireAuth'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 
 export default function ProfileScreen() {
@@ -45,10 +46,10 @@ export default function ProfileScreen() {
     },
   ]
 
-  // Sign-out happens here; route to login ourselves.
-  useEffect(() => {
-    if (session.status === 'anonymous') router.replace('/login')
-  }, [session.status])
+  // Auth gate — an anonymous user (e.g. after sign-out) is bounced to /login
+  // before any profile field renders.
+  const gate = useAuthGate()
+  if (gate) return gate
 
   const save = async () => {
     setSaving(true)
