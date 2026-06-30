@@ -33,7 +33,10 @@ export default function TabsLayout() {
   )
 }
 
-/** Floating glass tab bar — one card pinned bottom-center with 4 pill tabs. */
+/** Floating glass tab bar — one card pinned bottom-center with 4 pill tabs.
+ * Constrained to maxWidth so it stays a compact centered pill bar on desktop
+ * (instead of stretching edge-to-edge), with consistent icon+label on every tab
+ * so nothing clips or shifts when switching. */
 function GlassTabBar({ state, navigation }: any) {
   return (
     <View style={styles.tabWrap} pointerEvents="box-none">
@@ -44,16 +47,22 @@ function GlassTabBar({ state, navigation }: any) {
           return (
             <Pressable
               key={route.key}
-              style={[styles.tab, active && styles.tabActive]}
+              style={styles.tab}
               onPress={() => navigation.navigate(route.name)}
+              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             >
               <View style={[styles.tabInner, active && styles.tabInnerActive]}>
                 <Ionicons
                   name={active ? (tab.icon.replace('-outline', '') as any) : tab.icon}
-                  size={22}
+                  size={21}
                   color={active ? colors.snow : colors.slate}
                 />
-                <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{tab.label}</Text>
+                <Text
+                  style={[styles.tabLabel, active && styles.tabLabelActive]}
+                  numberOfLines={1}
+                >
+                  {tab.label}
+                </Text>
               </View>
             </Pressable>
           )
@@ -70,21 +79,25 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+    paddingHorizontal: space.md,
   },
   tabBar: {
     flexDirection: 'row',
-    paddingHorizontal: space.sm,
+    maxWidth: 460,
+    width: '100%',
+    paddingHorizontal: space.xs,
     paddingVertical: space.xs,
     borderRadius: radius.xl,
   },
-  tab: { flex: 1 },
+  tab: { flex: 1, alignItems: 'center' },
   tabActive: {},
   tabInner: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: space.sm,
+    paddingVertical: space.sm + 2,
+    paddingHorizontal: space.sm,
     borderRadius: radius.lg,
   },
   tabInnerActive: {

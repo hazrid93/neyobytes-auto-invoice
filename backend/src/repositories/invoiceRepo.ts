@@ -176,6 +176,61 @@ export async function getInvoiceById(
   }
 }
 
+// ── update: edit a draft's scalar columns + the extractedData blob ──
+// Only the keys present in `patch` are written (undefined keys are skipped so
+// a partial PATCH doesn't null out untouched fields). extractedData is replaced
+// wholesale when provided (the review screen sends the full edited object).
+export async function updateInvoice(
+  invoiceId: string,
+  userId: string,
+  patch: {
+    invoiceNumber?: string | null
+    issueDate?: string | null
+    dueDate?: string | null
+    currency?: string
+    subtotal?: number
+    taxTotal?: number
+    total?: number
+    extractedData?: Record<string, unknown> | null
+  },
+): Promise<InvoiceRow | undefined> {
+  const q = requireDb()
+  const set: Record<string, unknown> = { updatedAt: new Date() }
+  if (patch.invoiceNumber !== undefined) set.invoiceNumber = patch.invoiceNumber
+  if (patch.issueDate !== undefined) set.issueDate = patch.issueDate
+  if (patch.dueDate !== undefined) set.dueDate = patch.dueDate
+  if (patch.currency !== undefined) set.currency = patch.currency
+  if (patch.subtotal !== undefined) set.subtotal = patch.subtotal
+  if (patch.taxTotal !== undefined) set.taxTotal = patch.taxTotal
+  if (patch.total !== undefined) set.total = patch.total
+  if (patch.extractedData !== undefined) set.extractedData = patch.extractedData
+  try {
+    const [row] = await q
+      .update(invoicesTable)
+      .set(set)
+      .where(and(eq(invoicesTable.id, invoiceId), eq(invoicesTable.userId, userId)))
+      .returning()
+    return row
+  } catch (e) {
+    throw classifyDbError(e, 'updateInvoice')
+  }
+}
+
+// ── delete: remove an invoice (cascades to invoice_items + myinvois_submissions
+// via FK onDelete: 'cascade'). Returns true if a row was actually removed. ──
+export async function deleteInvoice(invoiceId: string, userId: string): Promise<boolean> {
+  const q = requireDb()
+  try {
+    const [row] = await q
+      .delete(invoicesTable)
+      .where(and(eq(invoicesTable.id, invoiceId), eq(invoicesTable.userId, userId)))
+      .returning({ id: invoicesTable.id })
+    return Boolean(row)
+  } catch (e) {
+    throw classifyDbError(e, 'deleteInvoice')
+  }
+}
+
 // The full aggregate needed for submission: invoice + items + customer + supplier.
 export type InvoiceAggregate = {
   invoice: InvoiceRow

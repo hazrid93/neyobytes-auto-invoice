@@ -16,6 +16,32 @@ export async function getInvoice(id: string): Promise<InvoiceDetail> {
   return invoice
 }
 
+/** Edit a draft's fields (scalar columns + the extractedData blob). */
+export async function updateInvoice(
+  id: string,
+  patch: {
+    invoiceNumber?: string | null
+    issueDate?: string | null
+    dueDate?: string | null
+    currency?: string
+    subtotal?: number
+    taxTotal?: number
+    total?: number
+    extractedData?: Record<string, unknown> | null
+  },
+): Promise<InvoiceDetail> {
+  const { invoice } = await request<{ invoice: InvoiceDetail }>(`/invoices/${id}`, {
+    method: 'PATCH',
+    body: patch,
+  })
+  return invoice
+}
+
+/** Delete a draft invoice (cascades to items + submissions server-side). */
+export async function deleteInvoice(id: string): Promise<void> {
+  await request<{ ok: boolean }>(`/invoices/${id}`, { method: 'DELETE' })
+}
+
 export interface CreateInvoiceInput {
   customerId?: string | null
   invoiceNumber?: string

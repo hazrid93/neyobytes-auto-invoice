@@ -4,7 +4,7 @@
  * on this being filled. Glass form over the gradient.
  */
 import { useEffect, useState } from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView } from 'react-native'
+import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { updateProfile } from '../services/authService'
@@ -93,7 +93,7 @@ function Field({
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputWrap}>
+      <View style={styles.inputWrap} {...(Platform.OS === 'web' ? { className: 'field-input' } : {})}>
         <Ionicons name={icon} size={18} color={colors.slate} style={styles.fieldIcon} />
         <TextInput
           style={styles.input}

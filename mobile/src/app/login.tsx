@@ -106,7 +106,7 @@ function Field({
   cap?: 'words' | 'none'
 }) {
   return (
-    <View style={styles.fieldWrap}>
+    <View style={styles.fieldWrap} {...(Platform.OS === 'web' ? { className: 'field-input' } : {})}>
       <Ionicons name={icon} size={18} color={colors.slate} style={styles.fieldIcon} />
       <TextInput
         style={styles.input}

@@ -25,6 +25,8 @@ import { parseExtracted } from '../lib/extract-parse'
 import {
   listInvoicesByUser,
   getInvoiceById,
+  updateInvoice as updateInvoiceRepo,
+  deleteInvoice as deleteInvoiceRepo,
   createInvoice,
   createDraftFromExtraction,
   type InvoiceSummary,
@@ -45,6 +47,29 @@ export async function getInvoice(
   userId: string,
 ): Promise<InvoiceRow | undefined> {
   return getInvoiceById(invoiceId, userId)
+}
+
+// ── update a draft (edit scalar fields + the extractedData blob) ──
+export async function updateInvoice(
+  invoiceId: string,
+  userId: string,
+  patch: {
+    invoiceNumber?: string | null
+    issueDate?: string | null
+    dueDate?: string | null
+    currency?: string
+    subtotal?: number
+    taxTotal?: number
+    total?: number
+    extractedData?: Record<string, unknown> | null
+  },
+): Promise<InvoiceRow | undefined> {
+  return updateInvoiceRepo(invoiceId, userId, patch)
+}
+
+// ── delete a draft (cascades items + submissions) ──
+export async function deleteInvoice(invoiceId: string, userId: string): Promise<boolean> {
+  return deleteInvoiceRepo(invoiceId, userId)
 }
 
 // ── create ───────────────────────────────────────────────────────────────

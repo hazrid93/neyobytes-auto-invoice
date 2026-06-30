@@ -5,7 +5,7 @@
  * and a floating Capture CTA. Reads the dashboard + submit view models.
  */
 import { useEffect, useMemo } from 'react'
-import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl } from 'react-native'
+import { View, Text, FlatList, Pressable, StyleSheet, RefreshControl, Alert } from 'react-native'
 import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useSession } from '../../viewmodels/useSession'
@@ -41,7 +41,7 @@ export default function HomeScreen() {
     <GradientBackground>
       <FlatList
         style={styles.scroll}
-        contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 120 }}
+        contentContainerStyle={{ paddingTop: space.xxxl, paddingHorizontal: space.xl, paddingBottom: 150 }}
         refreshControl={<RefreshControl refreshing={dash.loading} onRefresh={dash.refresh} tintColor={colors.azure} />}
         ListHeaderComponent={
           <>
@@ -103,7 +103,7 @@ export default function HomeScreen() {
             <Text style={styles.emptySub}>Capture a paper invoice to start your pipeline.</Text>
           </GlassCard>
         }
-        renderItem={({ item }) => <InvoiceCard invoice={item} />}
+        renderItem={({ item }) => <InvoiceCard invoice={item} onDelete={dash.deleteInvoice} />}
         ItemSeparatorComponent={() => <View style={{ height: space.md }} />}
       />
 
@@ -127,11 +127,18 @@ function StatTile({ label, value, accent }: { label: string; value: string; acce
   )
 }
 
-function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
-  const goSubmit = () => router.push({ pathname: '/submit', params: { id: invoice.id } })
+function InvoiceCard({ invoice, onDelete }: { invoice: InvoiceSummary; onDelete: (id: string) => Promise<boolean> }) {
   const isDraft = invoice.status === 'draft'
+  // Drafts → review (edit / delete / then submit). Submitted → submit (audit trail).
+  const open = () =>
+    router.push({ pathname: isDraft ? '/review' : '/submit', params: { id: invoice.id } })
+  const confirmDelete = () =>
+    Alert.alert('Delete invoice?', 'This invoice and its items will be permanently removed.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => onDelete(invoice.id) },
+    ])
   return (
-    <Pressable onPress={goSubmit}>
+    <Pressable onPress={open}>
       <GlassCard style={styles.card}>
         <View style={styles.cardHead}>
           <Text style={styles.cardNum}>{invoice.invoiceNumber ?? 'Draft'}</Text>
@@ -143,11 +150,14 @@ function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
           <Text style={styles.cardMeta}>{invoice.issueDate ?? 'No date'}</Text>
           <Text style={styles.cardTotal}>RM {(invoice.total ?? 0).toFixed(2)}</Text>
         </View>
-        {!isDraft && (
-          <View style={styles.cardChevron}>
-            <Ionicons name="chevron-forward" size={16} color={colors.silver} />
-          </View>
-        )}
+        <View style={styles.cardActions}>
+          {isDraft && (
+            <Pressable onPress={confirmDelete} hitSlop={8} style={styles.cardActionBtn}>
+              <Ionicons name="trash-outline" size={16} color={colors.danger} />
+            </Pressable>
+          )}
+          <Ionicons name="chevron-forward" size={16} color={colors.silver} />
+        </View>
       </GlassCard>
     </Pressable>
   )
@@ -191,10 +201,11 @@ const styles = StyleSheet.create({
   cardRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space.sm },
   cardMeta: { fontFamily: font.body, fontSize: 13, color: colors.slate },
   cardTotal: { fontFamily: font.displayBold, fontSize: 15, color: colors.ink },
-  cardChevron: { position: 'absolute', right: space.md, top: '50%', marginTop: -8 },
+  cardActions: { flexDirection: 'row', alignItems: 'center', gap: space.sm, position: 'absolute', right: space.md, top: '50%', marginTop: -10 },
+  cardActionBtn: { padding: 4 },
   fab: {
     position: 'absolute',
-    bottom: 84,
+    bottom: 100,
     alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',

@@ -34,6 +34,45 @@ invoices.get('/:id', requireAuth, async (c) => {
   return c.json({ invoice })
 })
 
+// PATCH /invoices/:id — edit a draft. Accepts a partial of the scalar columns
+// plus an optional `extractedData` blob (the review screen sends the full
+// edited object). Only provided keys are written.
+const patchSchema = z.object({
+  invoiceNumber: z.string().nullable().optional(),
+  issueDate: z.string().nullable().optional(),
+  dueDate: z.string().nullable().optional(),
+  currency: z.string().optional(),
+  subtotal: z.number().optional(),
+  taxTotal: z.number().optional(),
+  total: z.number().optional(),
+  extractedData: z.record(z.string(), z.unknown()).optional(),
+})
+invoices.patch('/:id', requireAuth, async (c) => {
+  const id = c.req.param('id')
+  if (!UUID.test(id)) {
+    return c.json({ error: 'invalid_input', message: 'invoice id must be a uuid' }, 400)
+  }
+  const parsed = patchSchema.safeParse(await c.req.json().catch(() => ({})))
+  if (!parsed.success) {
+    return c.json({ error: 'invalid_input', issues: parsed.error.issues }, 400)
+  }
+  const invoice = await invoiceService.updateInvoice(id, c.get('user').sub, parsed.data)
+  if (!invoice) return c.json({ error: 'not_found', message: 'invoice not found' }, 404)
+  return c.json({ invoice })
+})
+
+// DELETE /invoices/:id — delete a draft (cascades to invoice_items +
+// myinvois_submissions via FK onDelete: 'cascade'). Returns 200 on success.
+invoices.delete('/:id', requireAuth, async (c) => {
+  const id = c.req.param('id')
+  if (!UUID.test(id)) {
+    return c.json({ error: 'invalid_input', message: 'invoice id must be a uuid' }, 400)
+  }
+  const ok = await invoiceService.deleteInvoice(id, c.get('user').sub)
+  if (!ok) return c.json({ error: 'not_found', message: 'invoice not found' }, 404)
+  return c.json({ ok: true })
+})
+
 // POST /invoices — create a draft invoice (atomic: invoice + items in one tx).
 invoices.post('/', requireAuth, async (c) => {
   const parsed = z

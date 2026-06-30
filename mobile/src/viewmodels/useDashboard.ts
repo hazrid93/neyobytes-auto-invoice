@@ -17,6 +17,8 @@ export interface DashboardView {
   captureAndExtract: (image: string) => Promise<ExtractResult | null>
   extracting: boolean
   extractError: string | null
+  /** Delete an invoice (cascades items + submissions). Refreshes the list. */
+  deleteInvoice: (id: string) => Promise<boolean>
 }
 
 export function useDashboard(): DashboardView {
@@ -54,5 +56,16 @@ export function useDashboard(): DashboardView {
     }
   }, [refresh])
 
-  return { invoices, loading, error, refresh, captureAndExtract, extracting, extractError }
+  const deleteInvoice = useCallback(async (id: string): Promise<boolean> => {
+    try {
+      await invoiceService.deleteInvoice(id)
+      setInvoices((prev) => prev.filter((i) => i.id !== id))
+      return true
+    } catch (e) {
+      setError(apiErrorMessage(e as ApiError))
+      return false
+    }
+  }, [])
+
+  return { invoices, loading, error, refresh, captureAndExtract, extracting, extractError, deleteInvoice }
 }

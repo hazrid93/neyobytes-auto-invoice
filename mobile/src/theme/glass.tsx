@@ -82,9 +82,26 @@ export function GlassStyleInjector() {
         backdrop-filter: blur(16px) saturate(150%);
         -webkit-backdrop-filter: blur(16px) saturate(150%);
       }
-      :focus-visible {
+      /* Keyboard focus ring — buttons + links only. Text inputs get a
+         contained ring below (NOT the 2px+2px-offset outline that rendered
+         larger than the textbox). */
+      button:focus-visible, [role="button"]:focus-visible, a:focus-visible {
         outline: 2px solid ${colors.azure};
         outline-offset: 2px;
+        border-radius: 4px;
+      }
+      /* Text inputs: drop the default UA outline (it sat 2px outside the box
+         and looked bigger than the field) and replace it with a contained
+         box-shadow ring on the wrapper, which adds no layout size. */
+      input:focus, textarea:focus, select:focus {
+        outline: none;
+      }
+      .field-input {
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .field-input:focus-within {
+        border-color: ${colors.azure};
+        box-shadow: 0 0 0 3px ${colors.azure}22;
       }
     `}</style>
   )
