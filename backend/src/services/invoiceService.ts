@@ -24,10 +24,12 @@ import {
 import { parseExtracted } from '../lib/extract-parse'
 import {
   listInvoicesByUser,
+  getInvoiceById,
   createInvoice,
   createDraftFromExtraction,
   type InvoiceSummary,
   type NewInvoiceItem,
+  type InvoiceRow,
 } from '../repositories/invoiceRepo'
 import { computeInvoiceTotals } from '../domain/totals'
 import { ValidationError, ExternalError } from '../domain/errors'
@@ -35,6 +37,14 @@ import { ValidationError, ExternalError } from '../domain/errors'
 // ── list ─────────────────────────────────────────────────────────────────
 export async function listInvoices(userId: string): Promise<InvoiceSummary[]> {
   return listInvoicesByUser(userId)
+}
+
+// ── get one (full row incl. extractedData) for the review/confirm screen ──
+export async function getInvoice(
+  invoiceId: string,
+  userId: string,
+): Promise<InvoiceRow | undefined> {
+  return getInvoiceById(invoiceId, userId)
 }
 
 // ── create ───────────────────────────────────────────────────────────────

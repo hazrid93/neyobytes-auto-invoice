@@ -155,6 +155,27 @@ export async function createDraftFromExtraction(input: {
   }
 }
 
+// ── get one: full invoice row (including extractedData) for the review screen ──
+// Unlike listInvoicesByUser (a summary projection that omits the extractedData
+// blob), this returns the whole row so the review/confirm screen can render the
+// model's extracted fields + the persisted line items.
+export async function getInvoiceById(
+  invoiceId: string,
+  userId: string,
+): Promise<InvoiceRow | undefined> {
+  const q = requireDb()
+  try {
+    const [row] = await q
+      .select()
+      .from(invoicesTable)
+      .where(and(eq(invoicesTable.id, invoiceId), eq(invoicesTable.userId, userId)))
+      .limit(1)
+    return row
+  } catch (e) {
+    throw classifyDbError(e, 'getInvoiceById')
+  }
+}
+
 // The full aggregate needed for submission: invoice + items + customer + supplier.
 export type InvoiceAggregate = {
   invoice: InvoiceRow

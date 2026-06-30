@@ -36,6 +36,28 @@ export interface InvoiceSummary {
   createdAt: string
 }
 
+/**
+ * Full invoice row — what GET /invoices/:id returns. Includes the model's
+ * `extractedData` blob (the ExtractedInvoice the OCR pipeline produced) plus
+ * the persisted columns the review screen falls back to.
+ */
+export interface InvoiceDetail {
+  id: string
+  invoiceNumber: string | null
+  issueDate: string | null
+  dueDate: string | null
+  currency: string
+  subtotal: number
+  taxTotal: number
+  total: number
+  status: string
+  kind: string
+  rawImagePath: string | null
+  extractedData: ExtractedInvoice | null
+  myinvoisDocId: string | null
+  createdAt: string
+}
+
 export interface InvoiceItem {
   description: string
   quantity: number
@@ -48,15 +70,34 @@ export interface ExtractedInvoice {
   issue_date: string | null
   due_date: string | null
   currency: string
+  seller: {
+    name: string | null
+    tin: string | null
+    phone: string | null
+    email: string | null
+    address: string | null
+  } | null
+  buyer: {
+    name: string | null
+    tin: string | null
+    email: string | null
+    address: string | null
+  } | null
   items: Array<{
     description: string
     quantity: number
     unit_price: number
     tax_rate: number
+    payment_method: string | null
+    bank_detail: string | null
   }>
   subtotal: number | null
   tax_total: number | null
   total: number | null
+  payment_method: string | null
+  bank_detail: string | null
+  qr_verification: string | null
+  notes: string | null
   confidence: number | null
 }
 

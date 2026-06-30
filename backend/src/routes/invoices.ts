@@ -20,6 +20,20 @@ invoices.get('/', requireAuth, async (c) => {
   return c.json({ invoices: rows })
 })
 
+// GET /invoices/:id — full invoice (including extractedData) for the review/
+// confirm screen. UUID-validated so GET /invoices/extract (if ever issued) is
+// a clean 400, not a 404 masquerading as "not found".
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+invoices.get('/:id', requireAuth, async (c) => {
+  const id = c.req.param('id')
+  if (!UUID.test(id)) {
+    return c.json({ error: 'invalid_input', message: 'invoice id must be a uuid' }, 400)
+  }
+  const invoice = await invoiceService.getInvoice(id, c.get('user').sub)
+  if (!invoice) return c.json({ error: 'not_found', message: 'invoice not found' }, 404)
+  return c.json({ invoice })
+})
+
 // POST /invoices — create a draft invoice (atomic: invoice + items in one tx).
 invoices.post('/', requireAuth, async (c) => {
   const parsed = z
