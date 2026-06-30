@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:stg": "APP_ENV=stg tsx watch src/index.ts",
     "start": "node --import tsx src/index.ts",
+    "start:stg": "APP_ENV=stg node --import tsx src/index.ts",
     "typecheck": "tsc --noEmit",
     "db:verify": "tsx scripts/verify-db.ts",
     "llm:verify": "tsx scripts/verify-llm.ts"

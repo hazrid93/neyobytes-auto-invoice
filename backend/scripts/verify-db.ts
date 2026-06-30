@@ -1,6 +1,6 @@
 // Verifies the Drizzle schema matches the migrated Supabase tables and that
 // the transaction path (invoice + items) works against the live pooler.
-// Run:  npm run db:verify   (uses .env.local / .env.prod via load-env)
+// Run:  npm run db:verify   (uses .env.local/.env.stg/.env.prod via load-env; APP_ENV picks which)
 import '../src/load-env'
 import { sql } from 'drizzle-orm'
 import { db } from '../src/db/client'
@@ -20,7 +20,7 @@ const bad = (m: string, e?: unknown) => {
 
 async function main() {
   if (!db) {
-    console.error('❌ DATABASE_URL not set — cannot verify. Set it in .env.local/.env.prod and retry.')
+    console.error('❌ DATABASE_URL not set — cannot verify. Set it in .env.local/.env.stg/.env.prod and retry.')
     process.exit(1)
   }
 

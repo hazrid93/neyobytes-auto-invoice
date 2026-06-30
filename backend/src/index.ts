@@ -1,4 +1,4 @@
-import './load-env' // load .env.local/.env.prod BEFORE env.ts reads process.env
+import './load-env' // load .env.local/.env.stg/.env.prod (selected by APP_ENV) BEFORE env.ts reads process.env
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
@@ -44,5 +44,9 @@ app.onError((err, c) => mapDomainError(c, err))
 
 const port = env.PORT
 serve({ fetch: app.fetch, port }, (info) => {
-  console.log(`🚀 auto-invoice backend listening on http://localhost:${info.port}`)
+  const appEnv =
+    process.env.APP_ENV ?? (process.env.NODE_ENV === 'production' ? 'prod' : 'local')
+  console.log(
+    `🚀 auto-invoice backend listening on http://localhost:${info.port}  [env=${appEnv} · myinvois=${env.MYINVOIS_ENV}]`,
+  )
 })

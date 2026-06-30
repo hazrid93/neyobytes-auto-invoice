@@ -62,7 +62,9 @@ doesn't guarantee prepared-statement/connection affinity; enabling it triggers
 cd backend
 npm install
 cp .env.example .env.local     # fill in secrets (or use the existing .env.local for dev)
-npm run dev                   # http://localhost:4000
+npm run dev                   # http://localhost:4001  (mock LHDN)
+# Staging — real LHDN sandbox (preprod) API, no mock:
+#   npm run dev:stg            # http://localhost:4002  (MYINVOIS_ENV=sandbox)
 ```
 
 Verify the DB connection + schema match against the live pooler:
@@ -88,13 +90,23 @@ npx expo start --web    # http://localhost:8081
 
 ## Environment files
 
+`APP_ENV` selects which file loads (`src/load-env.ts`); with it unset,
+`NODE_ENV=production` → `.env.prod`, else `.env.local`.
+
 | File | Committed | Purpose |
 |---|---|---|
-| `.env.example` | ✅ | template — copy to `.env.local` / `.env.prod` |
-| `.env.local` | ❌ gitignored | dev (loaded when `NODE_ENV !== production`) |
-| `.env.prod` | ❌ gitignored | production (loaded when `NODE_ENV=production`) |
+| `.env.example` | ✅ | template — copy to `.env.local` / `.env.stg` / `.env.prod` |
+| `.env.local` | ❌ gitignored | dev — `APP_ENV=local` (default); `MYINVOIS_ENV=mock` |
+| `.env.stg` | ❌ gitignored | staging — `APP_ENV=stg`; LHDN **sandbox** (preprod) API on `:4002` |
+| `.env.prod` | ❌ gitignored | production — `APP_ENV=prod`; real LHDN API on `:4001` |
+
+Run staging locally: `npm run dev:stg`. Both backends run side-by-side under
+pm2 (`auto-invoice-api` → 4001, `auto-invoice-api-stg` → 4002); see
+`ecosystem.config.cjs`.
 
 Generate a JWT secret: `openssl rand -hex 32`
+Generate the per-user-secret encryption key (required for sandbox/prod):
+`openssl rand -base64 48`
 
 ## Security note
 

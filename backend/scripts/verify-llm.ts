@@ -2,7 +2,7 @@
 //   1. a plain text completion (proves auth + endpoint + retry wrapper)
 //   2. a TRUE OCR extraction: invoice text rendered into PNG pixels only,
 //      the prompt carries NO field data — the model must read the image.
-// Run:  npm run llm:verify   (uses .env.local / .env.prod via load-env)
+// Run:  npm run llm:verify   (uses .env.local/.env.stg/.env.prod via load-env; APP_ENV picks which)
 import '../src/load-env'
 import { chat } from '../src/lib/llm'
 import { ExtractedInvoiceSchema, EXTRACTION_SYSTEM_PROMPT } from '../src/lib/extraction'

@@ -38,7 +38,7 @@ export const isDbReady = db !== null
  */
 export function requireDb(): DB {
   if (!db) {
-    throw new DbUnavailableError('DATABASE_URL is not set. Enable the Supabase pooler and set it in .env.local/.env.prod.')
+    throw new DbUnavailableError('DATABASE_URL is not set. Enable the Supabase pooler and set it in .env.local/.env.stg/.env.prod.')
   }
   return db
 }
