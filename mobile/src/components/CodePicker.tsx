@@ -60,6 +60,9 @@ export function CodePicker({
   const sheetY = useRef(new Animated.Value(SCREEN_H)).current
   useEffect(() => {
     if (pickerOpen) {
+      // Read fresh so a window resize between opens doesn't leave the sheet
+      // partially visible (sheet max 85% could exceed the stale module height).
+      sheetY.setValue(Dimensions.get('window').height)
       Animated.timing(sheetY, {
         toValue: 0, duration: 280, easing: Easing.out(Easing.cubic), useNativeDriver: true,
       }).start()
@@ -82,7 +85,7 @@ export function CodePicker({
   // close button, and back/overlay dismiss so the exit always animates.
   const closePicker = () => {
     Animated.timing(sheetY, {
-      toValue: SCREEN_H, duration: 200, easing: Easing.in(Easing.cubic), useNativeDriver: true,
+      toValue: Dimensions.get('window').height, duration: 200, easing: Easing.in(Easing.cubic), useNativeDriver: true,
     }).start(() => { setPickerOpen(false); setQuery('') })
   }
 
