@@ -1,7 +1,9 @@
 /**
- * Profile screen — edit the supplier's own profile (name, company name, TIN).
- * These fields are mandatory for LHDN submission, so the home tab gates submit
- * on this being filled. Glass form over the gradient.
+ * Profile screen — edit the supplier's own profile. Every field with an
+ * LHDN rule gets inline validation (min length, max chars, pattern) and the
+ * code fields (TIN shape, MSIC, State) use a searchable CodePicker with a
+ * help (?) popup explaining each value. These are mandatory for LHDN
+ * submission, so the home tab gates submit on this being filled.
  */
 import { useRef, useState } from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator, ScrollView, Platform } from 'react-native'
@@ -9,12 +11,21 @@ import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { updateProfile } from '../services/authService'
 import { useSession } from '../viewmodels/useSession'
+import { useValidatedForm } from '../viewmodels/useValidatedForm'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
 import { useAuthGate } from '../components/RequireAuth'
+import { ValidatedField, type ValidatedFieldHandle } from '../components/ValidatedField'
+import { CodePicker } from '../components/CodePicker'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { useSafeInsets } from '../theme/useSafeInsets'
+import {
+  FIELD_RULES, MSIC_CODES, STATE_CODES,
+} from '../data/codes'
+import {
+  compose, required, minLength, maxLength, email as emailV, phone as phoneV, tin as tinV,
+} from '../lib/validation'
 
 export default function ProfileScreen() {
   const { top } = useSafeInsets()
@@ -43,6 +54,21 @@ export default function ProfileScreen() {
   const headerRef = useRef<View>(null)
   const formRef = useRef<View>(null)
   const saveRef = useRef<View>(null)
+  // Validated field refs — the form runs validate() on each before save.
+  const fullNameRef = useRef<ValidatedFieldHandle>(null)
+  const companyNameRef = useRef<ValidatedFieldHandle>(null)
+  const tinRef = useRef<ValidatedFieldHandle>(null)
+  const brnRef = useRef<ValidatedFieldHandle>(null)
+  const sstRef = useRef<ValidatedFieldHandle>(null)
+  const ttxRef = useRef<ValidatedFieldHandle>(null)
+  const contactRef = useRef<ValidatedFieldHandle>(null)
+  const addr1Ref = useRef<ValidatedFieldHandle>(null)
+  const cityRef = useRef<ValidatedFieldHandle>(null)
+  const postalRef = useRef<ValidatedFieldHandle>(null)
+  const { formError, runValidation, clearFormError } = useValidatedForm([
+    fullNameRef, companyNameRef, tinRef, brnRef, sstRef, ttxRef,
+    contactRef, addr1Ref, cityRef, postalRef,
+  ])
   const tourSteps: TourStep[] = [
     {
       id: 'profile', targetRef: headerRef, badge: 'Profile',
@@ -67,8 +93,11 @@ export default function ProfileScreen() {
   if (gate) return gate
 
   const save = async () => {
+    // Re-run every field validator before submit; block save while any fails.
+    if (!runValidation()) return
     setSaving(true)
     setError(null)
+    clearFormError()
     setOk(false)
     try {
       await updateProfile({
@@ -96,6 +125,14 @@ export default function ProfileScreen() {
     }
   }
 
+  // When the user picks an MSIC code, auto-fill the business activity from
+  // the table (they can still edit it — the description is mandatory too).
+  const onMsicPicked = (code: string) => {
+    setMsicCode(code)
+    const hit = MSIC_CODES.find((m) => m.code === code)
+    if (hit && !msicDescription.trim()) setMsicDescription(hit.label)
+  }
+
   return (
     <GradientBackground>
       <ScrollView style={styles.scroll} contentContainerStyle={[pageContentStyle, { paddingTop: space.xxxl + top, paddingBottom: 150 }]}>
@@ -112,32 +149,59 @@ export default function ProfileScreen() {
 
         <View ref={formRef}>
         <GlassCard strong style={styles.form}>
-          <Field label="Full name" icon="person-outline" value={fullName} onChange={setFullName} />
-          <Field label="Company name" icon="business-outline" value={companyName} onChange={setCompanyName} placeholder="Neyobytes Solutions Sdn Bhd" />
-          <Field label="TIN" icon="ribbon-outline" value={tin} onChange={setTin} placeholder="C1234567899" autoCap="characters" />
+          <ValidatedField ref={fullNameRef} label="Full name" icon="person-outline" value={fullName} onChange={setFullName}
+            validate={compose(required('Full name'), minLength('Full name', 2), maxLength('Full name', 100))} placeholder="Your full name" autoCap="words" />
+          <ValidatedField ref={companyNameRef} label="Company name" icon="business-outline" value={companyName} onChange={setCompanyName}
+            validate={compose(required('Company name'), minLength('Company name', 3), maxLength('Company name', 300))}
+            placeholder="Neyobytes Solutions Sdn Bhd" autoCap="words" hint="Mandatory for LHDN submission." />
+          <ValidatedField ref={tinRef} label="TIN" icon="ribbon-outline" value={tin} onChange={setTin}
+            validate={tinV()} placeholder="C1234567890" autoCap="characters"
+            hint="Your LHDN Tax Identification Number — a letter prefix + digits." />
         </GlassCard>
       </View>
 
         <Text style={styles.sectionTitle}>Supplier identity (for LHDN e-invoice)</Text>
         <Text style={styles.subtitle}>Required by the MyInvois Core Fields Validator. Leave blank/NA where not applicable.</Text>
         <GlassCard strong style={styles.form}>
-          <Field label="BRN / SSM (Business Reg. No.)" icon="document-text-outline" value={brn} onChange={setBrn} placeholder="202001234567" autoCap="characters" />
-          <Field label="SST number (NA if none)" icon="receipt-outline" value={sstNumber} onChange={setSstNumber} placeholder="A01-2345-67891012 or NA" autoCap="characters" />
-          <Field label="Tourism Tax / TTX (NA if none)" icon="boat-outline" value={ttxNumber} onChange={setTtxNumber} placeholder="123-4567-89012345 or NA" autoCap="characters" />
-          <Field label="MSIC code (5-digit)" icon="pricetag-outline" value={msicCode} onChange={setMsicCode} placeholder="46510" autoCap="characters" />
-          <Field label="Business activity" icon="briefcase-outline" value={msicDescription} onChange={setMsicDescription} placeholder="Wholesale of computer hardware" />
-          <Field label="Contact number (E.164)" icon="call-outline" value={contactNumber} onChange={setContactNumber} placeholder="+60123456789" keyboardType="phone-pad" />
+          <ValidatedField ref={brnRef} label="BRN / SSM (Business Reg. No.)" icon="document-text-outline" value={brn} onChange={setBrn}
+            validate={compose(required('BRN'), minLength('BRN', 5), maxLength('BRN', FIELD_RULES.brn.max))}
+            placeholder="202001234567" autoCap="characters" hint="SSM business registration number." />
+          <ValidatedField ref={sstRef} label="SST number" icon="receipt-outline" value={sstNumber} onChange={setSstNumber}
+            validate={compose(maxLength('SST number', FIELD_RULES.sst.max), (v) => v.trim().length === 0 || v.trim().toUpperCase() === 'NA' || /^[A-Z]{2,4}-\d{4,}-\d{4,}$/i.test(v) ? null : 'Use the format A01-2345-67891012, or NA if not SST-registered.')}
+            placeholder="A01-2345-67891012 or NA" autoCap="characters" hint="Enter NA if you are not SST-registered." />
+          <ValidatedField ref={ttxRef} label="Tourism Tax / TTX" icon="boat-outline" value={ttxNumber} onChange={setTtxNumber}
+            validate={compose(maxLength('TTX', FIELD_RULES.ttx.max), (v) => v.trim().length === 0 || v.trim().toUpperCase() === 'NA' || /^\d{3}-\d{4}-\d{8}$/i.test(v) ? null : 'Use the format 123-4567-89012345, or NA if not registered.')}
+            placeholder="123-4567-89012345 or NA" autoCap="characters" hint="Enter NA if you are not tourism-tax registered." />
+          <CodePicker label="MSIC code (business activity)" icon="pricetag-outline" options={MSIC_CODES} value={msicCode} onChange={onMsicPicked}
+            placeholder="Search 1,175 MSIC codes…" required />
+          <ValidatedField label="Business activity" icon="briefcase-outline" value={msicDescription} onChange={setMsicDescription}
+            validate={compose(required('Business activity'), maxLength('Business activity', 300))}
+            placeholder="Wholesale of computer hardware" hint="Auto-filled from the MSIC code; edit if needed." />
+          <ValidatedField ref={contactRef} label="Contact number" icon="call-outline" value={contactNumber} onChange={setContactNumber}
+            validate={compose(required('Contact number'), phoneV())} placeholder="+60123456789" keyboardType="phone-pad"
+            hint="E.164 format, e.g. +60123456789." />
         </GlassCard>
 
         <Text style={styles.sectionTitle}>Business address</Text>
         <GlassCard strong style={styles.form}>
-          <Field label="Address line 1" icon="location-outline" value={addressLine1} onChange={setAddressLine1} placeholder="Lot 66" />
-          <Field label="Address line 2 (optional)" icon="location-outline" value={addressLine2} onChange={setAddressLine2} placeholder="Bangunan Merdeka" />
-          <Field label="City" icon="business-outline" value={city} onChange={setCity} placeholder="Kuala Lumpur" />
-          <Field label="Postal zone" icon="mail-outline" value={postalZone} onChange={setPostalZone} placeholder="50480" keyboardType="numeric" />
-          <Field label="State code (01–17)" icon="map-outline" value={stateCode} onChange={setStateCode} placeholder="10" keyboardType="numeric" />
+          <ValidatedField ref={addr1Ref} label="Address line 1" icon="location-outline" value={addressLine1} onChange={setAddressLine1}
+            validate={compose(required('Address line 1'), maxLength('Address line 1', FIELD_RULES.addressLine.max))} placeholder="Lot 66" />
+          <ValidatedField label="Address line 2 (optional)" icon="location-outline" value={addressLine2} onChange={setAddressLine2}
+            validate={maxLength('Address line 2', FIELD_RULES.addressLine.max)} placeholder="Bangunan Merdeka" />
+          <ValidatedField ref={cityRef} label="City" icon="business-outline" value={city} onChange={setCity}
+            validate={compose(required('City'), maxLength('City', FIELD_RULES.city.max))} placeholder="Kuala Lumpur" />
+          <ValidatedField ref={postalRef} label="Postal zone" icon="mail-outline" value={postalZone} onChange={setPostalZone}
+            validate={maxLength('Postal zone', FIELD_RULES.postalZone.max)} placeholder="50480" keyboardType="numeric" />
+          <CodePicker label="State" icon="map-outline" options={STATE_CODES} value={stateCode} onChange={setStateCode}
+            placeholder="Select a Malaysian state…" required />
         </GlassCard>
 
+        {formError ? (
+          <View style={styles.errorRow}>
+            <Ionicons name="alert-circle" size={15} color={colors.danger} />
+            <Text style={styles.error}>{formError}</Text>
+          </View>
+        ) : null}
         {error ? (
           <View style={styles.errorRow}>
             <Ionicons name="alert-circle" size={15} color={colors.danger} />
@@ -161,28 +225,6 @@ export default function ProfileScreen() {
         </Pressable>
       </ScrollView>
     </GradientBackground>
-  )
-}
-
-function Field({
-  label, icon, value, onChange, placeholder, autoCap, keyboardType,
-}: { label: string; icon: keyof typeof Ionicons.glyphMap; value: string; onChange: (v: string) => void; placeholder?: string; autoCap?: 'characters' | 'none' | 'words'; keyboardType?: 'phone-pad' | 'numeric' | 'default' }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputWrap} {...(Platform.OS === 'web' ? { className: 'field-input' } : {})}>
-        <Ionicons name={icon} size={18} color={colors.slate} style={styles.fieldIcon} />
-        <TextInput
-          style={styles.input}
-          value={value}
-          onChangeText={onChange}
-          placeholder={placeholder}
-          placeholderTextColor={colors.slate}
-          autoCapitalize={autoCap ?? 'none'}
-          keyboardType={keyboardType ?? 'default'}
-        />
-      </View>
-    </View>
   )
 }
 

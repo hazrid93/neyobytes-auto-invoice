@@ -72,6 +72,10 @@ export default function SubmitScreen() {
   }, [id, vm.lastResult?.accepted])
 
   const supplierReady = Boolean(session.profile?.tin && session.profile?.companyName)
+  const missingFields = [
+    !session.profile?.companyName && 'company name',
+    !session.profile?.tin && 'TIN',
+  ].filter(Boolean) as string[]
   // Auth gate — an anonymous user hitting /submit directly goes to /login.
   if (gate) return gate
   const last = vm.lastResult
@@ -100,7 +104,7 @@ export default function SubmitScreen() {
           <GlassCard style={styles.warn}>
             <Ionicons name="warning-outline" size={20} color={colors.amber} />
             <Text style={styles.warnText}>
-              Your profile needs a TIN & company name before you can submit.
+              Your profile is missing {missingFields.join(' and ')} — both are required to submit to LHDN.
             </Text>
             <Pressable onPress={() => router.push('/profile')}>
               <Text style={styles.warnLink}>Edit profile →</Text>

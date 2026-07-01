@@ -4,15 +4,18 @@
  * session flips to 'authenticated' and the auth gate / this effect routes to
  * the home tab.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { View, Text, TextInput, Pressable, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native'
 import { Link, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useAsync } from '../viewmodels/useAsync'
 import { useSession } from '../viewmodels/useSession'
+import { useValidatedForm } from '../viewmodels/useValidatedForm'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
+import { ValidatedField, type ValidatedFieldHandle } from '../components/ValidatedField'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
+import { compose, required, minLength, email as emailV } from '../lib/validation'
 
 export default function LoginScreen() {
   const session = useSession()
@@ -22,6 +25,11 @@ export default function LoginScreen() {
   const [name, setName] = useState('')
   const async = useAsync<void>()
 
+  const emailRef = useRef<ValidatedFieldHandle>(null)
+  const passwordRef = useRef<ValidatedFieldHandle>(null)
+  const nameRef = useRef<ValidatedFieldHandle>(null)
+  const { formError, runValidation, clearFormError } = useValidatedForm([emailRef, passwordRef, nameRef])
+
   // Sign-in happens while the user is on /login, so the auth gate at / never
   // re-runs — navigate to the home tab ourselves on success.
   useEffect(() => {
@@ -29,6 +37,9 @@ export default function LoginScreen() {
   }, [session.status])
 
   const submit = async () => {
+    // Validate before sending; block submit while any field fails.
+    if (!runValidation()) return
+    clearFormError()
     if (mode === 'login') await session.login(email, password)
     else await session.register(email, password, name)
   }
@@ -57,11 +68,21 @@ export default function LoginScreen() {
           </Text>
 
           {mode === 'register' && (
-            <Field icon="person-outline" placeholder="Full name" value={name} onChange={setName} cap="words" />
+            <ValidatedField ref={nameRef} label="Full name" value={name} onChange={setName}
+              validate={compose(required('Full name'), minLength('Full name', 2))}
+              placeholder="Full name" autoCap="words" />
           )}
-          <Field icon="mail-outline" placeholder="Email" value={email} onChange={setEmail} keyboardType="email-address" />
-          <Field icon="lock-closed-outline" placeholder="Password" value={password} onChange={setPassword} secure />
+          <ValidatedField ref={emailRef} label="Email" value={email} onChange={setEmail}
+            validate={compose(required('Email'), emailV())} placeholder="you@company.com" keyboardType="email-address" />
+          <ValidatedField ref={passwordRef} label="Password" value={password} onChange={setPassword}
+            validate={compose(required('Password'), minLength('Password', 8))} placeholder="At least 8 characters" secure />
 
+          {formError ? (
+            <View style={styles.errorRow}>
+              <Ionicons name="alert-circle" size={15} color={colors.danger} />
+              <Text style={styles.error}>{formError}</Text>
+            </View>
+          ) : null}
           {error ? (
             <View style={styles.errorRow}>
               <Ionicons name="alert-circle" size={15} color={colors.danger} />
@@ -92,34 +113,6 @@ export default function LoginScreen() {
         </GlassCard>
       </KeyboardAvoidingView>
     </GradientBackground>
-  )
-}
-
-function Field({
-  icon, placeholder, value, onChange, keyboardType, secure, cap,
-}: {
-  icon: keyof typeof Ionicons.glyphMap
-  placeholder: string
-  value: string
-  onChange: (v: string) => void
-  keyboardType?: 'email-address' | 'default'
-  secure?: boolean
-  cap?: 'words' | 'none'
-}) {
-  return (
-    <View style={styles.fieldWrap} {...(Platform.OS === 'web' ? { className: 'field-input' } : {})}>
-      <Ionicons name={icon} size={18} color={colors.slate} style={styles.fieldIcon} />
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor={colors.slate}
-        value={value}
-        onChangeText={onChange}
-        autoCapitalize={cap ?? 'none'}
-        keyboardType={keyboardType ?? 'default'}
-        secureTextEntry={secure}
-      />
-    </View>
   )
 }
 

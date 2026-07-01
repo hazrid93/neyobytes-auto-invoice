@@ -18,14 +18,17 @@ import { router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import * as myinvoisService from '../services/myinvoisService'
 import { useSession } from '../viewmodels/useSession'
+import { useValidatedForm } from '../viewmodels/useValidatedForm'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { useAuthGate } from '../components/RequireAuth'
+import { ValidatedField, type ValidatedFieldHandle } from '../components/ValidatedField'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { useSafeInsets } from '../theme/useSafeInsets'
 import { apiErrorMessage } from '../http/client'
+import { compose, required, minLength, maxLength } from '../lib/validation'
 
 const MYTAX_URL = 'https://mytax.hasil.gov.my/'
 const MYINVOIS_PORTAL_URL = 'https://myinvois.hasil.gov.my/'
@@ -70,9 +73,15 @@ export default function ConnectMyInvoisScreen() {
   if (gate) return gate
 
   const connected = Boolean(p?.myinvoisClientId)
+  const clientIdRef = useRef<ValidatedFieldHandle>(null)
+  const secretRef = useRef<ValidatedFieldHandle>(null)
+  const { formError, runValidation, clearFormError } = useValidatedForm([clientIdRef, secretRef])
   const canSave = clientId.trim().length > 0 && clientSecret.length > 0 && !saving
 
   const save = async () => {
+    // Validate both halves before sending; block while invalid.
+    if (!runValidation()) return
+    clearFormError()
     setSaving(true)
     setError(null)
     setOk(false)
@@ -183,20 +192,17 @@ export default function ConnectMyInvoisScreen() {
 
         <View ref={formRef}>
         <GlassCard strong style={styles.form}>
-          <Field
-            label="Client ID"
-            icon="key-outline"
-            value={clientId}
-            onChange={setClientId}
-            placeholder="e.g. 9a1f...ERP client id"
-            autoCap="none"
-          />
-          <SecretField
-            value={clientSecret}
-            onChange={setClientSecret}
-            show={showSecret}
-            onToggle={() => setShowSecret((s) => !s)}
-          />
+          <ValidatedField ref={clientIdRef} label="Client ID" icon="key-outline" value={clientId} onChange={setClientId}
+            validate={compose(required('Client ID'), minLength('Client ID', 6), maxLength('Client ID', 200))}
+            placeholder="e.g. 9a1f...ERP client id" autoCap="none" hint="From the MyInvois portal → your profile → Generate ERP." />
+          <ValidatedField ref={secretRef} label="Client Secret" icon="lock-closed-outline" value={clientSecret} onChange={setClientSecret}
+            validate={compose(required('Client secret'), minLength('Client secret', 8), maxLength('Client secret', 400))}
+            placeholder="Paste your ERP client secret" secure={!showSecret} hint="Encrypted at rest; only shown to you once on the portal."
+            trailing={
+              <Pressable onPress={() => setShowSecret((s) => !s)} hitSlop={10} style={{ padding: 4 }}>
+                <Ionicons name={showSecret ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.slate} />
+              </Pressable>
+            } />
         </GlassCard>
       </View>
 
@@ -204,6 +210,12 @@ export default function ConnectMyInvoisScreen() {
           Re-connect with a fresh secret any time to rotate an expiring key.
         </Text>
 
+        {formError ? (
+          <View style={styles.errorRow}>
+            <Ionicons name="alert-circle" size={15} color={colors.danger} />
+            <Text style={styles.error}>{formError}</Text>
+          </View>
+        ) : null}
         {error ? (
           <View style={styles.errorRow}>
             <Ionicons name="alert-circle" size={15} color={colors.danger} />
@@ -260,54 +272,6 @@ function maskId(id: string | null | undefined): string {
   if (!id) return '—'
   if (id.length <= 8) return id
   return `${id.slice(0, 4)}…${id.slice(-4)}`
-}
-
-function Field({
-  label, icon, value, onChange, placeholder, autoCap,
-}: { label: string; icon: keyof typeof Ionicons.glyphMap; value: string; onChange: (v: string) => void; placeholder?: string; autoCap?: 'characters' | 'none' | 'words' }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputWrap} {...(Platform.OS === 'web' ? { className: 'field-input' } : {})}>
-        <Ionicons name={icon} size={18} color={colors.slate} style={styles.fieldIcon} />
-        <TextInput
-          style={styles.input}
-          value={value}
-          onChangeText={onChange}
-          placeholder={placeholder}
-          placeholderTextColor={colors.slate}
-          autoCapitalize={autoCap ?? 'none'}
-          autoCorrect={false}
-        />
-      </View>
-    </View>
-  )
-}
-
-function SecretField({
-  value, onChange, show, onToggle,
-}: { value: string; onChange: (v: string) => void; show: boolean; onToggle: () => void }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>Client Secret</Text>
-      <View style={styles.inputWrap} {...(Platform.OS === 'web' ? { className: 'field-input' } : {})}>
-        <Ionicons name="lock-closed-outline" size={18} color={colors.slate} style={styles.fieldIcon} />
-        <TextInput
-          style={styles.input}
-          value={value}
-          onChangeText={onChange}
-          placeholder="Paste your ERP client secret"
-          placeholderTextColor={colors.slate}
-          secureTextEntry={!show}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <Pressable onPress={onToggle} hitSlop={10} style={styles.eyeBtn}>
-          <Ionicons name={show ? 'eye-off-outline' : 'eye-outline'} size={18} color={colors.slate} />
-        </Pressable>
-      </View>
-    </View>
-  )
 }
 
 const styles = StyleSheet.create({

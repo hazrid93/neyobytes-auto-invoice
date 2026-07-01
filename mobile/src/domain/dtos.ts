@@ -115,6 +115,13 @@ export interface ExtractedInvoice {
     tax_rate: number
     payment_method: string | null
     bank_detail: string | null
+    // LHDN line-item code fields (UBL Item/InvoicedQuantity/TaxCategory).
+    // Optional — present when the user set them in the review editor; the UBL
+    // builder falls back to '06'/'C62'/'000' when absent.
+    tax_type_code?: string | null
+    unit_code?: string | null
+    classification?: string | null
+    origin_country?: string | null
   }>
   subtotal: number | null
   tax_total: number | null

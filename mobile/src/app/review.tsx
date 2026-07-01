@@ -18,12 +18,17 @@ import { getInvoice, updateInvoice, deleteInvoice } from '../services/invoiceSer
 import { ConfirmDialog, type ConfirmOptions } from '../components/ConfirmDialog'
 import { TourButton, type TourStep } from '../components/TourButton'
 import { useAuthGate } from '../components/RequireAuth'
+import { CodePicker, codeLabel } from '../components/CodePicker'
+import { ValidatedField, type ValidatedFieldHandle } from '../components/ValidatedField'
+import { useValidatedForm } from '../viewmodels/useValidatedForm'
 import { apiErrorMessage, type ApiError } from '../http/client'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { useSafeInsets } from '../theme/useSafeInsets'
 import type { ExtractedInvoice, InvoiceDetail } from '../domain/dtos'
+import { E_INVOICE_TYPES, PAYMENT_METHODS, CURRENCIES, TAX_TYPES, CLASSIFICATION_CODES, UNIT_TYPES, COUNTRIES, FIELD_RULES } from '../data/codes'
+import { compose, required, minLength, maxLength, isoDate, decimal, positiveNumber } from '../lib/validation'
 
 export default function ReviewScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -38,6 +43,18 @@ export default function ReviewScreen() {
   const [deleting, setDeleting] = useState(false)
   const [confirm, setConfirm] = useState<ConfirmOptions | null>(null)
   const gate = useAuthGate()
+
+  // Edit-form field refs — validated before save. Created up here so they're
+  // stable across re-renders while editing.
+  const invNumRef = useRef<ValidatedFieldHandle>(null)
+  const issueDateRef = useRef<ValidatedFieldHandle>(null)
+  const sellerNameRef = useRef<ValidatedFieldHandle>(null)
+  const sellerTinRef = useRef<ValidatedFieldHandle>(null)
+  const buyerNameRef = useRef<ValidatedFieldHandle>(null)
+  const buyerTinRef = useRef<ValidatedFieldHandle>(null)
+  const { formError, runValidation, clearFormError } = useValidatedForm([
+    invNumRef, issueDateRef, sellerNameRef, sellerTinRef, buyerNameRef, buyerTinRef,
+  ])
 
   const headerRef = useRef<View>(null)
   const actionsRef = useRef<View>(null)
@@ -87,6 +104,14 @@ export default function ReviewScreen() {
 
   const save = async () => {
     if (!draft || !form) return
+    // Re-validate every edit field before persisting (shared hook — same as
+    // login/profile/connect). Also guard the required invoice-type picker.
+    if (!form.invoice_type || !runValidation()) {
+      clearFormError() // runValidation sets its own message; reset first if type missing
+      if (!form.invoice_type) return
+      return
+    }
+    clearFormError()
     setSaving(true)
     try {
       const ex = fromForm(form)
@@ -206,7 +231,9 @@ export default function ReviewScreen() {
         )}
 
         {editing && form ? (
-          <EditView form={form} setForm={setForm} cur={cur} />
+          <EditView form={form} setForm={setForm} cur={cur}
+            refs={{ invNumRef, issueDateRef, sellerNameRef, sellerTinRef, buyerNameRef, buyerTinRef }}
+            formError={formError} />
         ) : (
           <ReadView
             seller={seller}
@@ -312,7 +339,9 @@ function ReadView({
         <Row label="Issue date" value={ex?.issue_date ?? draft.issueDate ?? '—'} />
         <Row label="Due date" value={ex?.due_date ?? draft.dueDate ?? '—'} />
         <Row label="Currency" value={draft.currency || ex?.currency || 'MYR'} />
-        {ex?.payment_method ? <Row label="Payment" value={ex.payment_method} /> : null}
+        <Row label="e-Invoice type" value={draft.invoiceType ? `${codeLabel(E_INVOICE_TYPES, draft.invoiceType)} (${draft.invoiceType})` : '—'} />
+        <Row label="Payment means" value={draft.paymentMeansCode ? `${codeLabel(PAYMENT_METHODS, draft.paymentMeansCode)} (${draft.paymentMeansCode})` : (ex?.payment_method ?? '—')} />
+        {draft.paymentAccount ? <Row label="Bank account" value={draft.paymentAccount} /> : null}
       </Section>
 
       <Section title="Line items">
@@ -336,40 +365,63 @@ function ReadView({
   )
 }
 
-// ── Editable view ─────────────────────────────────────────────────────────
-function EditView({ form, setForm, cur }: { form: EditForm; setForm: (f: EditForm) => void; cur: string }) {
+// ── Editable view ────────────────────────────────────────────────
+// Validation: the required scalar fields (invoice #, issue date, seller &
+// buyer name+TIN) use ValidatedField with refs the parent validates on save;
+// the code fields (currency, e-invoice type, payment means, line tax type &
+// unit, classification) use CodePicker so only valid LHDN values can be set.
+interface EditRefs {
+  invNumRef: React.Ref<ValidatedFieldHandle>
+  issueDateRef: React.Ref<ValidatedFieldHandle>
+  sellerNameRef: React.Ref<ValidatedFieldHandle>
+  sellerTinRef: React.Ref<ValidatedFieldHandle>
+  buyerNameRef: React.Ref<ValidatedFieldHandle>
+  buyerTinRef: React.Ref<ValidatedFieldHandle>
+}
+function EditView({ form, setForm, cur, refs, formError }: {
+  form: EditForm
+  setForm: (f: EditForm) => void
+  cur: string
+  refs: EditRefs
+  formError: string | null
+}) {
   const set = <K extends keyof EditForm>(k: K, v: EditForm[K]) => setForm({ ...form, [k]: v })
   const setItem = (i: number, patch: Partial<EditItem>) =>
     setForm({ ...form, items: form.items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) })
   const addItem = () =>
-    setForm({ ...form, items: [...form.items, { description: '', quantity: '1', unit_price: '0', tax_rate: '0' }] })
+    setForm({ ...form, items: [...form.items, { description: '', quantity: '1', unit_price: '0', tax_rate: '0', tax_type_code: '', unit_code: '', classification: '', origin_country: '' }] })
   const removeItem = (i: number) => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) })
 
   return (
     <>
       <Section title="Seller">
-        <EditField label="Name" value={form.seller_name} onChange={(v) => set('seller_name', v)} />
-        <EditField label="TIN" value={form.seller_tin} onChange={(v) => set('seller_tin', v)} autoCap="characters" />
+        <ValidatedField ref={refs.sellerNameRef} label="Name" value={form.seller_name} onChange={(v) => set('seller_name', v)}
+          validate={compose(required('Seller name'), maxLength('Seller name', 300))} />
+        <ValidatedField ref={refs.sellerTinRef} label="TIN" value={form.seller_tin} onChange={(v) => set('seller_tin', v)}
+          validate={compose(required('Seller TIN'), maxLength('TIN', 14))} autoCap="characters" />
         <EditField label="Phone" value={form.seller_phone} onChange={(v) => set('seller_phone', v)} keyboardType="phone-pad" />
         <EditField label="Email" value={form.seller_email} onChange={(v) => set('seller_email', v)} keyboardType="email-address" />
         <EditField label="Address" value={form.seller_address} onChange={(v) => set('seller_address', v)} multiline />
       </Section>
 
       <Section title="Buyer">
-        <EditField label="Name" value={form.buyer_name} onChange={(v) => set('buyer_name', v)} />
-        <EditField label="TIN" value={form.buyer_tin} onChange={(v) => set('buyer_tin', v)} autoCap="characters" />
+        <ValidatedField ref={refs.buyerNameRef} label="Name" value={form.buyer_name} onChange={(v) => set('buyer_name', v)}
+          validate={compose(required('Buyer name'), maxLength('Buyer name', 300))} />
+        <ValidatedField ref={refs.buyerTinRef} label="TIN" value={form.buyer_tin} onChange={(v) => set('buyer_tin', v)}
+          validate={compose(required('Buyer TIN'), maxLength('TIN', 14))} autoCap="characters" />
         <EditField label="Email" value={form.buyer_email} onChange={(v) => set('buyer_email', v)} keyboardType="email-address" />
         <EditField label="Address" value={form.buyer_address} onChange={(v) => set('buyer_address', v)} multiline />
       </Section>
 
       <Section title="Invoice details">
-        <EditField label="Invoice #" value={form.invoice_number} onChange={(v) => set('invoice_number', v)} />
-        <EditField label="Issue date" value={form.issue_date} onChange={(v) => set('issue_date', v)} placeholder="YYYY-MM-DD" />
+        <ValidatedField ref={refs.invNumRef} label="Invoice #" value={form.invoice_number} onChange={(v) => set('invoice_number', v)}
+          validate={compose(required('Invoice number'), minLength('Invoice number', 1), maxLength('Invoice number', FIELD_RULES.invoiceNumber.max))} />
+        <ValidatedField ref={refs.issueDateRef} label="Issue date" value={form.issue_date} onChange={(v) => set('issue_date', v)}
+          validate={compose(required('Issue date'), isoDate())} placeholder="YYYY-MM-DD" />
         <EditField label="Due date" value={form.due_date} onChange={(v) => set('due_date', v)} placeholder="YYYY-MM-DD" />
-        <EditField label="Currency" value={form.currency} onChange={(v) => set('currency', v)} />
-        <EditField label="Payment" value={form.payment_method} onChange={(v) => set('payment_method', v)} />
-        <EditField label="e-Invoice type (01 Inv, 02 CN, 03 DN, 04 RN)" value={form.invoice_type} onChange={(v) => set('invoice_type', v)} placeholder="01" autoCap="characters" />
-        <EditField label="Payment means code (01 Cash … 08 Others)" value={form.payment_means_code} onChange={(v) => set('payment_means_code', v)} placeholder="03" autoCap="characters" />
+        <CodePicker label="Currency" icon="cash-outline" options={CURRENCIES} value={form.currency} onChange={(v) => set('currency', v)} required />
+        <CodePicker label="e-Invoice type" icon="document-text-outline" options={E_INVOICE_TYPES} value={form.invoice_type} onChange={(v) => set('invoice_type', v)} required showCodeInList />
+        <CodePicker label="Payment means" icon="card-outline" options={PAYMENT_METHODS} value={form.payment_means_code} onChange={(v) => set('payment_means_code', v)} />
         <EditField label="Supplier bank account no" value={form.payment_account} onChange={(v) => set('payment_account', v)} placeholder="1234567890123" autoCap="characters" />
       </Section>
 
@@ -394,6 +446,16 @@ function EditView({ form, setForm, cur }: { form: EditForm; setForm: (f: EditFor
                 <EditField label="Tax %" value={it.tax_rate} onChange={(v) => setItem(i, { tax_rate: v })} keyboardType="numeric" />
               </View>
             </View>
+            <CodePicker label="Tax type" icon="pricetag-outline" options={TAX_TYPES} value={it.tax_type_code} onChange={(v) => setItem(i, { tax_type_code: v })} />
+            <View style={styles.itemEditRow}>
+              <View style={{ flex: 1 }}>
+                <CodePicker label="Unit" options={UNIT_TYPES} value={it.unit_code} onChange={(v) => setItem(i, { unit_code: v })} />
+              </View>
+              <View style={{ flex: 1.4, marginLeft: space.sm }}>
+                <CodePicker label="Classification" options={CLASSIFICATION_CODES} value={it.classification} onChange={(v) => setItem(i, { classification: v })} />
+              </View>
+            </View>
+            <CodePicker label="Country of origin" icon="globe-outline" options={COUNTRIES} value={it.origin_country} onChange={(v) => setItem(i, { origin_country: v })} />
           </View>
         ))}
         <Pressable style={styles.addItem} onPress={addItem}>
@@ -407,6 +469,13 @@ function EditView({ form, setForm, cur }: { form: EditForm; setForm: (f: EditFor
         <EditField label="Tax" value={form.tax_total} onChange={(v) => set('tax_total', v)} keyboardType="numeric" prefix={cur} />
         <EditField label="Total" value={form.total} onChange={(v) => set('total', v)} keyboardType="numeric" prefix={cur} />
       </Section>
+
+      {formError ? (
+        <View style={styles.formErrorRow}>
+          <Ionicons name="alert-circle" size={15} color={colors.danger} />
+          <Text style={styles.formError}>{formError}</Text>
+        </View>
+      ) : null}
     </>
   )
 }
@@ -417,6 +486,10 @@ interface EditItem {
   quantity: string
   unit_price: string
   tax_rate: string
+  tax_type_code: string
+  unit_code: string
+  classification: string
+  origin_country: string
 }
 interface EditForm {
   invoice_number: string
@@ -472,6 +545,10 @@ function toForm(d: InvoiceDetail | null): EditForm {
       quantity: String(it.quantity ?? 1),
       unit_price: String(it.unit_price ?? 0),
       tax_rate: String(it.tax_rate ?? 0),
+      tax_type_code: it.tax_type_code ?? '',
+      unit_code: it.unit_code ?? '',
+      classification: it.classification ?? '',
+      origin_country: it.origin_country ?? '',
     })),
   }
 }
@@ -507,6 +584,10 @@ function fromForm(f: EditForm): ExtractedInvoice {
       tax_rate: num(it.tax_rate),
       payment_method: null,
       bank_detail: null,
+      tax_type_code: it.tax_type_code || null,
+      unit_code: it.unit_code || null,
+      classification: it.classification || null,
+      origin_country: it.origin_country || null,
     })),
     subtotal: f.subtotal.trim() ? num(f.subtotal) : null,
     tax_total: f.tax_total.trim() ? num(f.tax_total) : null,
@@ -620,6 +701,9 @@ const styles = StyleSheet.create({
   itemEditRow: { flexDirection: 'row', alignItems: 'flex-end' },
   addItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: space.md, marginTop: space.xs },
   addItemText: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.azure },
+  // ── edit form error ──
+  formErrorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.md },
+  formError: { flex: 1, fontFamily: font.body, fontSize: 13, color: colors.danger },
   // ── actions ──
   actions: { marginTop: space.lg, gap: space.sm },
   primary: {

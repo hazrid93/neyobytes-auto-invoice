@@ -1,0 +1,8654 @@
+[
+  {
+    "Code": "10",
+    "Description": "group"
+  },
+  {
+    "Code": "11",
+    "Description": "outfit"
+  },
+  {
+    "Code": "13",
+    "Description": "ration"
+  },
+  {
+    "Code": "14",
+    "Description": "shot"
+  },
+  {
+    "Code": "15",
+    "Description": "stick, military"
+  },
+  {
+    "Code": "1I",
+    "Description": "fixed rate"
+  },
+  {
+    "Code": "20",
+    "Description": "twenty foot container"
+  },
+  {
+    "Code": "21",
+    "Description": "forty foot container"
+  },
+  {
+    "Code": "22",
+    "Description": "decilitre per gram"
+  },
+  {
+    "Code": "23",
+    "Description": "gram per cubic centimetre"
+  },
+  {
+    "Code": "24",
+    "Description": "theoretical pound"
+  },
+  {
+    "Code": "25",
+    "Description": "gram per square centimetre"
+  },
+  {
+    "Code": "27",
+    "Description": "theoretical ton"
+  },
+  {
+    "Code": "28",
+    "Description": "kilogram per square metre"
+  },
+  {
+    "Code": "2A",
+    "Description": "radian per second"
+  },
+  {
+    "Code": "2B",
+    "Description": "radian per second squared"
+  },
+  {
+    "Code": "2C",
+    "Description": "roentgen"
+  },
+  {
+    "Code": "2G",
+    "Description": "volt AC"
+  },
+  {
+    "Code": "2H",
+    "Description": "volt DC"
+  },
+  {
+    "Code": "2I",
+    "Description": "British thermal unit (international table) per hour"
+  },
+  {
+    "Code": "2J",
+    "Description": "cubic centimetre per second"
+  },
+  {
+    "Code": "2K",
+    "Description": "cubic foot per hour"
+  },
+  {
+    "Code": "2L",
+    "Description": "cubic foot per minute"
+  },
+  {
+    "Code": "2M",
+    "Description": "centimetre per second"
+  },
+  {
+    "Code": "2N",
+    "Description": "decibel"
+  },
+  {
+    "Code": "2P",
+    "Description": "kilobyte"
+  },
+  {
+    "Code": "2Q",
+    "Description": "kilobecquerel"
+  },
+  {
+    "Code": "2R",
+    "Description": "kilocurie"
+  },
+  {
+    "Code": "2U",
+    "Description": "megagram"
+  },
+  {
+    "Code": "2X",
+    "Description": "metre per minute"
+  },
+  {
+    "Code": "2Y",
+    "Description": "milliroentgen"
+  },
+  {
+    "Code": "2Z",
+    "Description": "millivolt"
+  },
+  {
+    "Code": "33",
+    "Description": "kilopascal square metre per gram"
+  },
+  {
+    "Code": "34",
+    "Description": "kilopascal per millimetre"
+  },
+  {
+    "Code": "35",
+    "Description": "millilitre per square centimetre second"
+  },
+  {
+    "Code": "37",
+    "Description": "ounce per square foot"
+  },
+  {
+    "Code": "38",
+    "Description": "ounce per square foot per 0,01inch"
+  },
+  {
+    "Code": "3B",
+    "Description": "megajoule"
+  },
+  {
+    "Code": "3C",
+    "Description": "manmonth"
+  },
+  {
+    "Code": "40",
+    "Description": "millilitre per second"
+  },
+  {
+    "Code": "41",
+    "Description": "millilitre per minute"
+  },
+  {
+    "Code": "4C",
+    "Description": "centistokes"
+  },
+  {
+    "Code": "4G",
+    "Description": "microlitre"
+  },
+  {
+    "Code": "4H",
+    "Description": "micrometre (micron)"
+  },
+  {
+    "Code": "4K",
+    "Description": "milliampere"
+  },
+  {
+    "Code": "4L",
+    "Description": "megabyte"
+  },
+  {
+    "Code": "4M",
+    "Description": "milligram per hour"
+  },
+  {
+    "Code": "4N",
+    "Description": "megabecquerel"
+  },
+  {
+    "Code": "4O",
+    "Description": "microfarad"
+  },
+  {
+    "Code": "4P",
+    "Description": "newton per metre"
+  },
+  {
+    "Code": "4Q",
+    "Description": "ounce inch"
+  },
+  {
+    "Code": "4R",
+    "Description": "ounce foot"
+  },
+  {
+    "Code": "4T",
+    "Description": "picofarad"
+  },
+  {
+    "Code": "4U",
+    "Description": "pound per hour"
+  },
+  {
+    "Code": "4W",
+    "Description": "ton (US) per hour"
+  },
+  {
+    "Code": "4X",
+    "Description": "kilolitre per hour"
+  },
+  {
+    "Code": "56",
+    "Description": "sitas"
+  },
+  {
+    "Code": "57",
+    "Description": "mesh"
+  },
+  {
+    "Code": "58",
+    "Description": "net kilogram"
+  },
+  {
+    "Code": "59",
+    "Description": "part per million"
+  },
+  {
+    "Code": "5A",
+    "Description": "barrel (US) per minute"
+  },
+  {
+    "Code": "5B",
+    "Description": "batch"
+  },
+  {
+    "Code": "5E",
+    "Description": "MMSCF/day"
+  },
+  {
+    "Code": "5J",
+    "Description": "hydraulic horse power"
+  },
+  {
+    "Code": "60",
+    "Description": "percent weight"
+  },
+  {
+    "Code": "61",
+    "Description": "part per billion (US)"
+  },
+  {
+    "Code": "74",
+    "Description": "millipascal"
+  },
+  {
+    "Code": "77",
+    "Description": "milli-inch"
+  },
+  {
+    "Code": "80",
+    "Description": "pound per square inch absolute"
+  },
+  {
+    "Code": "81",
+    "Description": "henry"
+  },
+  {
+    "Code": "85",
+    "Description": "foot pound-force"
+  },
+  {
+    "Code": "87",
+    "Description": "pound per cubic foot"
+  },
+  {
+    "Code": "89",
+    "Description": "poise"
+  },
+  {
+    "Code": "91",
+    "Description": "stokes"
+  },
+  {
+    "Code": "A10",
+    "Description": "ampere square metre per joule second"
+  },
+  {
+    "Code": "A11",
+    "Description": "angstrom"
+  },
+  {
+    "Code": "A12",
+    "Description": "astronomical unit"
+  },
+  {
+    "Code": "A13",
+    "Description": "attojoule"
+  },
+  {
+    "Code": "A14",
+    "Description": "barn"
+  },
+  {
+    "Code": "A15",
+    "Description": "barn per electronvolt"
+  },
+  {
+    "Code": "A16",
+    "Description": "barn per steradian electronvolt"
+  },
+  {
+    "Code": "A17",
+    "Description": "barn per steradian"
+  },
+  {
+    "Code": "A18",
+    "Description": "becquerel per kilogram"
+  },
+  {
+    "Code": "A19",
+    "Description": "becquerel per cubic metre"
+  },
+  {
+    "Code": "A2",
+    "Description": "ampere per centimetre"
+  },
+  {
+    "Code": "A20",
+    "Description": "British thermal unit (international table) per second square foot degreeRankine"
+  },
+  {
+    "Code": "A21",
+    "Description": "British thermal unit (international table) per pound degree Rankine"
+  },
+  {
+    "Code": "A22",
+    "Description": "British thermal unit (international table) per second foot degree Rankine"
+  },
+  {
+    "Code": "A23",
+    "Description": "British thermal unit (international table) per hour square foot degree Rankine"
+  },
+  {
+    "Code": "A24",
+    "Description": "candela per square metre"
+  },
+  {
+    "Code": "A26",
+    "Description": "coulomb metre"
+  },
+  {
+    "Code": "A27",
+    "Description": "coulomb metre squared per volt"
+  },
+  {
+    "Code": "A28",
+    "Description": "coulomb per cubic centimetre"
+  },
+  {
+    "Code": "A29",
+    "Description": "coulomb per cubic metre"
+  },
+  {
+    "Code": "A3",
+    "Description": "ampere per millimetre"
+  },
+  {
+    "Code": "A30",
+    "Description": "coulomb per cubic millimetre"
+  },
+  {
+    "Code": "A31",
+    "Description": "coulomb per kilogram second"
+  },
+  {
+    "Code": "A32",
+    "Description": "coulomb per mole"
+  },
+  {
+    "Code": "A33",
+    "Description": "coulomb per square centimetre"
+  },
+  {
+    "Code": "A34",
+    "Description": "coulomb per square metre"
+  },
+  {
+    "Code": "A35",
+    "Description": "coulomb per square millimetre"
+  },
+  {
+    "Code": "A36",
+    "Description": "cubic centimetre per mole"
+  },
+  {
+    "Code": "A37",
+    "Description": "cubic decimetre per mole"
+  },
+  {
+    "Code": "A38",
+    "Description": "cubic metre per coulomb"
+  },
+  {
+    "Code": "A39",
+    "Description": "cubic metre per kilogram"
+  },
+  {
+    "Code": "A4",
+    "Description": "ampere per square centimetre"
+  },
+  {
+    "Code": "A40",
+    "Description": "cubic metre per mole"
+  },
+  {
+    "Code": "A41",
+    "Description": "ampere per square metre"
+  },
+  {
+    "Code": "A42",
+    "Description": "curie per kilogram"
+  },
+  {
+    "Code": "A43",
+    "Description": "deadweight tonnage"
+  },
+  {
+    "Code": "A44",
+    "Description": "decalitre"
+  },
+  {
+    "Code": "A45",
+    "Description": "decametre"
+  },
+  {
+    "Code": "A47",
+    "Description": "decitex"
+  },
+  {
+    "Code": "A48",
+    "Description": "degree Rankine"
+  },
+  {
+    "Code": "A49",
+    "Description": "denier"
+  },
+  {
+    "Code": "A5",
+    "Description": "ampere square metre"
+  },
+  {
+    "Code": "A53",
+    "Description": "electronvolt"
+  },
+  {
+    "Code": "A54",
+    "Description": "electronvolt per metre"
+  },
+  {
+    "Code": "A55",
+    "Description": "electronvolt square metre"
+  },
+  {
+    "Code": "A56",
+    "Description": "electronvolt square metre per kilogram"
+  },
+  {
+    "Code": "A59",
+    "Description": "8-part cloud cover"
+  },
+  {
+    "Code": "A6",
+    "Description": "ampere per square metre kelvin squared"
+  },
+  {
+    "Code": "A68",
+    "Description": "exajoule"
+  },
+  {
+    "Code": "A69",
+    "Description": "farad per metre"
+  },
+  {
+    "Code": "A7",
+    "Description": "ampere per square millimetre"
+  },
+  {
+    "Code": "A70",
+    "Description": "femtojoule"
+  },
+  {
+    "Code": "A71",
+    "Description": "femtometre"
+  },
+  {
+    "Code": "A73",
+    "Description": "foot per second squared"
+  },
+  {
+    "Code": "A74",
+    "Description": "foot pound-force per second"
+  },
+  {
+    "Code": "A75",
+    "Description": "freight ton"
+  },
+  {
+    "Code": "A76",
+    "Description": "gal"
+  },
+  {
+    "Code": "A8",
+    "Description": "ampere second"
+  },
+  {
+    "Code": "A84",
+    "Description": "gigacoulomb per cubic metre"
+  },
+  {
+    "Code": "A85",
+    "Description": "gigaelectronvolt"
+  },
+  {
+    "Code": "A86",
+    "Description": "gigahertz"
+  },
+  {
+    "Code": "A87",
+    "Description": "gigaohm"
+  },
+  {
+    "Code": "A88",
+    "Description": "gigaohm metre"
+  },
+  {
+    "Code": "A89",
+    "Description": "gigapascal"
+  },
+  {
+    "Code": "A9",
+    "Description": "rate"
+  },
+  {
+    "Code": "A90",
+    "Description": "gigawatt"
+  },
+  {
+    "Code": "A91",
+    "Description": "gon"
+  },
+  {
+    "Code": "A93",
+    "Description": "gram per cubic metre"
+  },
+  {
+    "Code": "A94",
+    "Description": "gram per mole"
+  },
+  {
+    "Code": "A95",
+    "Description": "gray"
+  },
+  {
+    "Code": "A96",
+    "Description": "gray per second"
+  },
+  {
+    "Code": "A97",
+    "Description": "hectopascal"
+  },
+  {
+    "Code": "A98",
+    "Description": "henry per metre"
+  },
+  {
+    "Code": "A99",
+    "Description": "bit"
+  },
+  {
+    "Code": "AA",
+    "Description": "ball"
+  },
+  {
+    "Code": "AB",
+    "Description": "bulk pack"
+  },
+  {
+    "Code": "ACR",
+    "Description": "acre"
+  },
+  {
+    "Code": "ACT",
+    "Description": "activity"
+  },
+  {
+    "Code": "AD",
+    "Description": "byte"
+  },
+  {
+    "Code": "AE",
+    "Description": "ampere per metre"
+  },
+  {
+    "Code": "AH",
+    "Description": "additional minute"
+  },
+  {
+    "Code": "AI",
+    "Description": "average minute per call"
+  },
+  {
+    "Code": "AK",
+    "Description": "fathom"
+  },
+  {
+    "Code": "AL",
+    "Description": "access line"
+  },
+  {
+    "Code": "AMH",
+    "Description": "ampere hour"
+  },
+  {
+    "Code": "AMP",
+    "Description": "ampere"
+  },
+  {
+    "Code": "ANN",
+    "Description": "year"
+  },
+  {
+    "Code": "APZ",
+    "Description": "troy ounce or apothecary ounce"
+  },
+  {
+    "Code": "AQ",
+    "Description": "anti-hemophilic factor (AHF) unit"
+  },
+  {
+    "Code": "AS",
+    "Description": "assortment"
+  },
+  {
+    "Code": "ASM",
+    "Description": "alcoholic strength by mass"
+  },
+  {
+    "Code": "ASU",
+    "Description": "alcoholic strength by volume"
+  },
+  {
+    "Code": "ATM",
+    "Description": "standard atmosphere"
+  },
+  {
+    "Code": "AWG",
+    "Description": "american wire gauge"
+  },
+  {
+    "Code": "AY",
+    "Description": "assembly"
+  },
+  {
+    "Code": "AZ",
+    "Description": "British thermal unit (international table) per pound"
+  },
+  {
+    "Code": "B1",
+    "Description": "barrel (US) per day"
+  },
+  {
+    "Code": "B10",
+    "Description": "bit per second"
+  },
+  {
+    "Code": "B11",
+    "Description": "joule per kilogram kelvin"
+  },
+  {
+    "Code": "B12",
+    "Description": "joule per metre"
+  },
+  {
+    "Code": "B13",
+    "Description": "joule per square metre"
+  },
+  {
+    "Code": "B14",
+    "Description": "joule per metre to the fourth power"
+  },
+  {
+    "Code": "B15",
+    "Description": "joule per mole"
+  },
+  {
+    "Code": "B16",
+    "Description": "joule per mole kelvin"
+  },
+  {
+    "Code": "B17",
+    "Description": "credit"
+  },
+  {
+    "Code": "B18",
+    "Description": "joule second"
+  },
+  {
+    "Code": "B19",
+    "Description": "digit"
+  },
+  {
+    "Code": "B20",
+    "Description": "joule square metre per kilogram"
+  },
+  {
+    "Code": "B21",
+    "Description": "kelvin per watt"
+  },
+  {
+    "Code": "B22",
+    "Description": "kiloampere"
+  },
+  {
+    "Code": "B23",
+    "Description": "kiloampere per square metre"
+  },
+  {
+    "Code": "B24",
+    "Description": "kiloampere per metre"
+  },
+  {
+    "Code": "B25",
+    "Description": "kilobecquerel per kilogram"
+  },
+  {
+    "Code": "B26",
+    "Description": "kilocoulomb"
+  },
+  {
+    "Code": "B27",
+    "Description": "kilocoulomb per cubic metre"
+  },
+  {
+    "Code": "B28",
+    "Description": "kilocoulomb per square metre"
+  },
+  {
+    "Code": "B29",
+    "Description": "kiloelectronvolt"
+  },
+  {
+    "Code": "B3",
+    "Description": "batting pound"
+  },
+  {
+    "Code": "B30",
+    "Description": "gibibit"
+  },
+  {
+    "Code": "B31",
+    "Description": "kilogram metre per second"
+  },
+  {
+    "Code": "B32",
+    "Description": "kilogram metre squared"
+  },
+  {
+    "Code": "B33",
+    "Description": "kilogram metre squared per second"
+  },
+  {
+    "Code": "B34",
+    "Description": "kilogram per cubic decimetre"
+  },
+  {
+    "Code": "B35",
+    "Description": "kilogram per litre"
+  },
+  {
+    "Code": "B4",
+    "Description": "barrel, imperial"
+  },
+  {
+    "Code": "B41",
+    "Description": "kilojoule per kelvin"
+  },
+  {
+    "Code": "B42",
+    "Description": "kilojoule per kilogram"
+  },
+  {
+    "Code": "B43",
+    "Description": "kilojoule per kilogram kelvin"
+  },
+  {
+    "Code": "B44",
+    "Description": "kilojoule per mole"
+  },
+  {
+    "Code": "B45",
+    "Description": "kilomole"
+  },
+  {
+    "Code": "B46",
+    "Description": "kilomole per cubic metre"
+  },
+  {
+    "Code": "B47",
+    "Description": "kilonewton"
+  },
+  {
+    "Code": "B48",
+    "Description": "kilonewton metre"
+  },
+  {
+    "Code": "B49",
+    "Description": "kiloohm"
+  },
+  {
+    "Code": "B50",
+    "Description": "kiloohm metre"
+  },
+  {
+    "Code": "B52",
+    "Description": "kilosecond"
+  },
+  {
+    "Code": "B53",
+    "Description": "kilosiemens"
+  },
+  {
+    "Code": "B54",
+    "Description": "kilosiemens per metre"
+  },
+  {
+    "Code": "B55",
+    "Description": "kilovolt per metre"
+  },
+  {
+    "Code": "B56",
+    "Description": "kiloweber per metre"
+  },
+  {
+    "Code": "B57",
+    "Description": "light year"
+  },
+  {
+    "Code": "B58",
+    "Description": "litre per mole"
+  },
+  {
+    "Code": "B59",
+    "Description": "lumen hour"
+  },
+  {
+    "Code": "B60",
+    "Description": "lumen per square metre"
+  },
+  {
+    "Code": "B61",
+    "Description": "lumen per watt"
+  },
+  {
+    "Code": "B62",
+    "Description": "lumen second"
+  },
+  {
+    "Code": "B63",
+    "Description": "lux hour"
+  },
+  {
+    "Code": "B64",
+    "Description": "lux second"
+  },
+  {
+    "Code": "B66",
+    "Description": "megaampere per square metre"
+  },
+  {
+    "Code": "B67",
+    "Description": "megabecquerel per kilogram"
+  },
+  {
+    "Code": "B68",
+    "Description": "gigabit"
+  },
+  {
+    "Code": "B69",
+    "Description": "megacoulomb per cubic metre"
+  },
+  {
+    "Code": "B7",
+    "Description": "cycle"
+  },
+  {
+    "Code": "B70",
+    "Description": "megacoulomb per square metre"
+  },
+  {
+    "Code": "B71",
+    "Description": "megaelectronvolt"
+  },
+  {
+    "Code": "B72",
+    "Description": "megagram per cubic metre"
+  },
+  {
+    "Code": "B73",
+    "Description": "meganewton"
+  },
+  {
+    "Code": "B74",
+    "Description": "meganewton metre"
+  },
+  {
+    "Code": "B75",
+    "Description": "megaohm"
+  },
+  {
+    "Code": "B76",
+    "Description": "megaohm metre"
+  },
+  {
+    "Code": "B77",
+    "Description": "megasiemens per metre"
+  },
+  {
+    "Code": "B78",
+    "Description": "megavolt"
+  },
+  {
+    "Code": "B79",
+    "Description": "megavolt per metre"
+  },
+  {
+    "Code": "B8",
+    "Description": "joule per cubic metre"
+  },
+  {
+    "Code": "B80",
+    "Description": "gigabit per second"
+  },
+  {
+    "Code": "B81",
+    "Description": "reciprocal metre squared reciprocal second"
+  },
+  {
+    "Code": "B82",
+    "Description": "inch per linear foot"
+  },
+  {
+    "Code": "B83",
+    "Description": "metre to the fourth power"
+  },
+  {
+    "Code": "B84",
+    "Description": "microampere"
+  },
+  {
+    "Code": "B85",
+    "Description": "microbar"
+  },
+  {
+    "Code": "B86",
+    "Description": "microcoulomb"
+  },
+  {
+    "Code": "B87",
+    "Description": "microcoulomb per cubic metre"
+  },
+  {
+    "Code": "B88",
+    "Description": "microcoulomb per square metre"
+  },
+  {
+    "Code": "B89",
+    "Description": "microfarad per metre"
+  },
+  {
+    "Code": "B90",
+    "Description": "microhenry"
+  },
+  {
+    "Code": "B91",
+    "Description": "microhenry per metre"
+  },
+  {
+    "Code": "B92",
+    "Description": "micronewton"
+  },
+  {
+    "Code": "B93",
+    "Description": "micronewton metre"
+  },
+  {
+    "Code": "B94",
+    "Description": "microohm"
+  },
+  {
+    "Code": "B95",
+    "Description": "microohm metre"
+  },
+  {
+    "Code": "B96",
+    "Description": "micropascal"
+  },
+  {
+    "Code": "B97",
+    "Description": "microradian"
+  },
+  {
+    "Code": "B98",
+    "Description": "microsecond"
+  },
+  {
+    "Code": "B99",
+    "Description": "microsiemens"
+  },
+  {
+    "Code": "BAR",
+    "Description": "bar [unit of pressure]"
+  },
+  {
+    "Code": "BB",
+    "Description": "base box"
+  },
+  {
+    "Code": "BFT",
+    "Description": "board foot"
+  },
+  {
+    "Code": "BHP",
+    "Description": "brake horse power"
+  },
+  {
+    "Code": "BIL",
+    "Description": "billion (EUR)"
+  },
+  {
+    "Code": "BLD",
+    "Description": "dry barrel (US)"
+  },
+  {
+    "Code": "BLL",
+    "Description": "barrel (US)"
+  },
+  {
+    "Code": "BP",
+    "Description": "hundred board foot"
+  },
+  {
+    "Code": "BPM",
+    "Description": "beats per minute"
+  },
+  {
+    "Code": "BQL",
+    "Description": "becquerel"
+  },
+  {
+    "Code": "BTU",
+    "Description": "British thermal unit (international table)"
+  },
+  {
+    "Code": "BUA",
+    "Description": "bushel (US)"
+  },
+  {
+    "Code": "BUI",
+    "Description": "bushel (UK)"
+  },
+  {
+    "Code": "C0",
+    "Description": "call"
+  },
+  {
+    "Code": "C10",
+    "Description": "millifarad"
+  },
+  {
+    "Code": "C11",
+    "Description": "milligal"
+  },
+  {
+    "Code": "C12",
+    "Description": "milligram per metre"
+  },
+  {
+    "Code": "C13",
+    "Description": "milligray"
+  },
+  {
+    "Code": "C14",
+    "Description": "millihenry"
+  },
+  {
+    "Code": "C15",
+    "Description": "millijoule"
+  },
+  {
+    "Code": "C16",
+    "Description": "millimetre per second"
+  },
+  {
+    "Code": "C17",
+    "Description": "millimetre squared per second"
+  },
+  {
+    "Code": "C18",
+    "Description": "millimole"
+  },
+  {
+    "Code": "C19",
+    "Description": "mole per kilogram"
+  },
+  {
+    "Code": "C20",
+    "Description": "millinewton"
+  },
+  {
+    "Code": "C21",
+    "Description": "kibibit"
+  },
+  {
+    "Code": "C22",
+    "Description": "millinewton per metre"
+  },
+  {
+    "Code": "C23",
+    "Description": "milliohm metre"
+  },
+  {
+    "Code": "C24",
+    "Description": "millipascal second"
+  },
+  {
+    "Code": "C25",
+    "Description": "milliradian"
+  },
+  {
+    "Code": "C26",
+    "Description": "millisecond"
+  },
+  {
+    "Code": "C27",
+    "Description": "millisiemens"
+  },
+  {
+    "Code": "C28",
+    "Description": "millisievert"
+  },
+  {
+    "Code": "C29",
+    "Description": "millitesla"
+  },
+  {
+    "Code": "C3",
+    "Description": "microvolt per metre"
+  },
+  {
+    "Code": "C30",
+    "Description": "millivolt per metre"
+  },
+  {
+    "Code": "C31",
+    "Description": "milliwatt"
+  },
+  {
+    "Code": "C32",
+    "Description": "milliwatt per square metre"
+  },
+  {
+    "Code": "C33",
+    "Description": "milliweber"
+  },
+  {
+    "Code": "C34",
+    "Description": "mole"
+  },
+  {
+    "Code": "C35",
+    "Description": "mole per cubic decimetre"
+  },
+  {
+    "Code": "C36",
+    "Description": "mole per cubic metre"
+  },
+  {
+    "Code": "C37",
+    "Description": "kilobit"
+  },
+  {
+    "Code": "C38",
+    "Description": "mole per litre"
+  },
+  {
+    "Code": "C39",
+    "Description": "nanoampere"
+  },
+  {
+    "Code": "C40",
+    "Description": "nanocoulomb"
+  },
+  {
+    "Code": "C41",
+    "Description": "nanofarad"
+  },
+  {
+    "Code": "C42",
+    "Description": "nanofarad per metre"
+  },
+  {
+    "Code": "C43",
+    "Description": "nanohenry"
+  },
+  {
+    "Code": "C44",
+    "Description": "nanohenry per metre"
+  },
+  {
+    "Code": "C45",
+    "Description": "nanometre"
+  },
+  {
+    "Code": "C46",
+    "Description": "nanoohm metre"
+  },
+  {
+    "Code": "C47",
+    "Description": "nanosecond"
+  },
+  {
+    "Code": "C48",
+    "Description": "nanotesla"
+  },
+  {
+    "Code": "C49",
+    "Description": "nanowatt"
+  },
+  {
+    "Code": "C50",
+    "Description": "neper"
+  },
+  {
+    "Code": "C51",
+    "Description": "neper per second"
+  },
+  {
+    "Code": "C52",
+    "Description": "picometre"
+  },
+  {
+    "Code": "C53",
+    "Description": "newton metre second"
+  },
+  {
+    "Code": "C54",
+    "Description": "newton metre squared per kilogram squared"
+  },
+  {
+    "Code": "C55",
+    "Description": "newton per square metre"
+  },
+  {
+    "Code": "C56",
+    "Description": "newton per square millimetre"
+  },
+  {
+    "Code": "C57",
+    "Description": "newton second"
+  },
+  {
+    "Code": "C58",
+    "Description": "newton second per metre"
+  },
+  {
+    "Code": "C59",
+    "Description": "octave"
+  },
+  {
+    "Code": "C60",
+    "Description": "ohm centimetre"
+  },
+  {
+    "Code": "C61",
+    "Description": "ohm metre"
+  },
+  {
+    "Code": "C62",
+    "Description": "one"
+  },
+  {
+    "Code": "C63",
+    "Description": "parsec"
+  },
+  {
+    "Code": "C64",
+    "Description": "pascal per kelvin"
+  },
+  {
+    "Code": "C65",
+    "Description": "pascal second"
+  },
+  {
+    "Code": "C66",
+    "Description": "pascal second per cubic metre"
+  },
+  {
+    "Code": "C67",
+    "Description": "pascal second per metre"
+  },
+  {
+    "Code": "C68",
+    "Description": "petajoule"
+  },
+  {
+    "Code": "C69",
+    "Description": "phon"
+  },
+  {
+    "Code": "C7",
+    "Description": "centipoise"
+  },
+  {
+    "Code": "C70",
+    "Description": "picoampere"
+  },
+  {
+    "Code": "C71",
+    "Description": "picocoulomb"
+  },
+  {
+    "Code": "C72",
+    "Description": "picofarad per metre"
+  },
+  {
+    "Code": "C73",
+    "Description": "picohenry"
+  },
+  {
+    "Code": "C74",
+    "Description": "kilobit per second"
+  },
+  {
+    "Code": "C75",
+    "Description": "picowatt"
+  },
+  {
+    "Code": "C76",
+    "Description": "picowatt per square metre"
+  },
+  {
+    "Code": "C78",
+    "Description": "pound-force"
+  },
+  {
+    "Code": "C79",
+    "Description": "kilovolt ampere hour"
+  },
+  {
+    "Code": "C8",
+    "Description": "millicoulomb per kilogram"
+  },
+  {
+    "Code": "C80",
+    "Description": "rad"
+  },
+  {
+    "Code": "C81",
+    "Description": "radian"
+  },
+  {
+    "Code": "C82",
+    "Description": "radian square metre per mole"
+  },
+  {
+    "Code": "C83",
+    "Description": "radian square metre per kilogram"
+  },
+  {
+    "Code": "C84",
+    "Description": "radian per metre"
+  },
+  {
+    "Code": "C85",
+    "Description": "reciprocal angstrom"
+  },
+  {
+    "Code": "C86",
+    "Description": "reciprocal cubic metre"
+  },
+  {
+    "Code": "C87",
+    "Description": "reciprocal cubic metre per second"
+  },
+  {
+    "Code": "C88",
+    "Description": "reciprocal electron volt per cubic metre"
+  },
+  {
+    "Code": "C89",
+    "Description": "reciprocal henry"
+  },
+  {
+    "Code": "C9",
+    "Description": "coil group"
+  },
+  {
+    "Code": "C90",
+    "Description": "reciprocal joule per cubic metre"
+  },
+  {
+    "Code": "C91",
+    "Description": "reciprocal kelvin or kelvin to the power minus one"
+  },
+  {
+    "Code": "C92",
+    "Description": "reciprocal metre"
+  },
+  {
+    "Code": "C93",
+    "Description": "reciprocal square metre"
+  },
+  {
+    "Code": "C94",
+    "Description": "reciprocal minute"
+  },
+  {
+    "Code": "C95",
+    "Description": "reciprocal mole"
+  },
+  {
+    "Code": "C96",
+    "Description": "reciprocal pascal or pascal to the power minus one"
+  },
+  {
+    "Code": "C97",
+    "Description": "reciprocal second"
+  },
+  {
+    "Code": "C99",
+    "Description": "reciprocal second per metre squared"
+  },
+  {
+    "Code": "CCT",
+    "Description": "carrying capacity in metric ton"
+  },
+  {
+    "Code": "CDL",
+    "Description": "candela"
+  },
+  {
+    "Code": "CEL",
+    "Description": "degree Celsius"
+  },
+  {
+    "Code": "CEN",
+    "Description": "hundred"
+  },
+  {
+    "Code": "CG",
+    "Description": "card"
+  },
+  {
+    "Code": "CGM",
+    "Description": "centigram"
+  },
+  {
+    "Code": "CKG",
+    "Description": "coulomb per kilogram"
+  },
+  {
+    "Code": "CLF",
+    "Description": "hundred leave"
+  },
+  {
+    "Code": "CLT",
+    "Description": "centilitre"
+  },
+  {
+    "Code": "CMK",
+    "Description": "square centimetre"
+  },
+  {
+    "Code": "CMQ",
+    "Description": "cubic centimetre"
+  },
+  {
+    "Code": "CMT",
+    "Description": "centimetre"
+  },
+  {
+    "Code": "CNP",
+    "Description": "hundred pack"
+  },
+  {
+    "Code": "CNT",
+    "Description": "cental (UK)"
+  },
+  {
+    "Code": "COU",
+    "Description": "coulomb"
+  },
+  {
+    "Code": "CTG",
+    "Description": "content gram"
+  },
+  {
+    "Code": "CTM",
+    "Description": "metric carat"
+  },
+  {
+    "Code": "CTN",
+    "Description": "content ton (metric)"
+  },
+  {
+    "Code": "CUR",
+    "Description": "curie"
+  },
+  {
+    "Code": "CWA",
+    "Description": "hundred pound (cwt) / hundred weight (US)"
+  },
+  {
+    "Code": "CWI",
+    "Description": "hundred weight (UK)"
+  },
+  {
+    "Code": "D03",
+    "Description": "kilowatt hour per hour"
+  },
+  {
+    "Code": "D04",
+    "Description": "lot [unit of weight]"
+  },
+  {
+    "Code": "D1",
+    "Description": "reciprocal second per steradian"
+  },
+  {
+    "Code": "D10",
+    "Description": "siemens per metre"
+  },
+  {
+    "Code": "D11",
+    "Description": "mebibit"
+  },
+  {
+    "Code": "D12",
+    "Description": "siemens square metre per mole"
+  },
+  {
+    "Code": "D13",
+    "Description": "sievert"
+  },
+  {
+    "Code": "D15",
+    "Description": "sone"
+  },
+  {
+    "Code": "D16",
+    "Description": "square centimetre per erg"
+  },
+  {
+    "Code": "D17",
+    "Description": "square centimetre per steradian erg"
+  },
+  {
+    "Code": "D18",
+    "Description": "metre kelvin"
+  },
+  {
+    "Code": "D19",
+    "Description": "square metre kelvin per watt"
+  },
+  {
+    "Code": "D2",
+    "Description": "reciprocal second per steradian metre squared"
+  },
+  {
+    "Code": "D20",
+    "Description": "square metre per joule"
+  },
+  {
+    "Code": "D21",
+    "Description": "square metre per kilogram"
+  },
+  {
+    "Code": "D22",
+    "Description": "square metre per mole"
+  },
+  {
+    "Code": "D23",
+    "Description": "pen gram (protein)"
+  },
+  {
+    "Code": "D24",
+    "Description": "square metre per steradian"
+  },
+  {
+    "Code": "D25",
+    "Description": "square metre per steradian joule"
+  },
+  {
+    "Code": "D26",
+    "Description": "square metre per volt second"
+  },
+  {
+    "Code": "D27",
+    "Description": "steradian"
+  },
+  {
+    "Code": "D29",
+    "Description": "terahertz"
+  },
+  {
+    "Code": "D30",
+    "Description": "terajoule"
+  },
+  {
+    "Code": "D31",
+    "Description": "terawatt"
+  },
+  {
+    "Code": "D32",
+    "Description": "terawatt hour"
+  },
+  {
+    "Code": "D33",
+    "Description": "tesla"
+  },
+  {
+    "Code": "D34",
+    "Description": "tex"
+  },
+  {
+    "Code": "D36",
+    "Description": "megabit"
+  },
+  {
+    "Code": "D41",
+    "Description": "tonne per cubic metre"
+  },
+  {
+    "Code": "D42",
+    "Description": "tropical year"
+  },
+  {
+    "Code": "D43",
+    "Description": "unified atomic mass unit"
+  },
+  {
+    "Code": "D44",
+    "Description": "var"
+  },
+  {
+    "Code": "D45",
+    "Description": "volt squared per kelvin squared"
+  },
+  {
+    "Code": "D46",
+    "Description": "volt - ampere"
+  },
+  {
+    "Code": "D47",
+    "Description": "volt per centimetre"
+  },
+  {
+    "Code": "D48",
+    "Description": "volt per kelvin"
+  },
+  {
+    "Code": "D49",
+    "Description": "millivolt per kelvin"
+  },
+  {
+    "Code": "D5",
+    "Description": "kilogram per square centimetre"
+  },
+  {
+    "Code": "D50",
+    "Description": "volt per metre"
+  },
+  {
+    "Code": "D51",
+    "Description": "volt per millimetre"
+  },
+  {
+    "Code": "D52",
+    "Description": "watt per kelvin"
+  },
+  {
+    "Code": "D53",
+    "Description": "watt per metre kelvin"
+  },
+  {
+    "Code": "D54",
+    "Description": "watt per square metre"
+  },
+  {
+    "Code": "D55",
+    "Description": "watt per square metre kelvin"
+  },
+  {
+    "Code": "D56",
+    "Description": "watt per square metre kelvin to the fourth power"
+  },
+  {
+    "Code": "D57",
+    "Description": "watt per steradian"
+  },
+  {
+    "Code": "D58",
+    "Description": "watt per steradian square metre"
+  },
+  {
+    "Code": "D59",
+    "Description": "weber per metre"
+  },
+  {
+    "Code": "D6",
+    "Description": "roentgen per second"
+  },
+  {
+    "Code": "D60",
+    "Description": "weber per millimetre"
+  },
+  {
+    "Code": "D61",
+    "Description": "minute [unit of angle]"
+  },
+  {
+    "Code": "D62",
+    "Description": "second [unit of angle]"
+  },
+  {
+    "Code": "D63",
+    "Description": "book"
+  },
+  {
+    "Code": "D65",
+    "Description": "round"
+  },
+  {
+    "Code": "D68",
+    "Description": "number of words"
+  },
+  {
+    "Code": "D69",
+    "Description": "inch to the fourth power"
+  },
+  {
+    "Code": "D73",
+    "Description": "joule square metre"
+  },
+  {
+    "Code": "D74",
+    "Description": "kilogram per mole"
+  },
+  {
+    "Code": "D77",
+    "Description": "megacoulomb"
+  },
+  {
+    "Code": "D78",
+    "Description": "megajoule per second"
+  },
+  {
+    "Code": "D80",
+    "Description": "microwatt"
+  },
+  {
+    "Code": "D81",
+    "Description": "microtesla"
+  },
+  {
+    "Code": "D82",
+    "Description": "microvolt"
+  },
+  {
+    "Code": "D83",
+    "Description": "millinewton metre"
+  },
+  {
+    "Code": "D85",
+    "Description": "microwatt per square metre"
+  },
+  {
+    "Code": "D86",
+    "Description": "millicoulomb"
+  },
+  {
+    "Code": "D87",
+    "Description": "millimole per kilogram"
+  },
+  {
+    "Code": "D88",
+    "Description": "millicoulomb per cubic metre"
+  },
+  {
+    "Code": "D89",
+    "Description": "millicoulomb per square metre"
+  },
+  {
+    "Code": "D91",
+    "Description": "rem"
+  },
+  {
+    "Code": "D93",
+    "Description": "second per cubic metre"
+  },
+  {
+    "Code": "D94",
+    "Description": "second per cubic metre radian"
+  },
+  {
+    "Code": "D95",
+    "Description": "joule per gram"
+  },
+  {
+    "Code": "DAA",
+    "Description": "decare"
+  },
+  {
+    "Code": "DAD",
+    "Description": "ten day"
+  },
+  {
+    "Code": "DAY",
+    "Description": "day"
+  },
+  {
+    "Code": "DB",
+    "Description": "dry pound"
+  },
+  {
+    "Code": "DBM",
+    "Description": "Decibel-milliwatts"
+  },
+  {
+    "Code": "DBW",
+    "Description": "Decibel watt"
+  },
+  {
+    "Code": "DD",
+    "Description": "degree [unit of angle]"
+  },
+  {
+    "Code": "DEC",
+    "Description": "decade"
+  },
+  {
+    "Code": "DG",
+    "Description": "decigram"
+  },
+  {
+    "Code": "DJ",
+    "Description": "decagram"
+  },
+  {
+    "Code": "DLT",
+    "Description": "decilitre"
+  },
+  {
+    "Code": "DMA",
+    "Description": "cubic decametre"
+  },
+  {
+    "Code": "DMK",
+    "Description": "square decimetre"
+  },
+  {
+    "Code": "DMO",
+    "Description": "standard kilolitre"
+  },
+  {
+    "Code": "DMQ",
+    "Description": "cubic decimetre"
+  },
+  {
+    "Code": "DMT",
+    "Description": "decimetre"
+  },
+  {
+    "Code": "DN",
+    "Description": "decinewton metre"
+  },
+  {
+    "Code": "DPC",
+    "Description": "dozen piece"
+  },
+  {
+    "Code": "DPR",
+    "Description": "dozen pair"
+  },
+  {
+    "Code": "DPT",
+    "Description": "displacement tonnage"
+  },
+  {
+    "Code": "DRA",
+    "Description": "dram (US)"
+  },
+  {
+    "Code": "DRI",
+    "Description": "dram (UK)"
+  },
+  {
+    "Code": "DRL",
+    "Description": "dozen roll"
+  },
+  {
+    "Code": "DT",
+    "Description": "dry ton"
+  },
+  {
+    "Code": "DTN",
+    "Description": "decitonne"
+  },
+  {
+    "Code": "DWT",
+    "Description": "pennyweight"
+  },
+  {
+    "Code": "DZN",
+    "Description": "dozen"
+  },
+  {
+    "Code": "DZP",
+    "Description": "dozen pack"
+  },
+  {
+    "Code": "E01",
+    "Description": "newton per square centimetre"
+  },
+  {
+    "Code": "E07",
+    "Description": "megawatt hour per hour"
+  },
+  {
+    "Code": "E08",
+    "Description": "megawatt per hertz"
+  },
+  {
+    "Code": "E09",
+    "Description": "milliampere hour"
+  },
+  {
+    "Code": "E10",
+    "Description": "degree day"
+  },
+  {
+    "Code": "E12",
+    "Description": "mille"
+  },
+  {
+    "Code": "E14",
+    "Description": "kilocalorie (international table)"
+  },
+  {
+    "Code": "E15",
+    "Description": "kilocalorie (thermochemical) per hour"
+  },
+  {
+    "Code": "E16",
+    "Description": "million Btu(IT) per hour"
+  },
+  {
+    "Code": "E17",
+    "Description": "cubic foot per second"
+  },
+  {
+    "Code": "E18",
+    "Description": "tonne per hour"
+  },
+  {
+    "Code": "E19",
+    "Description": "ping"
+  },
+  {
+    "Code": "E20",
+    "Description": "megabit per second"
+  },
+  {
+    "Code": "E21",
+    "Description": "shares"
+  },
+  {
+    "Code": "E22",
+    "Description": "TEU"
+  },
+  {
+    "Code": "E23",
+    "Description": "tyre"
+  },
+  {
+    "Code": "E25",
+    "Description": "active unit"
+  },
+  {
+    "Code": "E27",
+    "Description": "dose"
+  },
+  {
+    "Code": "E28",
+    "Description": "air dry ton"
+  },
+  {
+    "Code": "E30",
+    "Description": "strand"
+  },
+  {
+    "Code": "E31",
+    "Description": "square metre per litre"
+  },
+  {
+    "Code": "E32",
+    "Description": "litre per hour"
+  },
+  {
+    "Code": "E33",
+    "Description": "foot per thousand"
+  },
+  {
+    "Code": "E34",
+    "Description": "gigabyte"
+  },
+  {
+    "Code": "E35",
+    "Description": "terabyte"
+  },
+  {
+    "Code": "E36",
+    "Description": "petabyte"
+  },
+  {
+    "Code": "E37",
+    "Description": "pixel"
+  },
+  {
+    "Code": "E38",
+    "Description": "megapixel"
+  },
+  {
+    "Code": "E39",
+    "Description": "dots per inch"
+  },
+  {
+    "Code": "E4",
+    "Description": "gross kilogram"
+  },
+  {
+    "Code": "E40",
+    "Description": "part per hundred thousand"
+  },
+  {
+    "Code": "E41",
+    "Description": "kilogram-force per square millimetre"
+  },
+  {
+    "Code": "E42",
+    "Description": "kilogram-force per square centimetre"
+  },
+  {
+    "Code": "E43",
+    "Description": "joule per square centimetre"
+  },
+  {
+    "Code": "E44",
+    "Description": "kilogram-force metre per square centimetre"
+  },
+  {
+    "Code": "E45",
+    "Description": "milliohm"
+  },
+  {
+    "Code": "E46",
+    "Description": "kilowatt hour per cubic metre"
+  },
+  {
+    "Code": "E47",
+    "Description": "kilowatt hour per kelvin"
+  },
+  {
+    "Code": "E48",
+    "Description": "service unit"
+  },
+  {
+    "Code": "E49",
+    "Description": "working day"
+  },
+  {
+    "Code": "E50",
+    "Description": "accounting unit"
+  },
+  {
+    "Code": "E51",
+    "Description": "job"
+  },
+  {
+    "Code": "E52",
+    "Description": "run foot"
+  },
+  {
+    "Code": "E53",
+    "Description": "test"
+  },
+  {
+    "Code": "E54",
+    "Description": "trip"
+  },
+  {
+    "Code": "E55",
+    "Description": "use"
+  },
+  {
+    "Code": "E56",
+    "Description": "well"
+  },
+  {
+    "Code": "E57",
+    "Description": "zone"
+  },
+  {
+    "Code": "E58",
+    "Description": "exabit per second"
+  },
+  {
+    "Code": "E59",
+    "Description": "exbibyte"
+  },
+  {
+    "Code": "E60",
+    "Description": "pebibyte"
+  },
+  {
+    "Code": "E61",
+    "Description": "tebibyte"
+  },
+  {
+    "Code": "E62",
+    "Description": "gibibyte"
+  },
+  {
+    "Code": "E63",
+    "Description": "mebibyte"
+  },
+  {
+    "Code": "E64",
+    "Description": "kibibyte"
+  },
+  {
+    "Code": "E65",
+    "Description": "exbibit per metre"
+  },
+  {
+    "Code": "E66",
+    "Description": "exbibit per square metre"
+  },
+  {
+    "Code": "E67",
+    "Description": "exbibit per cubic metre"
+  },
+  {
+    "Code": "E68",
+    "Description": "gigabyte per second"
+  },
+  {
+    "Code": "E69",
+    "Description": "gibibit per metre"
+  },
+  {
+    "Code": "E70",
+    "Description": "gibibit per square metre"
+  },
+  {
+    "Code": "E71",
+    "Description": "gibibit per cubic metre"
+  },
+  {
+    "Code": "E72",
+    "Description": "kibibit per metre"
+  },
+  {
+    "Code": "E73",
+    "Description": "kibibit per square metre"
+  },
+  {
+    "Code": "E74",
+    "Description": "kibibit per cubic metre"
+  },
+  {
+    "Code": "E75",
+    "Description": "mebibit per metre"
+  },
+  {
+    "Code": "E76",
+    "Description": "mebibit per square metre"
+  },
+  {
+    "Code": "E77",
+    "Description": "mebibit per cubic metre"
+  },
+  {
+    "Code": "E78",
+    "Description": "petabit"
+  },
+  {
+    "Code": "E79",
+    "Description": "petabit per second"
+  },
+  {
+    "Code": "E80",
+    "Description": "pebibit per metre"
+  },
+  {
+    "Code": "E81",
+    "Description": "pebibit per square metre"
+  },
+  {
+    "Code": "E82",
+    "Description": "pebibit per cubic metre"
+  },
+  {
+    "Code": "E83",
+    "Description": "terabit"
+  },
+  {
+    "Code": "E84",
+    "Description": "terabit per second"
+  },
+  {
+    "Code": "E85",
+    "Description": "tebibit per metre"
+  },
+  {
+    "Code": "E86",
+    "Description": "tebibit per cubic metre"
+  },
+  {
+    "Code": "E87",
+    "Description": "tebibit per square metre"
+  },
+  {
+    "Code": "E88",
+    "Description": "bit per metre"
+  },
+  {
+    "Code": "E89",
+    "Description": "bit per square metre"
+  },
+  {
+    "Code": "E90",
+    "Description": "reciprocal centimetre"
+  },
+  {
+    "Code": "E91",
+    "Description": "reciprocal day"
+  },
+  {
+    "Code": "E92",
+    "Description": "cubic decimetre per hour"
+  },
+  {
+    "Code": "E93",
+    "Description": "kilogram per hour"
+  },
+  {
+    "Code": "E94",
+    "Description": "kilomole per second"
+  },
+  {
+    "Code": "E95",
+    "Description": "mole per second"
+  },
+  {
+    "Code": "E96",
+    "Description": "degree per second"
+  },
+  {
+    "Code": "E97",
+    "Description": "millimetre per degree Celcius metre"
+  },
+  {
+    "Code": "E98",
+    "Description": "degree Celsius per kelvin"
+  },
+  {
+    "Code": "E99",
+    "Description": "hectopascal per bar"
+  },
+  {
+    "Code": "EA",
+    "Description": "each"
+  },
+  {
+    "Code": "EB",
+    "Description": "electronic mail box"
+  },
+  {
+    "Code": "EQ",
+    "Description": "equivalent gallon"
+  },
+  {
+    "Code": "F01",
+    "Description": "bit per cubic metre"
+  },
+  {
+    "Code": "F02",
+    "Description": "kelvin per kelvin"
+  },
+  {
+    "Code": "F03",
+    "Description": "kilopascal per bar"
+  },
+  {
+    "Code": "F04",
+    "Description": "millibar per bar"
+  },
+  {
+    "Code": "F05",
+    "Description": "megapascal per bar"
+  },
+  {
+    "Code": "F06",
+    "Description": "poise per bar"
+  },
+  {
+    "Code": "F07",
+    "Description": "pascal per bar"
+  },
+  {
+    "Code": "F08",
+    "Description": "milliampere per inch"
+  },
+  {
+    "Code": "F10",
+    "Description": "kelvin per hour"
+  },
+  {
+    "Code": "F11",
+    "Description": "kelvin per minute"
+  },
+  {
+    "Code": "F12",
+    "Description": "kelvin per second"
+  },
+  {
+    "Code": "F13",
+    "Description": "slug"
+  },
+  {
+    "Code": "F14",
+    "Description": "gram per kelvin"
+  },
+  {
+    "Code": "F15",
+    "Description": "kilogram per kelvin"
+  },
+  {
+    "Code": "F16",
+    "Description": "milligram per kelvin"
+  },
+  {
+    "Code": "F17",
+    "Description": "pound-force per foot"
+  },
+  {
+    "Code": "F18",
+    "Description": "kilogram square centimetre"
+  },
+  {
+    "Code": "F19",
+    "Description": "kilogram square millimetre"
+  },
+  {
+    "Code": "F20",
+    "Description": "pound inch squared"
+  },
+  {
+    "Code": "F21",
+    "Description": "pound-force inch"
+  },
+  {
+    "Code": "F22",
+    "Description": "pound-force foot per ampere"
+  },
+  {
+    "Code": "F23",
+    "Description": "gram per cubic decimetre"
+  },
+  {
+    "Code": "F24",
+    "Description": "kilogram per kilomol"
+  },
+  {
+    "Code": "F25",
+    "Description": "gram per hertz"
+  },
+  {
+    "Code": "F26",
+    "Description": "gram per day"
+  },
+  {
+    "Code": "F27",
+    "Description": "gram per hour"
+  },
+  {
+    "Code": "F28",
+    "Description": "gram per minute"
+  },
+  {
+    "Code": "F29",
+    "Description": "gram per second"
+  },
+  {
+    "Code": "F30",
+    "Description": "kilogram per day"
+  },
+  {
+    "Code": "F31",
+    "Description": "kilogram per minute"
+  },
+  {
+    "Code": "F32",
+    "Description": "milligram per day"
+  },
+  {
+    "Code": "F33",
+    "Description": "milligram per minute"
+  },
+  {
+    "Code": "F34",
+    "Description": "milligram per second"
+  },
+  {
+    "Code": "F35",
+    "Description": "gram per day kelvin"
+  },
+  {
+    "Code": "F36",
+    "Description": "gram per hour kelvin"
+  },
+  {
+    "Code": "F37",
+    "Description": "gram per minute kelvin"
+  },
+  {
+    "Code": "F38",
+    "Description": "gram per second kelvin"
+  },
+  {
+    "Code": "F39",
+    "Description": "kilogram per day kelvin"
+  },
+  {
+    "Code": "F40",
+    "Description": "kilogram per hour kelvin"
+  },
+  {
+    "Code": "F41",
+    "Description": "kilogram per minute kelvin"
+  },
+  {
+    "Code": "F42",
+    "Description": "kilogram per second kelvin"
+  },
+  {
+    "Code": "F43",
+    "Description": "milligram per day kelvin"
+  },
+  {
+    "Code": "F44",
+    "Description": "milligram per hour kelvin"
+  },
+  {
+    "Code": "F45",
+    "Description": "milligram per minute kelvin"
+  },
+  {
+    "Code": "F46",
+    "Description": "milligram per second kelvin"
+  },
+  {
+    "Code": "F47",
+    "Description": "newton per millimetre"
+  },
+  {
+    "Code": "F48",
+    "Description": "pound-force per inch"
+  },
+  {
+    "Code": "F49",
+    "Description": "rod [unit of distance]"
+  },
+  {
+    "Code": "F50",
+    "Description": "micrometre per kelvin"
+  },
+  {
+    "Code": "F51",
+    "Description": "centimetre per kelvin"
+  },
+  {
+    "Code": "F52",
+    "Description": "metre per kelvin"
+  },
+  {
+    "Code": "F53",
+    "Description": "millimetre per kelvin"
+  },
+  {
+    "Code": "F54",
+    "Description": "milliohm per metre"
+  },
+  {
+    "Code": "F55",
+    "Description": "ohm per mile (statute mile)"
+  },
+  {
+    "Code": "F56",
+    "Description": "ohm per kilometre"
+  },
+  {
+    "Code": "F57",
+    "Description": "milliampere per pound-force per square inch"
+  },
+  {
+    "Code": "F58",
+    "Description": "reciprocal bar"
+  },
+  {
+    "Code": "F59",
+    "Description": "milliampere per bar"
+  },
+  {
+    "Code": "F60",
+    "Description": "degree Celsius per bar"
+  },
+  {
+    "Code": "F61",
+    "Description": "kelvin per bar"
+  },
+  {
+    "Code": "F62",
+    "Description": "gram per day bar"
+  },
+  {
+    "Code": "F63",
+    "Description": "gram per hour bar"
+  },
+  {
+    "Code": "F64",
+    "Description": "gram per minute bar"
+  },
+  {
+    "Code": "F65",
+    "Description": "gram per second bar"
+  },
+  {
+    "Code": "F66",
+    "Description": "kilogram per day bar"
+  },
+  {
+    "Code": "F67",
+    "Description": "kilogram per hour bar"
+  },
+  {
+    "Code": "F68",
+    "Description": "kilogram per minute bar"
+  },
+  {
+    "Code": "F69",
+    "Description": "kilogram per second bar"
+  },
+  {
+    "Code": "F70",
+    "Description": "milligram per day bar"
+  },
+  {
+    "Code": "F71",
+    "Description": "milligram per hour bar"
+  },
+  {
+    "Code": "F72",
+    "Description": "milligram per minute bar"
+  },
+  {
+    "Code": "F73",
+    "Description": "milligram per second bar"
+  },
+  {
+    "Code": "F74",
+    "Description": "gram per bar"
+  },
+  {
+    "Code": "F75",
+    "Description": "milligram per bar"
+  },
+  {
+    "Code": "F76",
+    "Description": "milliampere per millimetre"
+  },
+  {
+    "Code": "F77",
+    "Description": "pascal second per kelvin"
+  },
+  {
+    "Code": "F78",
+    "Description": "inch of water"
+  },
+  {
+    "Code": "F79",
+    "Description": "inch of mercury"
+  },
+  {
+    "Code": "F80",
+    "Description": "water horse power"
+  },
+  {
+    "Code": "F81",
+    "Description": "bar per kelvin"
+  },
+  {
+    "Code": "F82",
+    "Description": "hectopascal per kelvin"
+  },
+  {
+    "Code": "F83",
+    "Description": "kilopascal per kelvin"
+  },
+  {
+    "Code": "F84",
+    "Description": "millibar per kelvin"
+  },
+  {
+    "Code": "F85",
+    "Description": "megapascal per kelvin"
+  },
+  {
+    "Code": "F86",
+    "Description": "poise per kelvin"
+  },
+  {
+    "Code": "F87",
+    "Description": "volt per litre minute"
+  },
+  {
+    "Code": "F88",
+    "Description": "newton centimetre"
+  },
+  {
+    "Code": "F89",
+    "Description": "newton metre per degree"
+  },
+  {
+    "Code": "F90",
+    "Description": "newton metre per ampere"
+  },
+  {
+    "Code": "F91",
+    "Description": "bar litre per second"
+  },
+  {
+    "Code": "F92",
+    "Description": "bar cubic metre per second"
+  },
+  {
+    "Code": "F93",
+    "Description": "hectopascal litre per second"
+  },
+  {
+    "Code": "F94",
+    "Description": "hectopascal cubic metre per second"
+  },
+  {
+    "Code": "F95",
+    "Description": "millibar litre per second"
+  },
+  {
+    "Code": "F96",
+    "Description": "millibar cubic metre per second"
+  },
+  {
+    "Code": "F97",
+    "Description": "megapascal litre per second"
+  },
+  {
+    "Code": "F98",
+    "Description": "megapascal cubic metre per second"
+  },
+  {
+    "Code": "F99",
+    "Description": "pascal litre per second"
+  },
+  {
+    "Code": "FAH",
+    "Description": "degree Fahrenheit"
+  },
+  {
+    "Code": "FAR",
+    "Description": "farad"
+  },
+  {
+    "Code": "FBM",
+    "Description": "fibre metre"
+  },
+  {
+    "Code": "FC",
+    "Description": "thousand cubic foot"
+  },
+  {
+    "Code": "FF",
+    "Description": "hundred cubic metre"
+  },
+  {
+    "Code": "FH",
+    "Description": "micromole"
+  },
+  {
+    "Code": "FIT",
+    "Description": "failures in time"
+  },
+  {
+    "Code": "FL",
+    "Description": "flake ton"
+  },
+  {
+    "Code": "FNU",
+    "Description": "Formazin nephelometric unit"
+  },
+  {
+    "Code": "FOT",
+    "Description": "foot"
+  },
+  {
+    "Code": "FP",
+    "Description": "pound per square foot"
+  },
+  {
+    "Code": "FR",
+    "Description": "foot per minute"
+  },
+  {
+    "Code": "FS",
+    "Description": "foot per second"
+  },
+  {
+    "Code": "FTK",
+    "Description": "square foot"
+  },
+  {
+    "Code": "FTQ",
+    "Description": "cubic foot"
+  },
+  {
+    "Code": "G01",
+    "Description": "pascal cubic metre per second"
+  },
+  {
+    "Code": "G04",
+    "Description": "centimetre per bar"
+  },
+  {
+    "Code": "G05",
+    "Description": "metre per bar"
+  },
+  {
+    "Code": "G06",
+    "Description": "millimetre per bar"
+  },
+  {
+    "Code": "G08",
+    "Description": "square inch per second"
+  },
+  {
+    "Code": "G09",
+    "Description": "square metre per second kelvin"
+  },
+  {
+    "Code": "G10",
+    "Description": "stokes per kelvin"
+  },
+  {
+    "Code": "G11",
+    "Description": "gram per cubic centimetre bar"
+  },
+  {
+    "Code": "G12",
+    "Description": "gram per cubic decimetre bar"
+  },
+  {
+    "Code": "G13",
+    "Description": "gram per litre bar"
+  },
+  {
+    "Code": "G14",
+    "Description": "gram per cubic metre bar"
+  },
+  {
+    "Code": "G15",
+    "Description": "gram per millilitre bar"
+  },
+  {
+    "Code": "G16",
+    "Description": "kilogram per cubic centimetre bar"
+  },
+  {
+    "Code": "G17",
+    "Description": "kilogram per litre bar"
+  },
+  {
+    "Code": "G18",
+    "Description": "kilogram per cubic metre bar"
+  },
+  {
+    "Code": "G19",
+    "Description": "newton metre per kilogram"
+  },
+  {
+    "Code": "G2",
+    "Description": "US gallon per minute"
+  },
+  {
+    "Code": "G20",
+    "Description": "pound-force foot per pound"
+  },
+  {
+    "Code": "G21",
+    "Description": "cup [unit of volume]"
+  },
+  {
+    "Code": "G23",
+    "Description": "peck"
+  },
+  {
+    "Code": "G24",
+    "Description": "tablespoon (US)"
+  },
+  {
+    "Code": "G25",
+    "Description": "teaspoon (US)"
+  },
+  {
+    "Code": "G26",
+    "Description": "stere"
+  },
+  {
+    "Code": "G27",
+    "Description": "cubic centimetre per kelvin"
+  },
+  {
+    "Code": "G28",
+    "Description": "litre per kelvin"
+  },
+  {
+    "Code": "G29",
+    "Description": "cubic metre per kelvin"
+  },
+  {
+    "Code": "G3",
+    "Description": "Imperial gallon per minute"
+  },
+  {
+    "Code": "G30",
+    "Description": "millilitre per kelvin"
+  },
+  {
+    "Code": "G31",
+    "Description": "kilogram per cubic centimetre"
+  },
+  {
+    "Code": "G32",
+    "Description": "ounce (avoirdupois) per cubic yard"
+  },
+  {
+    "Code": "G33",
+    "Description": "gram per cubic centimetre kelvin"
+  },
+  {
+    "Code": "G34",
+    "Description": "gram per cubic decimetre kelvin"
+  },
+  {
+    "Code": "G35",
+    "Description": "gram per litre kelvin"
+  },
+  {
+    "Code": "G36",
+    "Description": "gram per cubic metre kelvin"
+  },
+  {
+    "Code": "G37",
+    "Description": "gram per millilitre kelvin"
+  },
+  {
+    "Code": "G38",
+    "Description": "kilogram per cubic centimetre kelvin"
+  },
+  {
+    "Code": "G39",
+    "Description": "kilogram per litre kelvin"
+  },
+  {
+    "Code": "G40",
+    "Description": "kilogram per cubic metre kelvin"
+  },
+  {
+    "Code": "G41",
+    "Description": "square metre per second bar"
+  },
+  {
+    "Code": "G42",
+    "Description": "microsiemens per centimetre"
+  },
+  {
+    "Code": "G43",
+    "Description": "microsiemens per metre"
+  },
+  {
+    "Code": "G44",
+    "Description": "nanosiemens per centimetre"
+  },
+  {
+    "Code": "G45",
+    "Description": "nanosiemens per metre"
+  },
+  {
+    "Code": "G46",
+    "Description": "stokes per bar"
+  },
+  {
+    "Code": "G47",
+    "Description": "cubic centimetre per day"
+  },
+  {
+    "Code": "G48",
+    "Description": "cubic centimetre per hour"
+  },
+  {
+    "Code": "G49",
+    "Description": "cubic centimetre per minute"
+  },
+  {
+    "Code": "G50",
+    "Description": "gallon (US) per hour"
+  },
+  {
+    "Code": "G51",
+    "Description": "litre per second"
+  },
+  {
+    "Code": "G52",
+    "Description": "cubic metre per day"
+  },
+  {
+    "Code": "G53",
+    "Description": "cubic metre per minute"
+  },
+  {
+    "Code": "G54",
+    "Description": "millilitre per day"
+  },
+  {
+    "Code": "G55",
+    "Description": "millilitre per hour"
+  },
+  {
+    "Code": "G56",
+    "Description": "cubic inch per hour"
+  },
+  {
+    "Code": "G57",
+    "Description": "cubic inch per minute"
+  },
+  {
+    "Code": "G58",
+    "Description": "cubic inch per second"
+  },
+  {
+    "Code": "G59",
+    "Description": "milliampere per litre minute"
+  },
+  {
+    "Code": "G60",
+    "Description": "volt per bar"
+  },
+  {
+    "Code": "G61",
+    "Description": "cubic centimetre per day kelvin"
+  },
+  {
+    "Code": "G62",
+    "Description": "cubic centimetre per hour kelvin"
+  },
+  {
+    "Code": "G63",
+    "Description": "cubic centimetre per minute kelvin"
+  },
+  {
+    "Code": "G64",
+    "Description": "cubic centimetre per second kelvin"
+  },
+  {
+    "Code": "G65",
+    "Description": "litre per day kelvin"
+  },
+  {
+    "Code": "G66",
+    "Description": "litre per hour kelvin"
+  },
+  {
+    "Code": "G67",
+    "Description": "litre per minute kelvin"
+  },
+  {
+    "Code": "G68",
+    "Description": "litre per second kelvin"
+  },
+  {
+    "Code": "G69",
+    "Description": "cubic metre per day kelvin"
+  },
+  {
+    "Code": "G70",
+    "Description": "cubic metre per hour kelvin"
+  },
+  {
+    "Code": "G71",
+    "Description": "cubic metre per minute kelvin"
+  },
+  {
+    "Code": "G72",
+    "Description": "cubic metre per second kelvin"
+  },
+  {
+    "Code": "G73",
+    "Description": "millilitre per day kelvin"
+  },
+  {
+    "Code": "G74",
+    "Description": "millilitre per hour kelvin"
+  },
+  {
+    "Code": "G75",
+    "Description": "millilitre per minute kelvin"
+  },
+  {
+    "Code": "G76",
+    "Description": "millilitre per second kelvin"
+  },
+  {
+    "Code": "G77",
+    "Description": "millimetre to the fourth power"
+  },
+  {
+    "Code": "G78",
+    "Description": "cubic centimetre per day bar"
+  },
+  {
+    "Code": "G79",
+    "Description": "cubic centimetre per hour bar"
+  },
+  {
+    "Code": "G80",
+    "Description": "cubic centimetre per minute bar"
+  },
+  {
+    "Code": "G81",
+    "Description": "cubic centimetre per second bar"
+  },
+  {
+    "Code": "G82",
+    "Description": "litre per day bar"
+  },
+  {
+    "Code": "G83",
+    "Description": "litre per hour bar"
+  },
+  {
+    "Code": "G84",
+    "Description": "litre per minute bar"
+  },
+  {
+    "Code": "G85",
+    "Description": "litre per second bar"
+  },
+  {
+    "Code": "G86",
+    "Description": "cubic metre per day bar"
+  },
+  {
+    "Code": "G87",
+    "Description": "cubic metre per hour bar"
+  },
+  {
+    "Code": "G88",
+    "Description": "cubic metre per minute bar"
+  },
+  {
+    "Code": "G89",
+    "Description": "cubic metre per second bar"
+  },
+  {
+    "Code": "G90",
+    "Description": "millilitre per day bar"
+  },
+  {
+    "Code": "G91",
+    "Description": "millilitre per hour bar"
+  },
+  {
+    "Code": "G92",
+    "Description": "millilitre per minute bar"
+  },
+  {
+    "Code": "G93",
+    "Description": "millilitre per second bar"
+  },
+  {
+    "Code": "G94",
+    "Description": "cubic centimetre per bar"
+  },
+  {
+    "Code": "G95",
+    "Description": "litre per bar"
+  },
+  {
+    "Code": "G96",
+    "Description": "cubic metre per bar"
+  },
+  {
+    "Code": "G97",
+    "Description": "millilitre per bar"
+  },
+  {
+    "Code": "G98",
+    "Description": "microhenry per kiloohm"
+  },
+  {
+    "Code": "G99",
+    "Description": "microhenry per ohm"
+  },
+  {
+    "Code": "GB",
+    "Description": "gallon (US) per day"
+  },
+  {
+    "Code": "GBQ",
+    "Description": "gigabecquerel"
+  },
+  {
+    "Code": "GDW",
+    "Description": "gram, dry weight"
+  },
+  {
+    "Code": "GE",
+    "Description": "pound per gallon (US)"
+  },
+  {
+    "Code": "GF",
+    "Description": "gram per metre (gram per 100 centimetres)"
+  },
+  {
+    "Code": "GFI",
+    "Description": "gram of fissile isotope"
+  },
+  {
+    "Code": "GGR",
+    "Description": "great gross"
+  },
+  {
+    "Code": "GIA",
+    "Description": "gill (US)"
+  },
+  {
+    "Code": "GIC",
+    "Description": "gram, including container"
+  },
+  {
+    "Code": "GII",
+    "Description": "gill (UK)"
+  },
+  {
+    "Code": "GIP",
+    "Description": "gram, including inner packaging"
+  },
+  {
+    "Code": "GJ",
+    "Description": "gram per millilitre"
+  },
+  {
+    "Code": "GL",
+    "Description": "gram per litre"
+  },
+  {
+    "Code": "GLD",
+    "Description": "dry gallon (US)"
+  },
+  {
+    "Code": "GLI",
+    "Description": "gallon (UK)"
+  },
+  {
+    "Code": "GLL",
+    "Description": "gallon (US)"
+  },
+  {
+    "Code": "GM",
+    "Description": "gram per square metre"
+  },
+  {
+    "Code": "GO",
+    "Description": "milligram per square metre"
+  },
+  {
+    "Code": "GP",
+    "Description": "milligram per cubic metre"
+  },
+  {
+    "Code": "GQ",
+    "Description": "microgram per cubic metre"
+  },
+  {
+    "Code": "GRM",
+    "Description": "gram"
+  },
+  {
+    "Code": "GRN",
+    "Description": "grain"
+  },
+  {
+    "Code": "GRO",
+    "Description": "gross"
+  },
+  {
+    "Code": "GT",
+    "Description": "gross ton"
+  },
+  {
+    "Code": "GV",
+    "Description": "gigajoule"
+  },
+  {
+    "Code": "GWH",
+    "Description": "gigawatt hour"
+  },
+  {
+    "Code": "H03",
+    "Description": "henry per kiloohm"
+  },
+  {
+    "Code": "H04",
+    "Description": "henry per ohm"
+  },
+  {
+    "Code": "H05",
+    "Description": "millihenry per kiloohm"
+  },
+  {
+    "Code": "H06",
+    "Description": "millihenry per ohm"
+  },
+  {
+    "Code": "H07",
+    "Description": "pascal second per bar"
+  },
+  {
+    "Code": "H08",
+    "Description": "microbecquerel"
+  },
+  {
+    "Code": "H09",
+    "Description": "reciprocal year"
+  },
+  {
+    "Code": "H10",
+    "Description": "reciprocal hour"
+  },
+  {
+    "Code": "H11",
+    "Description": "reciprocal month"
+  },
+  {
+    "Code": "H12",
+    "Description": "degree Celsius per hour"
+  },
+  {
+    "Code": "H13",
+    "Description": "degree Celsius per minute"
+  },
+  {
+    "Code": "H14",
+    "Description": "degree Celsius per second"
+  },
+  {
+    "Code": "H15",
+    "Description": "square centimetre per gram"
+  },
+  {
+    "Code": "H16",
+    "Description": "square decametre"
+  },
+  {
+    "Code": "H18",
+    "Description": "square hectometre"
+  },
+  {
+    "Code": "H19",
+    "Description": "cubic hectometre"
+  },
+  {
+    "Code": "H20",
+    "Description": "cubic kilometre"
+  },
+  {
+    "Code": "H21",
+    "Description": "blank"
+  },
+  {
+    "Code": "H22",
+    "Description": "volt square inch per pound-force"
+  },
+  {
+    "Code": "H23",
+    "Description": "volt per inch"
+  },
+  {
+    "Code": "H24",
+    "Description": "volt per microsecond"
+  },
+  {
+    "Code": "H25",
+    "Description": "percent per kelvin"
+  },
+  {
+    "Code": "H26",
+    "Description": "ohm per metre"
+  },
+  {
+    "Code": "H27",
+    "Description": "degree per metre"
+  },
+  {
+    "Code": "H28",
+    "Description": "microfarad per kilometre"
+  },
+  {
+    "Code": "H29",
+    "Description": "microgram per litre"
+  },
+  {
+    "Code": "H30",
+    "Description": "square micrometre (square micron)"
+  },
+  {
+    "Code": "H31",
+    "Description": "ampere per kilogram"
+  },
+  {
+    "Code": "H32",
+    "Description": "ampere squared second"
+  },
+  {
+    "Code": "H33",
+    "Description": "farad per kilometre"
+  },
+  {
+    "Code": "H34",
+    "Description": "hertz metre"
+  },
+  {
+    "Code": "H35",
+    "Description": "kelvin metre per watt"
+  },
+  {
+    "Code": "H36",
+    "Description": "megaohm per kilometre"
+  },
+  {
+    "Code": "H37",
+    "Description": "megaohm per metre"
+  },
+  {
+    "Code": "H38",
+    "Description": "megaampere"
+  },
+  {
+    "Code": "H39",
+    "Description": "megahertz kilometre"
+  },
+  {
+    "Code": "H40",
+    "Description": "newton per ampere"
+  },
+  {
+    "Code": "H41",
+    "Description": "newton metre watt to the power minus 0,5"
+  },
+  {
+    "Code": "H42",
+    "Description": "pascal per metre"
+  },
+  {
+    "Code": "H43",
+    "Description": "siemens per centimetre"
+  },
+  {
+    "Code": "H44",
+    "Description": "teraohm"
+  },
+  {
+    "Code": "H45",
+    "Description": "volt second per metre"
+  },
+  {
+    "Code": "H46",
+    "Description": "volt per second"
+  },
+  {
+    "Code": "H47",
+    "Description": "watt per cubic metre"
+  },
+  {
+    "Code": "H48",
+    "Description": "attofarad"
+  },
+  {
+    "Code": "H49",
+    "Description": "centimetre per hour"
+  },
+  {
+    "Code": "H50",
+    "Description": "reciprocal cubic centimetre"
+  },
+  {
+    "Code": "H51",
+    "Description": "decibel per kilometre"
+  },
+  {
+    "Code": "H52",
+    "Description": "decibel per metre"
+  },
+  {
+    "Code": "H53",
+    "Description": "kilogram per bar"
+  },
+  {
+    "Code": "H54",
+    "Description": "kilogram per cubic decimetre kelvin"
+  },
+  {
+    "Code": "H55",
+    "Description": "kilogram per cubic decimetre bar"
+  },
+  {
+    "Code": "H56",
+    "Description": "kilogram per square metre second"
+  },
+  {
+    "Code": "H57",
+    "Description": "inch per two pi radiant"
+  },
+  {
+    "Code": "H58",
+    "Description": "metre per volt second"
+  },
+  {
+    "Code": "H59",
+    "Description": "square metre per newton"
+  },
+  {
+    "Code": "H60",
+    "Description": "cubic metre per cubic metre"
+  },
+  {
+    "Code": "H61",
+    "Description": "millisiemens per centimetre"
+  },
+  {
+    "Code": "H62",
+    "Description": "millivolt per minute"
+  },
+  {
+    "Code": "H63",
+    "Description": "milligram per square centimetre"
+  },
+  {
+    "Code": "H64",
+    "Description": "milligram per gram"
+  },
+  {
+    "Code": "H65",
+    "Description": "millilitre per cubic metre"
+  },
+  {
+    "Code": "H66",
+    "Description": "millimetre per year"
+  },
+  {
+    "Code": "H67",
+    "Description": "millimetre per hour"
+  },
+  {
+    "Code": "H68",
+    "Description": "millimole per gram"
+  },
+  {
+    "Code": "H69",
+    "Description": "picopascal per kilometre"
+  },
+  {
+    "Code": "H70",
+    "Description": "picosecond"
+  },
+  {
+    "Code": "H71",
+    "Description": "percent per month"
+  },
+  {
+    "Code": "H72",
+    "Description": "percent per hectobar"
+  },
+  {
+    "Code": "H73",
+    "Description": "percent per decakelvin"
+  },
+  {
+    "Code": "H74",
+    "Description": "watt per metre"
+  },
+  {
+    "Code": "H75",
+    "Description": "decapascal"
+  },
+  {
+    "Code": "H76",
+    "Description": "gram per millimetre"
+  },
+  {
+    "Code": "H77",
+    "Description": "module width"
+  },
+  {
+    "Code": "H79",
+    "Description": "French gauge"
+  },
+  {
+    "Code": "H80",
+    "Description": "rack unit"
+  },
+  {
+    "Code": "H81",
+    "Description": "millimetre per minute"
+  },
+  {
+    "Code": "H82",
+    "Description": "big point"
+  },
+  {
+    "Code": "H83",
+    "Description": "litre per kilogram"
+  },
+  {
+    "Code": "H84",
+    "Description": "gram millimetre"
+  },
+  {
+    "Code": "H85",
+    "Description": "reciprocal week"
+  },
+  {
+    "Code": "H87",
+    "Description": "piece"
+  },
+  {
+    "Code": "H88",
+    "Description": "megaohm kilometre"
+  },
+  {
+    "Code": "H89",
+    "Description": "percent per ohm"
+  },
+  {
+    "Code": "H90",
+    "Description": "percent per degree"
+  },
+  {
+    "Code": "H91",
+    "Description": "percent per ten thousand"
+  },
+  {
+    "Code": "H92",
+    "Description": "percent per one hundred thousand"
+  },
+  {
+    "Code": "H93",
+    "Description": "percent per hundred"
+  },
+  {
+    "Code": "H94",
+    "Description": "percent per thousand"
+  },
+  {
+    "Code": "H95",
+    "Description": "percent per volt"
+  },
+  {
+    "Code": "H96",
+    "Description": "percent per bar"
+  },
+  {
+    "Code": "H98",
+    "Description": "percent per inch"
+  },
+  {
+    "Code": "H99",
+    "Description": "percent per metre"
+  },
+  {
+    "Code": "HA",
+    "Description": "hank"
+  },
+  {
+    "Code": "HAD",
+    "Description": "Piece Day"
+  },
+  {
+    "Code": "HAR",
+    "Description": "Hectare"
+  },
+  {
+    "Code": "HBA",
+    "Description": "hectobar"
+  },
+  {
+    "Code": "HBX",
+    "Description": "hundred boxes"
+  },
+  {
+    "Code": "HC",
+    "Description": "hundred count"
+  },
+  {
+    "Code": "HDW",
+    "Description": "hundred kilogram, dry weight"
+  },
+  {
+    "Code": "HEA",
+    "Description": "head"
+  },
+  {
+    "Code": "HGM",
+    "Description": "hectogram"
+  },
+  {
+    "Code": "HH",
+    "Description": "hundred cubic foot"
+  },
+  {
+    "Code": "HIU",
+    "Description": "hundred international unit"
+  },
+  {
+    "Code": "HKM",
+    "Description": "hundred kilogram, net mass"
+  },
+  {
+    "Code": "HLT",
+    "Description": "hectolitre"
+  },
+  {
+    "Code": "HM",
+    "Description": "mile per hour (statute mile)"
+  },
+  {
+    "Code": "HMO",
+    "Description": "Piece Month"
+  },
+  {
+    "Code": "HMQ",
+    "Description": "million cubic metre"
+  },
+  {
+    "Code": "HMT",
+    "Description": "hectometre"
+  },
+  {
+    "Code": "HPA",
+    "Description": "hectolitre of pure alcohol"
+  },
+  {
+    "Code": "HTZ",
+    "Description": "hertz"
+  },
+  {
+    "Code": "HUR",
+    "Description": "hour"
+  },
+  {
+    "Code": "IA",
+    "Description": "inch pound (pound inch)"
+  },
+  {
+    "Code": "IE",
+    "Description": "person"
+  },
+  {
+    "Code": "INH",
+    "Description": "inch"
+  },
+  {
+    "Code": "INK",
+    "Description": "square inch"
+  },
+  {
+    "Code": "INQ",
+    "Description": "cubic inch"
+  },
+  {
+    "Code": "ISD",
+    "Description": "international sugar degree"
+  },
+  {
+    "Code": "IU",
+    "Description": "inch per second"
+  },
+  {
+    "Code": "IUG",
+    "Description": "international unit per gram"
+  },
+  {
+    "Code": "IV",
+    "Description": "inch per second squared"
+  },
+  {
+    "Code": "J10",
+    "Description": "percent per millimetre"
+  },
+  {
+    "Code": "J12",
+    "Description": "per mille per psi"
+  },
+  {
+    "Code": "J13",
+    "Description": "degree API"
+  },
+  {
+    "Code": "J14",
+    "Description": "degree Baume (origin scale)"
+  },
+  {
+    "Code": "J15",
+    "Description": "degree Baume (US heavy)"
+  },
+  {
+    "Code": "J16",
+    "Description": "degree Baume (US light)"
+  },
+  {
+    "Code": "J17",
+    "Description": "degree Balling"
+  },
+  {
+    "Code": "J18",
+    "Description": "degree Brix"
+  },
+  {
+    "Code": "J19",
+    "Description": "degree Fahrenheit hour square foot per British thermal unit (thermochemical)"
+  },
+  {
+    "Code": "J2",
+    "Description": "joule per kilogram"
+  },
+  {
+    "Code": "J20",
+    "Description": "degree Fahrenheit per kelvin"
+  },
+  {
+    "Code": "J21",
+    "Description": "degree Fahrenheit per bar"
+  },
+  {
+    "Code": "J22",
+    "Description": "degree Fahrenheit hour square foot per British thermal unit (international table)"
+  },
+  {
+    "Code": "J23",
+    "Description": "degree Fahrenheit per hour"
+  },
+  {
+    "Code": "J24",
+    "Description": "degree Fahrenheit per minute"
+  },
+  {
+    "Code": "J25",
+    "Description": "degree Fahrenheit per second"
+  },
+  {
+    "Code": "J26",
+    "Description": "reciprocal degree Fahrenheit"
+  },
+  {
+    "Code": "J27",
+    "Description": "degree Oechsle"
+  },
+  {
+    "Code": "J28",
+    "Description": "degree Rankine per hour"
+  },
+  {
+    "Code": "J29",
+    "Description": "degree Rankine per minute"
+  },
+  {
+    "Code": "J30",
+    "Description": "degree Rankine per second"
+  },
+  {
+    "Code": "J31",
+    "Description": "degree Twaddell"
+  },
+  {
+    "Code": "J32",
+    "Description": "micropoise"
+  },
+  {
+    "Code": "J33",
+    "Description": "microgram per kilogram"
+  },
+  {
+    "Code": "J34",
+    "Description": "microgram per cubic metre kelvin"
+  },
+  {
+    "Code": "J35",
+    "Description": "microgram per cubic metre bar"
+  },
+  {
+    "Code": "J36",
+    "Description": "microlitre per litre"
+  },
+  {
+    "Code": "J38",
+    "Description": "baud"
+  },
+  {
+    "Code": "J39",
+    "Description": "British thermal unit (mean)"
+  },
+  {
+    "Code": "J40",
+    "Description": "British thermal unit (international table) foot per hourÂ square foot degree Fahrenheit"
+  },
+  {
+    "Code": "J41",
+    "Description": "British thermal unit (international table) inch per hour squareÂ foot degree Fahrenheit"
+  },
+  {
+    "Code": "J42",
+    "Description": "British thermal unit (international table) inch per second squareÂ foot degree Fahrenheit"
+  },
+  {
+    "Code": "J43",
+    "Description": "British thermal unit (international table) per pound degree Fahrenheit"
+  },
+  {
+    "Code": "J44",
+    "Description": "British thermal unit (international table) per minute"
+  },
+  {
+    "Code": "J45",
+    "Description": "British thermal unit (international table) per second"
+  },
+  {
+    "Code": "J46",
+    "Description": "British thermal unit (thermochemical) foot per hour squareÂ foot degree Fahrenheit"
+  },
+  {
+    "Code": "J47",
+    "Description": "British thermal unit (thermochemical) per hour"
+  },
+  {
+    "Code": "J48",
+    "Description": "British thermal unit (thermochemical) inch per hour squareÂ foot degree Fahrenheit"
+  },
+  {
+    "Code": "J49",
+    "Description": "British thermal unit (thermochemical) inch per secondÂ square foot degree Fahrenheit"
+  },
+  {
+    "Code": "J50",
+    "Description": "British thermal unit (thermochemical) per pound degree Fahrenheit"
+  },
+  {
+    "Code": "J51",
+    "Description": "British thermal unit (thermochemical) per minute"
+  },
+  {
+    "Code": "J52",
+    "Description": "British thermal unit (thermochemical) per second"
+  },
+  {
+    "Code": "J53",
+    "Description": "coulomb square metre per kilogram"
+  },
+  {
+    "Code": "J54",
+    "Description": "megabaud"
+  },
+  {
+    "Code": "J55",
+    "Description": "watt second"
+  },
+  {
+    "Code": "J56",
+    "Description": "bar per bar"
+  },
+  {
+    "Code": "J57",
+    "Description": "barrel (UK petroleum)"
+  },
+  {
+    "Code": "J58",
+    "Description": "barrel (UK petroleum) per minute"
+  },
+  {
+    "Code": "J59",
+    "Description": "barrel (UK petroleum) per day"
+  },
+  {
+    "Code": "J60",
+    "Description": "barrel (UK petroleum) per hour"
+  },
+  {
+    "Code": "J61",
+    "Description": "barrel (UK petroleum) per second"
+  },
+  {
+    "Code": "J62",
+    "Description": "barrel (US petroleum) per hour"
+  },
+  {
+    "Code": "J63",
+    "Description": "barrel (US petroleum) per second"
+  },
+  {
+    "Code": "J64",
+    "Description": "bushel (UK) per day"
+  },
+  {
+    "Code": "J65",
+    "Description": "bushel (UK) per hour"
+  },
+  {
+    "Code": "J66",
+    "Description": "bushel (UK) per minute"
+  },
+  {
+    "Code": "J67",
+    "Description": "bushel (UK) per second"
+  },
+  {
+    "Code": "J68",
+    "Description": "bushel (US dry) per day"
+  },
+  {
+    "Code": "J69",
+    "Description": "bushel (US dry) per hour"
+  },
+  {
+    "Code": "J70",
+    "Description": "bushel (US dry) per minute"
+  },
+  {
+    "Code": "J71",
+    "Description": "bushel (US dry) per second"
+  },
+  {
+    "Code": "J72",
+    "Description": "centinewton metre"
+  },
+  {
+    "Code": "J73",
+    "Description": "centipoise per kelvin"
+  },
+  {
+    "Code": "J74",
+    "Description": "centipoise per bar"
+  },
+  {
+    "Code": "J75",
+    "Description": "calorie (mean)"
+  },
+  {
+    "Code": "J76",
+    "Description": "calorie (international table) per gram degree Celsius"
+  },
+  {
+    "Code": "J78",
+    "Description": "calorie (thermochemical) per centimetre second degree Celsius"
+  },
+  {
+    "Code": "J79",
+    "Description": "calorie (thermochemical) per gram degree Celsius"
+  },
+  {
+    "Code": "J81",
+    "Description": "calorie (thermochemical) per minute"
+  },
+  {
+    "Code": "J82",
+    "Description": "calorie (thermochemical) per second"
+  },
+  {
+    "Code": "J83",
+    "Description": "clo"
+  },
+  {
+    "Code": "J84",
+    "Description": "centimetre per second kelvin"
+  },
+  {
+    "Code": "J85",
+    "Description": "centimetre per second bar"
+  },
+  {
+    "Code": "J87",
+    "Description": "cubic centimetre per cubic metre"
+  },
+  {
+    "Code": "J90",
+    "Description": "cubic decimetre per day"
+  },
+  {
+    "Code": "J91",
+    "Description": "cubic decimetre per cubic metre"
+  },
+  {
+    "Code": "J92",
+    "Description": "cubic decimetre per minute"
+  },
+  {
+    "Code": "J93",
+    "Description": "cubic decimetre per second"
+  },
+  {
+    "Code": "J95",
+    "Description": "ounce (UK fluid) per day"
+  },
+  {
+    "Code": "J96",
+    "Description": "ounce (UK fluid) per hour"
+  },
+  {
+    "Code": "J97",
+    "Description": "ounce (UK fluid) per minute"
+  },
+  {
+    "Code": "J98",
+    "Description": "ounce (UK fluid) per second"
+  },
+  {
+    "Code": "J99",
+    "Description": "ounce (US fluid) per day"
+  },
+  {
+    "Code": "JE",
+    "Description": "joule per kelvin"
+  },
+  {
+    "Code": "JK",
+    "Description": "megajoule per kilogram"
+  },
+  {
+    "Code": "JM",
+    "Description": "megajoule per cubic metre"
+  },
+  {
+    "Code": "JNT",
+    "Description": "pipeline joint"
+  },
+  {
+    "Code": "JOU",
+    "Description": "joule"
+  },
+  {
+    "Code": "JPS",
+    "Description": "hundred metre"
+  },
+  {
+    "Code": "JWL",
+    "Description": "number of jewels"
+  },
+  {
+    "Code": "K1",
+    "Description": "kilowatt demand"
+  },
+  {
+    "Code": "K10",
+    "Description": "ounce (US fluid) per hour"
+  },
+  {
+    "Code": "K11",
+    "Description": "ounce (US fluid) per minute"
+  },
+  {
+    "Code": "K12",
+    "Description": "ounce (US fluid) per second"
+  },
+  {
+    "Code": "K13",
+    "Description": "foot per degree Fahrenheit"
+  },
+  {
+    "Code": "K14",
+    "Description": "foot per hour"
+  },
+  {
+    "Code": "K15",
+    "Description": "foot pound-force per hour"
+  },
+  {
+    "Code": "K16",
+    "Description": "foot pound-force per minute"
+  },
+  {
+    "Code": "K17",
+    "Description": "foot per psi"
+  },
+  {
+    "Code": "K18",
+    "Description": "foot per second degree Fahrenheit"
+  },
+  {
+    "Code": "K19",
+    "Description": "foot per second psi"
+  },
+  {
+    "Code": "K2",
+    "Description": "kilovolt ampere reactive demand"
+  },
+  {
+    "Code": "K20",
+    "Description": "reciprocal cubic foot"
+  },
+  {
+    "Code": "K21",
+    "Description": "cubic foot per degree Fahrenheit"
+  },
+  {
+    "Code": "K22",
+    "Description": "cubic foot per day"
+  },
+  {
+    "Code": "K23",
+    "Description": "cubic foot per psi"
+  },
+  {
+    "Code": "K26",
+    "Description": "gallon (UK) per day"
+  },
+  {
+    "Code": "K27",
+    "Description": "gallon (UK) per hour"
+  },
+  {
+    "Code": "K28",
+    "Description": "gallon (UK) per second"
+  },
+  {
+    "Code": "K3",
+    "Description": "kilovolt ampere reactive hour"
+  },
+  {
+    "Code": "K30",
+    "Description": "gallon (US liquid) per second"
+  },
+  {
+    "Code": "K31",
+    "Description": "gram-force per square centimetre"
+  },
+  {
+    "Code": "K32",
+    "Description": "gill (UK) per day"
+  },
+  {
+    "Code": "K33",
+    "Description": "gill (UK) per hour"
+  },
+  {
+    "Code": "K34",
+    "Description": "gill (UK) per minute"
+  },
+  {
+    "Code": "K35",
+    "Description": "gill (UK) per second"
+  },
+  {
+    "Code": "K36",
+    "Description": "gill (US) per day"
+  },
+  {
+    "Code": "K37",
+    "Description": "gill (US) per hour"
+  },
+  {
+    "Code": "K38",
+    "Description": "gill (US) per minute"
+  },
+  {
+    "Code": "K39",
+    "Description": "gill (US) per second"
+  },
+  {
+    "Code": "K40",
+    "Description": "standard acceleration of free fall"
+  },
+  {
+    "Code": "K41",
+    "Description": "grain per gallon (US)"
+  },
+  {
+    "Code": "K42",
+    "Description": "horsepower (boiler)"
+  },
+  {
+    "Code": "K43",
+    "Description": "horsepower (electric)"
+  },
+  {
+    "Code": "K45",
+    "Description": "inch per degree Fahrenheit"
+  },
+  {
+    "Code": "K46",
+    "Description": "inch per psi"
+  },
+  {
+    "Code": "K47",
+    "Description": "inch per second degree Fahrenheit"
+  },
+  {
+    "Code": "K48",
+    "Description": "inch per second psi"
+  },
+  {
+    "Code": "K49",
+    "Description": "reciprocal cubic inch"
+  },
+  {
+    "Code": "K50",
+    "Description": "kilobaud"
+  },
+  {
+    "Code": "K51",
+    "Description": "kilocalorie (mean)"
+  },
+  {
+    "Code": "K52",
+    "Description": "kilocalorie (international table) per hour metre degree Celsius"
+  },
+  {
+    "Code": "K53",
+    "Description": "kilocalorie (thermochemical)"
+  },
+  {
+    "Code": "K54",
+    "Description": "kilocalorie (thermochemical) per minute"
+  },
+  {
+    "Code": "K55",
+    "Description": "kilocalorie (thermochemical) per second"
+  },
+  {
+    "Code": "K58",
+    "Description": "kilomole per hour"
+  },
+  {
+    "Code": "K59",
+    "Description": "kilomole per cubic metre kelvin"
+  },
+  {
+    "Code": "K6",
+    "Description": "kilolitre"
+  },
+  {
+    "Code": "K60",
+    "Description": "kilomole per cubic metre bar"
+  },
+  {
+    "Code": "K61",
+    "Description": "kilomole per minute"
+  },
+  {
+    "Code": "K62",
+    "Description": "litre per litre"
+  },
+  {
+    "Code": "K63",
+    "Description": "reciprocal litre"
+  },
+  {
+    "Code": "K64",
+    "Description": "pound (avoirdupois) per degree Fahrenheit"
+  },
+  {
+    "Code": "K65",
+    "Description": "pound (avoirdupois) square foot"
+  },
+  {
+    "Code": "K66",
+    "Description": "pound (avoirdupois) per day"
+  },
+  {
+    "Code": "K67",
+    "Description": "pound per foot hour"
+  },
+  {
+    "Code": "K68",
+    "Description": "pound per foot second"
+  },
+  {
+    "Code": "K69",
+    "Description": "pound (avoirdupois) per cubic foot degree Fahrenheit"
+  },
+  {
+    "Code": "K70",
+    "Description": "pound (avoirdupois) per cubic foot psi"
+  },
+  {
+    "Code": "K71",
+    "Description": "pound (avoirdupois) per gallon (UK)"
+  },
+  {
+    "Code": "K73",
+    "Description": "pound (avoirdupois) per hour degree Fahrenheit"
+  },
+  {
+    "Code": "K74",
+    "Description": "pound (avoirdupois) per hour psi"
+  },
+  {
+    "Code": "K75",
+    "Description": "pound (avoirdupois) per cubic inch degree Fahrenheit"
+  },
+  {
+    "Code": "K76",
+    "Description": "pound (avoirdupois) per cubic inch psi"
+  },
+  {
+    "Code": "K77",
+    "Description": "pound (avoirdupois) per psi"
+  },
+  {
+    "Code": "K78",
+    "Description": "pound (avoirdupois) per minute"
+  },
+  {
+    "Code": "K79",
+    "Description": "pound (avoirdupois) per minute degree Fahrenheit"
+  },
+  {
+    "Code": "K80",
+    "Description": "pound (avoirdupois) per minute psi"
+  },
+  {
+    "Code": "K81",
+    "Description": "pound (avoirdupois) per second"
+  },
+  {
+    "Code": "K82",
+    "Description": "pound (avoirdupois) per second degree Fahrenheit"
+  },
+  {
+    "Code": "K83",
+    "Description": "pound (avoirdupois) per second psi"
+  },
+  {
+    "Code": "K84",
+    "Description": "pound per cubic yard"
+  },
+  {
+    "Code": "K85",
+    "Description": "pound-force per square foot"
+  },
+  {
+    "Code": "K86",
+    "Description": "pound-force per square inch degree Fahrenheit"
+  },
+  {
+    "Code": "K87",
+    "Description": "psi cubic inch per second"
+  },
+  {
+    "Code": "K88",
+    "Description": "psi litre per second"
+  },
+  {
+    "Code": "K89",
+    "Description": "psi cubic metre per second"
+  },
+  {
+    "Code": "K90",
+    "Description": "psi cubic yard per second"
+  },
+  {
+    "Code": "K91",
+    "Description": "pound-force second per square foot"
+  },
+  {
+    "Code": "K92",
+    "Description": "pound-force second per square inch"
+  },
+  {
+    "Code": "K93",
+    "Description": "reciprocal psi"
+  },
+  {
+    "Code": "K94",
+    "Description": "quart (UK liquid) per day"
+  },
+  {
+    "Code": "K95",
+    "Description": "quart (UK liquid) per hour"
+  },
+  {
+    "Code": "K96",
+    "Description": "quart (UK liquid) per minute"
+  },
+  {
+    "Code": "K97",
+    "Description": "quart (UK liquid) per second"
+  },
+  {
+    "Code": "K98",
+    "Description": "quart (US liquid) per day"
+  },
+  {
+    "Code": "K99",
+    "Description": "quart (US liquid) per hour"
+  },
+  {
+    "Code": "KA",
+    "Description": "cake"
+  },
+  {
+    "Code": "KAT",
+    "Description": "katal"
+  },
+  {
+    "Code": "KB",
+    "Description": "kilocharacter"
+  },
+  {
+    "Code": "KBA",
+    "Description": "kilobar"
+  },
+  {
+    "Code": "KCC",
+    "Description": "kilogram of choline chloride"
+  },
+  {
+    "Code": "KDW",
+    "Description": "kilogram drained net weight"
+  },
+  {
+    "Code": "KEL",
+    "Description": "kelvin"
+  },
+  {
+    "Code": "KGM",
+    "Description": "kilogram"
+  },
+  {
+    "Code": "KGS",
+    "Description": "kilogram per second"
+  },
+  {
+    "Code": "KHY",
+    "Description": "kilogram of hydrogen peroxide"
+  },
+  {
+    "Code": "KHZ",
+    "Description": "kilohertz"
+  },
+  {
+    "Code": "KI",
+    "Description": "kilogram per millimetre width"
+  },
+  {
+    "Code": "KIC",
+    "Description": "kilogram, including container"
+  },
+  {
+    "Code": "KIP",
+    "Description": "kilogram, including inner packaging"
+  },
+  {
+    "Code": "KJ",
+    "Description": "kilosegment"
+  },
+  {
+    "Code": "KJO",
+    "Description": "kilojoule"
+  },
+  {
+    "Code": "KL",
+    "Description": "kilogram per metre"
+  },
+  {
+    "Code": "KLK",
+    "Description": "lactic dry material percentage"
+  },
+  {
+    "Code": "KLX",
+    "Description": "kilolux"
+  },
+  {
+    "Code": "KMA",
+    "Description": "kilogram of methylamine"
+  },
+  {
+    "Code": "KMH",
+    "Description": "kilometre per hour"
+  },
+  {
+    "Code": "KMK",
+    "Description": "square kilometre"
+  },
+  {
+    "Code": "KMQ",
+    "Description": "kilogram per cubic metre"
+  },
+  {
+    "Code": "KMT",
+    "Description": "kilometre"
+  },
+  {
+    "Code": "KNI",
+    "Description": "kilogram of nitrogen"
+  },
+  {
+    "Code": "KNM",
+    "Description": "kilonewton per square metre"
+  },
+  {
+    "Code": "KNS",
+    "Description": "kilogram named substance"
+  },
+  {
+    "Code": "KNT",
+    "Description": "knot"
+  },
+  {
+    "Code": "KO",
+    "Description": "milliequivalence caustic potash per gram of product"
+  },
+  {
+    "Code": "KPA",
+    "Description": "kilopascal"
+  },
+  {
+    "Code": "KPH",
+    "Description": "kilogram of potassium hydroxide (caustic potash)"
+  },
+  {
+    "Code": "KPO",
+    "Description": "kilogram of potassium oxide"
+  },
+  {
+    "Code": "KPP",
+    "Description": "kilogram of phosphorus pentoxide (phosphoric anhydride)"
+  },
+  {
+    "Code": "KR",
+    "Description": "kiloroentgen"
+  },
+  {
+    "Code": "KSD",
+    "Description": "kilogram of substance 90 % dry"
+  },
+  {
+    "Code": "KSH",
+    "Description": "kilogram of sodium hydroxide (caustic soda)"
+  },
+  {
+    "Code": "KT",
+    "Description": "kit"
+  },
+  {
+    "Code": "KTN",
+    "Description": "kilotonne"
+  },
+  {
+    "Code": "KUR",
+    "Description": "kilogram of uranium"
+  },
+  {
+    "Code": "KVA",
+    "Description": "kilovolt - ampere"
+  },
+  {
+    "Code": "KVR",
+    "Description": "kilovar"
+  },
+  {
+    "Code": "KVT",
+    "Description": "kilovolt"
+  },
+  {
+    "Code": "KW",
+    "Description": "kilogram per millimetre"
+  },
+  {
+    "Code": "KWH",
+    "Description": "kilowatt hour"
+  },
+  {
+    "Code": "KWN",
+    "Description": "Kilowatt hour per normalized cubic metre"
+  },
+  {
+    "Code": "KWO",
+    "Description": "kilogram of tungsten trioxide"
+  },
+  {
+    "Code": "KWS",
+    "Description": "Kilowatt hour per standard cubic metre"
+  },
+  {
+    "Code": "KWT",
+    "Description": "kilowatt"
+  },
+  {
+    "Code": "KWY",
+    "Description": "kilowatt year"
+  },
+  {
+    "Code": "KX",
+    "Description": "millilitre per kilogram"
+  },
+  {
+    "Code": "L10",
+    "Description": "quart (US liquid) per minute"
+  },
+  {
+    "Code": "L11",
+    "Description": "quart (US liquid) per second"
+  },
+  {
+    "Code": "L12",
+    "Description": "metre per second kelvin"
+  },
+  {
+    "Code": "L13",
+    "Description": "metre per second bar"
+  },
+  {
+    "Code": "L14",
+    "Description": "square metre hour degree Celsius per kilocalorie (international table)"
+  },
+  {
+    "Code": "L15",
+    "Description": "millipascal second per kelvin"
+  },
+  {
+    "Code": "L16",
+    "Description": "millipascal second per bar"
+  },
+  {
+    "Code": "L17",
+    "Description": "milligram per cubic metre kelvin"
+  },
+  {
+    "Code": "L18",
+    "Description": "milligram per cubic metre bar"
+  },
+  {
+    "Code": "L19",
+    "Description": "millilitre per litre"
+  },
+  {
+    "Code": "L2",
+    "Description": "litre per minute"
+  },
+  {
+    "Code": "L20",
+    "Description": "reciprocal cubic millimetre"
+  },
+  {
+    "Code": "L21",
+    "Description": "cubic millimetre per cubic metre"
+  },
+  {
+    "Code": "L23",
+    "Description": "mole per hour"
+  },
+  {
+    "Code": "L24",
+    "Description": "mole per kilogram kelvin"
+  },
+  {
+    "Code": "L25",
+    "Description": "mole per kilogram bar"
+  },
+  {
+    "Code": "L26",
+    "Description": "mole per litre kelvin"
+  },
+  {
+    "Code": "L27",
+    "Description": "mole per litre bar"
+  },
+  {
+    "Code": "L28",
+    "Description": "mole per cubic metre kelvin"
+  },
+  {
+    "Code": "L29",
+    "Description": "mole per cubic metre bar"
+  },
+  {
+    "Code": "L30",
+    "Description": "mole per minute"
+  },
+  {
+    "Code": "L31",
+    "Description": "milliroentgen aequivalent men"
+  },
+  {
+    "Code": "L32",
+    "Description": "nanogram per kilogram"
+  },
+  {
+    "Code": "L33",
+    "Description": "ounce (avoirdupois) per day"
+  },
+  {
+    "Code": "L34",
+    "Description": "ounce (avoirdupois) per hour"
+  },
+  {
+    "Code": "L35",
+    "Description": "ounce (avoirdupois) per minute"
+  },
+  {
+    "Code": "L36",
+    "Description": "ounce (avoirdupois) per second"
+  },
+  {
+    "Code": "L37",
+    "Description": "ounce (avoirdupois) per gallon (UK)"
+  },
+  {
+    "Code": "L38",
+    "Description": "ounce (avoirdupois) per gallon (US)"
+  },
+  {
+    "Code": "L39",
+    "Description": "ounce (avoirdupois) per cubic inch"
+  },
+  {
+    "Code": "L40",
+    "Description": "ounce (avoirdupois)-force"
+  },
+  {
+    "Code": "L41",
+    "Description": "ounce (avoirdupois)-force inch"
+  },
+  {
+    "Code": "L42",
+    "Description": "picosiemens per metre"
+  },
+  {
+    "Code": "L43",
+    "Description": "peck (UK)"
+  },
+  {
+    "Code": "L44",
+    "Description": "peck (UK) per day"
+  },
+  {
+    "Code": "L45",
+    "Description": "peck (UK) per hour"
+  },
+  {
+    "Code": "L46",
+    "Description": "peck (UK) per minute"
+  },
+  {
+    "Code": "L47",
+    "Description": "peck (UK) per second"
+  },
+  {
+    "Code": "L48",
+    "Description": "peck (US dry) per day"
+  },
+  {
+    "Code": "L49",
+    "Description": "peck (US dry) per hour"
+  },
+  {
+    "Code": "L50",
+    "Description": "peck (US dry) per minute"
+  },
+  {
+    "Code": "L51",
+    "Description": "peck (US dry) per second"
+  },
+  {
+    "Code": "L52",
+    "Description": "psi per psi"
+  },
+  {
+    "Code": "L53",
+    "Description": "pint (UK) per day"
+  },
+  {
+    "Code": "L54",
+    "Description": "pint (UK) per hour"
+  },
+  {
+    "Code": "L55",
+    "Description": "pint (UK) per minute"
+  },
+  {
+    "Code": "L56",
+    "Description": "pint (UK) per second"
+  },
+  {
+    "Code": "L57",
+    "Description": "pint (US liquid) per day"
+  },
+  {
+    "Code": "L58",
+    "Description": "pint (US liquid) per hour"
+  },
+  {
+    "Code": "L59",
+    "Description": "pint (US liquid) per minute"
+  },
+  {
+    "Code": "L60",
+    "Description": "pint (US liquid) per second"
+  },
+  {
+    "Code": "L63",
+    "Description": "slug per day"
+  },
+  {
+    "Code": "L64",
+    "Description": "slug per foot second"
+  },
+  {
+    "Code": "L65",
+    "Description": "slug per cubic foot"
+  },
+  {
+    "Code": "L66",
+    "Description": "slug per hour"
+  },
+  {
+    "Code": "L67",
+    "Description": "slug per minute"
+  },
+  {
+    "Code": "L68",
+    "Description": "slug per second"
+  },
+  {
+    "Code": "L69",
+    "Description": "tonne per kelvin"
+  },
+  {
+    "Code": "L70",
+    "Description": "tonne per bar"
+  },
+  {
+    "Code": "L71",
+    "Description": "tonne per day"
+  },
+  {
+    "Code": "L72",
+    "Description": "tonne per day kelvin"
+  },
+  {
+    "Code": "L73",
+    "Description": "tonne per day bar"
+  },
+  {
+    "Code": "L74",
+    "Description": "tonne per hour kelvin"
+  },
+  {
+    "Code": "L75",
+    "Description": "tonne per hour bar"
+  },
+  {
+    "Code": "L76",
+    "Description": "tonne per cubic metre kelvin"
+  },
+  {
+    "Code": "L77",
+    "Description": "tonne per cubic metre bar"
+  },
+  {
+    "Code": "L78",
+    "Description": "tonne per minute"
+  },
+  {
+    "Code": "L79",
+    "Description": "tonne per minute kelvin"
+  },
+  {
+    "Code": "L80",
+    "Description": "tonne per minute bar"
+  },
+  {
+    "Code": "L81",
+    "Description": "tonne per second"
+  },
+  {
+    "Code": "L82",
+    "Description": "tonne per second kelvin"
+  },
+  {
+    "Code": "L83",
+    "Description": "tonne per second bar"
+  },
+  {
+    "Code": "L84",
+    "Description": "ton (UK shipping)"
+  },
+  {
+    "Code": "L85",
+    "Description": "ton long per day"
+  },
+  {
+    "Code": "L86",
+    "Description": "ton (US shipping)"
+  },
+  {
+    "Code": "L87",
+    "Description": "ton short per degree Fahrenheit"
+  },
+  {
+    "Code": "L88",
+    "Description": "ton short per day"
+  },
+  {
+    "Code": "L89",
+    "Description": "ton short per hour degree Fahrenheit"
+  },
+  {
+    "Code": "L90",
+    "Description": "ton short per hour psi"
+  },
+  {
+    "Code": "L91",
+    "Description": "ton short per psi"
+  },
+  {
+    "Code": "L92",
+    "Description": "ton (UK long) per cubic yard"
+  },
+  {
+    "Code": "L93",
+    "Description": "ton (US short) per cubic yard"
+  },
+  {
+    "Code": "L94",
+    "Description": "ton-force (US short)"
+  },
+  {
+    "Code": "L95",
+    "Description": "common year"
+  },
+  {
+    "Code": "L96",
+    "Description": "sidereal year"
+  },
+  {
+    "Code": "L98",
+    "Description": "yard per degree Fahrenheit"
+  },
+  {
+    "Code": "L99",
+    "Description": "yard per psi"
+  },
+  {
+    "Code": "LA",
+    "Description": "pound per cubic inch"
+  },
+  {
+    "Code": "LAC",
+    "Description": "lactose excess percentage"
+  },
+  {
+    "Code": "LBR",
+    "Description": "pound"
+  },
+  {
+    "Code": "LBT",
+    "Description": "troy pound (US)"
+  },
+  {
+    "Code": "LD",
+    "Description": "litre per day"
+  },
+  {
+    "Code": "LEF",
+    "Description": "leaf"
+  },
+  {
+    "Code": "LF",
+    "Description": "linear foot"
+  },
+  {
+    "Code": "LH",
+    "Description": "labour hour"
+  },
+  {
+    "Code": "LK",
+    "Description": "link"
+  },
+  {
+    "Code": "LM",
+    "Description": "linear metre"
+  },
+  {
+    "Code": "LN",
+    "Description": "length"
+  },
+  {
+    "Code": "LO",
+    "Description": "lot [unit of procurement]"
+  },
+  {
+    "Code": "LP",
+    "Description": "liquid pound"
+  },
+  {
+    "Code": "LPA",
+    "Description": "litre of pure alcohol"
+  },
+  {
+    "Code": "LR",
+    "Description": "layer"
+  },
+  {
+    "Code": "LS",
+    "Description": "lump sum"
+  },
+  {
+    "Code": "LTN",
+    "Description": "ton (UK) or long ton (US)"
+  },
+  {
+    "Code": "LTR",
+    "Description": "litre"
+  },
+  {
+    "Code": "LUB",
+    "Description": "metric ton, lubricating oil"
+  },
+  {
+    "Code": "LUM",
+    "Description": "lumen"
+  },
+  {
+    "Code": "LUX",
+    "Description": "lux"
+  },
+  {
+    "Code": "LY",
+    "Description": "linear yard"
+  },
+  {
+    "Code": "M1",
+    "Description": "milligram per litre"
+  },
+  {
+    "Code": "M10",
+    "Description": "reciprocal cubic yard"
+  },
+  {
+    "Code": "M11",
+    "Description": "cubic yard per degree Fahrenheit"
+  },
+  {
+    "Code": "M12",
+    "Description": "cubic yard per day"
+  },
+  {
+    "Code": "M13",
+    "Description": "cubic yard per hour"
+  },
+  {
+    "Code": "M14",
+    "Description": "cubic yard per psi"
+  },
+  {
+    "Code": "M15",
+    "Description": "cubic yard per minute"
+  },
+  {
+    "Code": "M16",
+    "Description": "cubic yard per second"
+  },
+  {
+    "Code": "M17",
+    "Description": "kilohertz metre"
+  },
+  {
+    "Code": "M18",
+    "Description": "gigahertz metre"
+  },
+  {
+    "Code": "M19",
+    "Description": "Beaufort"
+  },
+  {
+    "Code": "M20",
+    "Description": "reciprocal megakelvin or megakelvin to the power minus one"
+  },
+  {
+    "Code": "M21",
+    "Description": "reciprocal kilovolt - ampere reciprocal hour"
+  },
+  {
+    "Code": "M22",
+    "Description": "millilitre per square centimetre minute"
+  },
+  {
+    "Code": "M23",
+    "Description": "newton per centimetre"
+  },
+  {
+    "Code": "M24",
+    "Description": "ohm kilometre"
+  },
+  {
+    "Code": "M25",
+    "Description": "percent per degree Celsius"
+  },
+  {
+    "Code": "M26",
+    "Description": "gigaohm per metre"
+  },
+  {
+    "Code": "M27",
+    "Description": "megahertz metre"
+  },
+  {
+    "Code": "M29",
+    "Description": "kilogram per kilogram"
+  },
+  {
+    "Code": "M30",
+    "Description": "reciprocal volt - ampere reciprocal second"
+  },
+  {
+    "Code": "M31",
+    "Description": "kilogram per kilometre"
+  },
+  {
+    "Code": "M32",
+    "Description": "pascal second per litre"
+  },
+  {
+    "Code": "M33",
+    "Description": "millimole per litre"
+  },
+  {
+    "Code": "M34",
+    "Description": "newton metre per square metre"
+  },
+  {
+    "Code": "M35",
+    "Description": "millivolt - ampere"
+  },
+  {
+    "Code": "M36",
+    "Description": "30-day month"
+  },
+  {
+    "Code": "M37",
+    "Description": "actual/360"
+  },
+  {
+    "Code": "M38",
+    "Description": "kilometre per second squared"
+  },
+  {
+    "Code": "M39",
+    "Description": "centimetre per second squared"
+  },
+  {
+    "Code": "M4",
+    "Description": "monetary value"
+  },
+  {
+    "Code": "M40",
+    "Description": "yard per second squared"
+  },
+  {
+    "Code": "M41",
+    "Description": "millimetre per second squared"
+  },
+  {
+    "Code": "M42",
+    "Description": "mile (statute mile) per second squared"
+  },
+  {
+    "Code": "M43",
+    "Description": "mil"
+  },
+  {
+    "Code": "M44",
+    "Description": "revolution"
+  },
+  {
+    "Code": "M45",
+    "Description": "degree [unit of angle] per second squared"
+  },
+  {
+    "Code": "M46",
+    "Description": "revolution per minute"
+  },
+  {
+    "Code": "M47",
+    "Description": "circular mil"
+  },
+  {
+    "Code": "M48",
+    "Description": "square mile (based on U.S. survey foot)"
+  },
+  {
+    "Code": "M49",
+    "Description": "chain (based on U.S. survey foot)"
+  },
+  {
+    "Code": "M5",
+    "Description": "microcurie"
+  },
+  {
+    "Code": "M50",
+    "Description": "furlong"
+  },
+  {
+    "Code": "M51",
+    "Description": "foot (U.S. survey)"
+  },
+  {
+    "Code": "M52",
+    "Description": "mile (based on U.S. survey foot)"
+  },
+  {
+    "Code": "M53",
+    "Description": "metre per pascal"
+  },
+  {
+    "Code": "M55",
+    "Description": "metre per radiant"
+  },
+  {
+    "Code": "M56",
+    "Description": "shake"
+  },
+  {
+    "Code": "M57",
+    "Description": "mile per minute"
+  },
+  {
+    "Code": "M58",
+    "Description": "mile per second"
+  },
+  {
+    "Code": "M59",
+    "Description": "metre per second pascal"
+  },
+  {
+    "Code": "M60",
+    "Description": "metre per hour"
+  },
+  {
+    "Code": "M61",
+    "Description": "inch per year"
+  },
+  {
+    "Code": "M62",
+    "Description": "kilometre per second"
+  },
+  {
+    "Code": "M63",
+    "Description": "inch per minute"
+  },
+  {
+    "Code": "M64",
+    "Description": "yard per second"
+  },
+  {
+    "Code": "M65",
+    "Description": "yard per minute"
+  },
+  {
+    "Code": "M66",
+    "Description": "yard per hour"
+  },
+  {
+    "Code": "M67",
+    "Description": "acre-foot (based on U.S. survey foot)"
+  },
+  {
+    "Code": "M68",
+    "Description": "cord (128 ft3)"
+  },
+  {
+    "Code": "M69",
+    "Description": "cubic mile (UK statute)"
+  },
+  {
+    "Code": "M7",
+    "Description": "micro-inch"
+  },
+  {
+    "Code": "M70",
+    "Description": "ton, register"
+  },
+  {
+    "Code": "M71",
+    "Description": "cubic metre per pascal"
+  },
+  {
+    "Code": "M72",
+    "Description": "bel"
+  },
+  {
+    "Code": "M73",
+    "Description": "kilogram per cubic metre pascal"
+  },
+  {
+    "Code": "M74",
+    "Description": "kilogram per pascal"
+  },
+  {
+    "Code": "M75",
+    "Description": "kilopound-force"
+  },
+  {
+    "Code": "M76",
+    "Description": "poundal"
+  },
+  {
+    "Code": "M77",
+    "Description": "kilogram metre per second squared"
+  },
+  {
+    "Code": "M78",
+    "Description": "pond"
+  },
+  {
+    "Code": "M79",
+    "Description": "square foot per hour"
+  },
+  {
+    "Code": "M80",
+    "Description": "stokes per pascal"
+  },
+  {
+    "Code": "M81",
+    "Description": "square centimetre per second"
+  },
+  {
+    "Code": "M82",
+    "Description": "square metre per second pascal"
+  },
+  {
+    "Code": "M83",
+    "Description": "denier"
+  },
+  {
+    "Code": "M84",
+    "Description": "pound per yard"
+  },
+  {
+    "Code": "M85",
+    "Description": "ton, assay"
+  },
+  {
+    "Code": "M86",
+    "Description": "pfund"
+  },
+  {
+    "Code": "M87",
+    "Description": "kilogram per second pascal"
+  },
+  {
+    "Code": "M88",
+    "Description": "tonne per month"
+  },
+  {
+    "Code": "M89",
+    "Description": "tonne per year"
+  },
+  {
+    "Code": "M9",
+    "Description": "million Btu per 1000 cubic foot"
+  },
+  {
+    "Code": "M90",
+    "Description": "kilopound per hour"
+  },
+  {
+    "Code": "M91",
+    "Description": "pound per pound"
+  },
+  {
+    "Code": "M92",
+    "Description": "pound-force foot"
+  },
+  {
+    "Code": "M93",
+    "Description": "newton metre per radian"
+  },
+  {
+    "Code": "M94",
+    "Description": "kilogram metre"
+  },
+  {
+    "Code": "M95",
+    "Description": "poundal foot"
+  },
+  {
+    "Code": "M96",
+    "Description": "poundal inch"
+  },
+  {
+    "Code": "M97",
+    "Description": "dyne metre"
+  },
+  {
+    "Code": "M98",
+    "Description": "kilogram centimetre per second"
+  },
+  {
+    "Code": "M99",
+    "Description": "gram centimetre per second"
+  },
+  {
+    "Code": "MAH",
+    "Description": "megavolt ampere reactive hour"
+  },
+  {
+    "Code": "MAL",
+    "Description": "megalitre"
+  },
+  {
+    "Code": "MAM",
+    "Description": "megametre"
+  },
+  {
+    "Code": "MAR",
+    "Description": "megavar"
+  },
+  {
+    "Code": "MAW",
+    "Description": "megawatt"
+  },
+  {
+    "Code": "MBE",
+    "Description": "thousand standard brick equivalent"
+  },
+  {
+    "Code": "MBF",
+    "Description": "thousand board foot"
+  },
+  {
+    "Code": "MBR",
+    "Description": "millibar"
+  },
+  {
+    "Code": "MC",
+    "Description": "microgram"
+  },
+  {
+    "Code": "MCU",
+    "Description": "millicurie"
+  },
+  {
+    "Code": "MD",
+    "Description": "air dry metric ton"
+  },
+  {
+    "Code": "MGM",
+    "Description": "milligram"
+  },
+  {
+    "Code": "MHZ",
+    "Description": "megahertz"
+  },
+  {
+    "Code": "MIK",
+    "Description": "square mile (statute mile)"
+  },
+  {
+    "Code": "MIL",
+    "Description": "thousand"
+  },
+  {
+    "Code": "MIN",
+    "Description": "minute [unit of time]"
+  },
+  {
+    "Code": "MIO",
+    "Description": "million"
+  },
+  {
+    "Code": "MIU",
+    "Description": "million international unit"
+  },
+  {
+    "Code": "MKD",
+    "Description": "Square Metre Day"
+  },
+  {
+    "Code": "MKM",
+    "Description": "Square Metre Month"
+  },
+  {
+    "Code": "MKW",
+    "Description": "Square Metre Week"
+  },
+  {
+    "Code": "MLD",
+    "Description": "milliard"
+  },
+  {
+    "Code": "MLT",
+    "Description": "millilitre"
+  },
+  {
+    "Code": "MMK",
+    "Description": "square millimetre"
+  },
+  {
+    "Code": "MMQ",
+    "Description": "cubic millimetre"
+  },
+  {
+    "Code": "MMT",
+    "Description": "millimetre"
+  },
+  {
+    "Code": "MND",
+    "Description": "kilogram, dry weight"
+  },
+  {
+    "Code": "MNJ",
+    "Description": "Mega Joule per Normalised cubic Metre"
+  },
+  {
+    "Code": "MON",
+    "Description": "month"
+  },
+  {
+    "Code": "MPA",
+    "Description": "megapascal"
+  },
+  {
+    "Code": "MQD",
+    "Description": "Cubic Metre Day"
+  },
+  {
+    "Code": "MQH",
+    "Description": "cubic metre per hour"
+  },
+  {
+    "Code": "MQM",
+    "Description": "Cubic Metre Month"
+  },
+  {
+    "Code": "MQS",
+    "Description": "cubic metre per second"
+  },
+  {
+    "Code": "MQW",
+    "Description": "Cubic Metre Week"
+  },
+  {
+    "Code": "MRD",
+    "Description": "Metre Day"
+  },
+  {
+    "Code": "MRM",
+    "Description": "Metre Month"
+  },
+  {
+    "Code": "MRW",
+    "Description": "Metre Week"
+  },
+  {
+    "Code": "MSK",
+    "Description": "metre per second squared"
+  },
+  {
+    "Code": "MTK",
+    "Description": "square metre"
+  },
+  {
+    "Code": "MTQ",
+    "Description": "cubic metre"
+  },
+  {
+    "Code": "MTR",
+    "Description": "metre"
+  },
+  {
+    "Code": "MTS",
+    "Description": "metre per second"
+  },
+  {
+    "Code": "MTZ",
+    "Description": "milihertz"
+  },
+  {
+    "Code": "MVA",
+    "Description": "megavolt - ampere"
+  },
+  {
+    "Code": "MWH",
+    "Description": "megawatt hour (1000Â kW.h)"
+  },
+  {
+    "Code": "N1",
+    "Description": "pen calorie"
+  },
+  {
+    "Code": "N10",
+    "Description": "pound foot per second"
+  },
+  {
+    "Code": "N11",
+    "Description": "pound inch per second"
+  },
+  {
+    "Code": "N12",
+    "Description": "Pferdestaerke"
+  },
+  {
+    "Code": "N13",
+    "Description": "centimetre of mercury (0 ÂºC)"
+  },
+  {
+    "Code": "N14",
+    "Description": "centimetre of water (4 ÂºC)"
+  },
+  {
+    "Code": "N15",
+    "Description": "foot of water (39.2 ÂºF)"
+  },
+  {
+    "Code": "N16",
+    "Description": "inch of mercury (32 ÂºF)"
+  },
+  {
+    "Code": "N17",
+    "Description": "inch of mercury (60 ÂºF)"
+  },
+  {
+    "Code": "N18",
+    "Description": "inch of water (39.2 ÂºF)"
+  },
+  {
+    "Code": "N19",
+    "Description": "inch of water (60 ÂºF)"
+  },
+  {
+    "Code": "N20",
+    "Description": "kip per square inch"
+  },
+  {
+    "Code": "N21",
+    "Description": "poundal per square foot"
+  },
+  {
+    "Code": "N22",
+    "Description": "ounce (avoirdupois) per square inch"
+  },
+  {
+    "Code": "N23",
+    "Description": "conventional metre of water"
+  },
+  {
+    "Code": "N24",
+    "Description": "gram per square millimetre"
+  },
+  {
+    "Code": "N25",
+    "Description": "pound per square yard"
+  },
+  {
+    "Code": "N26",
+    "Description": "poundal per square inch"
+  },
+  {
+    "Code": "N27",
+    "Description": "foot to the fourth power"
+  },
+  {
+    "Code": "N28",
+    "Description": "cubic decimetre per kilogram"
+  },
+  {
+    "Code": "N29",
+    "Description": "cubic foot per pound"
+  },
+  {
+    "Code": "N3",
+    "Description": "print point"
+  },
+  {
+    "Code": "N30",
+    "Description": "cubic inch per pound"
+  },
+  {
+    "Code": "N31",
+    "Description": "kilonewton per metre"
+  },
+  {
+    "Code": "N32",
+    "Description": "poundal per inch"
+  },
+  {
+    "Code": "N33",
+    "Description": "pound-force per yard"
+  },
+  {
+    "Code": "N34",
+    "Description": "poundal second per square foot"
+  },
+  {
+    "Code": "N35",
+    "Description": "poise per pascal"
+  },
+  {
+    "Code": "N36",
+    "Description": "newton second per square metre"
+  },
+  {
+    "Code": "N37",
+    "Description": "kilogram per metre second"
+  },
+  {
+    "Code": "N38",
+    "Description": "kilogram per metre minute"
+  },
+  {
+    "Code": "N39",
+    "Description": "kilogram per metre day"
+  },
+  {
+    "Code": "N40",
+    "Description": "kilogram per metre hour"
+  },
+  {
+    "Code": "N41",
+    "Description": "gram per centimetre second"
+  },
+  {
+    "Code": "N42",
+    "Description": "poundal second per square inch"
+  },
+  {
+    "Code": "N43",
+    "Description": "pound per foot minute"
+  },
+  {
+    "Code": "N44",
+    "Description": "pound per foot day"
+  },
+  {
+    "Code": "N45",
+    "Description": "cubic metre per second pascal"
+  },
+  {
+    "Code": "N46",
+    "Description": "foot poundal"
+  },
+  {
+    "Code": "N47",
+    "Description": "inch poundal"
+  },
+  {
+    "Code": "N48",
+    "Description": "watt per square centimetre"
+  },
+  {
+    "Code": "N49",
+    "Description": "watt per square inch"
+  },
+  {
+    "Code": "N50",
+    "Description": "British thermal unit (international table) per square foot hour"
+  },
+  {
+    "Code": "N51",
+    "Description": "British thermal unit (thermochemical) per square foot hour"
+  },
+  {
+    "Code": "N52",
+    "Description": "British thermal unit (thermochemical) per square foot minute"
+  },
+  {
+    "Code": "N53",
+    "Description": "British thermal unit (international table) per square foot second"
+  },
+  {
+    "Code": "N54",
+    "Description": "British thermal unit (thermochemical) per square foot second"
+  },
+  {
+    "Code": "N55",
+    "Description": "British thermal unit (international table) per square inch second"
+  },
+  {
+    "Code": "N56",
+    "Description": "calorie (thermochemical) per square centimetre minute"
+  },
+  {
+    "Code": "N57",
+    "Description": "calorie (thermochemical) per square centimetre second"
+  },
+  {
+    "Code": "N58",
+    "Description": "British thermal unit (international table) per cubic foot"
+  },
+  {
+    "Code": "N59",
+    "Description": "British thermal unit (thermochemical) per cubic foot"
+  },
+  {
+    "Code": "N60",
+    "Description": "British thermal unit (international table) per degree Fahrenheit"
+  },
+  {
+    "Code": "N61",
+    "Description": "British thermal unit (thermochemical) per degree Fahrenheit"
+  },
+  {
+    "Code": "N62",
+    "Description": "British thermal unit (international table) per degree Rankine"
+  },
+  {
+    "Code": "N63",
+    "Description": "British thermal unit (thermochemical) per degree Rankine"
+  },
+  {
+    "Code": "N64",
+    "Description": "British thermal unit (thermochemical) per pound degree Rankine"
+  },
+  {
+    "Code": "N65",
+    "Description": "kilocalorie (international table) per gram kelvin"
+  },
+  {
+    "Code": "N66",
+    "Description": "British thermal unit (39 ÂºF)"
+  },
+  {
+    "Code": "N67",
+    "Description": "British thermal unit (59 ÂºF)"
+  },
+  {
+    "Code": "N68",
+    "Description": "British thermal unit (60 ÂºF)"
+  },
+  {
+    "Code": "N69",
+    "Description": "calorie (20 ÂºC)"
+  },
+  {
+    "Code": "N70",
+    "Description": "quad (1015 BtuIT)"
+  },
+  {
+    "Code": "N71",
+    "Description": "therm (EC)"
+  },
+  {
+    "Code": "N72",
+    "Description": "therm (U.S.)"
+  },
+  {
+    "Code": "N73",
+    "Description": "British thermal unit (thermochemical) per pound"
+  },
+  {
+    "Code": "N74",
+    "Description": "British thermal unit (international table) per hour square foot degree Fahrenheit"
+  },
+  {
+    "Code": "N75",
+    "Description": "British thermal unit (thermochemical) per hour square foot degree Fahrenheit"
+  },
+  {
+    "Code": "N76",
+    "Description": "British thermal unit (international table) per second square foot degree Fahrenheit"
+  },
+  {
+    "Code": "N77",
+    "Description": "British thermal unit (thermochemical) per second square foot degree Fahrenheit"
+  },
+  {
+    "Code": "N78",
+    "Description": "kilowatt per square metre kelvin"
+  },
+  {
+    "Code": "N79",
+    "Description": "kelvin per pascal"
+  },
+  {
+    "Code": "N80",
+    "Description": "watt per metre degree Celsius"
+  },
+  {
+    "Code": "N81",
+    "Description": "kilowatt per metre kelvin"
+  },
+  {
+    "Code": "N82",
+    "Description": "kilowatt per metre degree Celsius"
+  },
+  {
+    "Code": "N83",
+    "Description": "metre per degree Celcius metre"
+  },
+  {
+    "Code": "N84",
+    "Description": "degree Fahrenheit hour per British thermal unit (international table)"
+  },
+  {
+    "Code": "N85",
+    "Description": "degree Fahrenheit hour per British thermal unit (thermochemical)"
+  },
+  {
+    "Code": "N86",
+    "Description": "degree Fahrenheit second per British thermal unit (international table)"
+  },
+  {
+    "Code": "N87",
+    "Description": "degree Fahrenheit second per British thermal unit (thermochemical)"
+  },
+  {
+    "Code": "N88",
+    "Description": "degree Fahrenheit hour square foot per British thermal unit (international table) inch"
+  },
+  {
+    "Code": "N89",
+    "Description": "degree Fahrenheit hour square foot per British thermal unit (thermochemical) inch"
+  },
+  {
+    "Code": "N90",
+    "Description": "kilofarad"
+  },
+  {
+    "Code": "N91",
+    "Description": "reciprocal joule"
+  },
+  {
+    "Code": "N92",
+    "Description": "picosiemens"
+  },
+  {
+    "Code": "N93",
+    "Description": "ampere per pascal"
+  },
+  {
+    "Code": "N94",
+    "Description": "franklin"
+  },
+  {
+    "Code": "N95",
+    "Description": "ampere minute"
+  },
+  {
+    "Code": "N96",
+    "Description": "biot"
+  },
+  {
+    "Code": "N97",
+    "Description": "gilbert"
+  },
+  {
+    "Code": "N98",
+    "Description": "volt per pascal"
+  },
+  {
+    "Code": "N99",
+    "Description": "picovolt"
+  },
+  {
+    "Code": "NA",
+    "Description": "milligram per kilogram"
+  },
+  {
+    "Code": "NAR",
+    "Description": "number of articles"
+  },
+  {
+    "Code": "NCL",
+    "Description": "number of cells"
+  },
+  {
+    "Code": "NEW",
+    "Description": "newton"
+  },
+  {
+    "Code": "NF",
+    "Description": "message"
+  },
+  {
+    "Code": "NIL",
+    "Description": "nil"
+  },
+  {
+    "Code": "NIU",
+    "Description": "number of international units"
+  },
+  {
+    "Code": "NL",
+    "Description": "load"
+  },
+  {
+    "Code": "NM3",
+    "Description": "Normalised cubic metre"
+  },
+  {
+    "Code": "NMI",
+    "Description": "nautical mile"
+  },
+  {
+    "Code": "NMP",
+    "Description": "number of packs"
+  },
+  {
+    "Code": "NPT",
+    "Description": "number of parts"
+  },
+  {
+    "Code": "NT",
+    "Description": "net ton"
+  },
+  {
+    "Code": "NTU",
+    "Description": "Nephelometric turbidity unit"
+  },
+  {
+    "Code": "NU",
+    "Description": "newton metre"
+  },
+  {
+    "Code": "NX",
+    "Description": "part per thousand"
+  },
+  {
+    "Code": "OA",
+    "Description": "panel"
+  },
+  {
+    "Code": "ODE",
+    "Description": "ozone depletion equivalent"
+  },
+  {
+    "Code": "ODG",
+    "Description": "ODS Grams"
+  },
+  {
+    "Code": "ODK",
+    "Description": "ODS Kilograms"
+  },
+  {
+    "Code": "ODM",
+    "Description": "ODS Milligrams"
+  },
+  {
+    "Code": "OHM",
+    "Description": "ohm"
+  },
+  {
+    "Code": "ON",
+    "Description": "ounce per square yard"
+  },
+  {
+    "Code": "ONZ",
+    "Description": "ounce (avoirdupois)"
+  },
+  {
+    "Code": "OPM",
+    "Description": "oscillations per minute"
+  },
+  {
+    "Code": "OT",
+    "Description": "overtime hour"
+  },
+  {
+    "Code": "OZA",
+    "Description": "fluid ounce (US)"
+  },
+  {
+    "Code": "OZI",
+    "Description": "fluid ounce (UK)"
+  },
+  {
+    "Code": "P1",
+    "Description": "percent"
+  },
+  {
+    "Code": "P10",
+    "Description": "coulomb per metre"
+  },
+  {
+    "Code": "P11",
+    "Description": "kiloweber"
+  },
+  {
+    "Code": "P12",
+    "Description": "gamma"
+  },
+  {
+    "Code": "P13",
+    "Description": "kilotesla"
+  },
+  {
+    "Code": "P14",
+    "Description": "joule per second"
+  },
+  {
+    "Code": "P15",
+    "Description": "joule per minute"
+  },
+  {
+    "Code": "P16",
+    "Description": "joule per hour"
+  },
+  {
+    "Code": "P17",
+    "Description": "joule per day"
+  },
+  {
+    "Code": "P18",
+    "Description": "kilojoule per second"
+  },
+  {
+    "Code": "P19",
+    "Description": "kilojoule per minute"
+  },
+  {
+    "Code": "P2",
+    "Description": "pound per foot"
+  },
+  {
+    "Code": "P20",
+    "Description": "kilojoule per hour"
+  },
+  {
+    "Code": "P21",
+    "Description": "kilojoule per day"
+  },
+  {
+    "Code": "P22",
+    "Description": "nanoohm"
+  },
+  {
+    "Code": "P23",
+    "Description": "ohm circular-mil per foot"
+  },
+  {
+    "Code": "P24",
+    "Description": "kilohenry"
+  },
+  {
+    "Code": "P25",
+    "Description": "lumen per square foot"
+  },
+  {
+    "Code": "P26",
+    "Description": "phot"
+  },
+  {
+    "Code": "P27",
+    "Description": "footcandle"
+  },
+  {
+    "Code": "P28",
+    "Description": "candela per square inch"
+  },
+  {
+    "Code": "P29",
+    "Description": "footlambert"
+  },
+  {
+    "Code": "P30",
+    "Description": "lambert"
+  },
+  {
+    "Code": "P31",
+    "Description": "stilb"
+  },
+  {
+    "Code": "P32",
+    "Description": "candela per square foot"
+  },
+  {
+    "Code": "P33",
+    "Description": "kilocandela"
+  },
+  {
+    "Code": "P34",
+    "Description": "millicandela"
+  },
+  {
+    "Code": "P35",
+    "Description": "Hefner-Kerze"
+  },
+  {
+    "Code": "P36",
+    "Description": "international candle"
+  },
+  {
+    "Code": "P37",
+    "Description": "British thermal unit (international table) per square foot"
+  },
+  {
+    "Code": "P38",
+    "Description": "British thermal unit (thermochemical) per square foot"
+  },
+  {
+    "Code": "P39",
+    "Description": "calorie (thermochemical) per square centimetre"
+  },
+  {
+    "Code": "P40",
+    "Description": "langley"
+  },
+  {
+    "Code": "P41",
+    "Description": "decade (logarithmic)"
+  },
+  {
+    "Code": "P42",
+    "Description": "pascal squared second"
+  },
+  {
+    "Code": "P43",
+    "Description": "bel per metre"
+  },
+  {
+    "Code": "P44",
+    "Description": "pound mole"
+  },
+  {
+    "Code": "P45",
+    "Description": "pound mole per second"
+  },
+  {
+    "Code": "P46",
+    "Description": "pound mole per minute"
+  },
+  {
+    "Code": "P47",
+    "Description": "kilomole per kilogram"
+  },
+  {
+    "Code": "P48",
+    "Description": "pound mole per pound"
+  },
+  {
+    "Code": "P49",
+    "Description": "newton square metre per ampere"
+  },
+  {
+    "Code": "P5",
+    "Description": "five pack"
+  },
+  {
+    "Code": "P50",
+    "Description": "weber metre"
+  },
+  {
+    "Code": "P51",
+    "Description": "mol per kilogram pascal"
+  },
+  {
+    "Code": "P52",
+    "Description": "mol per cubic metre pascal"
+  },
+  {
+    "Code": "P53",
+    "Description": "unit pole"
+  },
+  {
+    "Code": "P54",
+    "Description": "milligray per second"
+  },
+  {
+    "Code": "P55",
+    "Description": "microgray per second"
+  },
+  {
+    "Code": "P56",
+    "Description": "nanogray per second"
+  },
+  {
+    "Code": "P57",
+    "Description": "gray per minute"
+  },
+  {
+    "Code": "P58",
+    "Description": "milligray per minute"
+  },
+  {
+    "Code": "P59",
+    "Description": "microgray per minute"
+  },
+  {
+    "Code": "P60",
+    "Description": "nanogray per minute"
+  },
+  {
+    "Code": "P61",
+    "Description": "gray per hour"
+  },
+  {
+    "Code": "P62",
+    "Description": "milligray per hour"
+  },
+  {
+    "Code": "P63",
+    "Description": "microgray per hour"
+  },
+  {
+    "Code": "P64",
+    "Description": "nanogray per hour"
+  },
+  {
+    "Code": "P65",
+    "Description": "sievert per second"
+  },
+  {
+    "Code": "P66",
+    "Description": "millisievert per second"
+  },
+  {
+    "Code": "P67",
+    "Description": "microsievert per second"
+  },
+  {
+    "Code": "P68",
+    "Description": "nanosievert per second"
+  },
+  {
+    "Code": "P69",
+    "Description": "rem per second"
+  },
+  {
+    "Code": "P70",
+    "Description": "sievert per hour"
+  },
+  {
+    "Code": "P71",
+    "Description": "millisievert per hour"
+  },
+  {
+    "Code": "P72",
+    "Description": "microsievert per hour"
+  },
+  {
+    "Code": "P73",
+    "Description": "nanosievert per hour"
+  },
+  {
+    "Code": "P74",
+    "Description": "sievert per minute"
+  },
+  {
+    "Code": "P75",
+    "Description": "millisievert per minute"
+  },
+  {
+    "Code": "P76",
+    "Description": "microsievert per minute"
+  },
+  {
+    "Code": "P77",
+    "Description": "nanosievert per minute"
+  },
+  {
+    "Code": "P78",
+    "Description": "reciprocal square inch"
+  },
+  {
+    "Code": "P79",
+    "Description": "pascal square metre per kilogram"
+  },
+  {
+    "Code": "P80",
+    "Description": "millipascal per metre"
+  },
+  {
+    "Code": "P81",
+    "Description": "kilopascal per metre"
+  },
+  {
+    "Code": "P82",
+    "Description": "hectopascal per metre"
+  },
+  {
+    "Code": "P83",
+    "Description": "standard atmosphere per metre"
+  },
+  {
+    "Code": "P84",
+    "Description": "technical atmosphere per metre"
+  },
+  {
+    "Code": "P85",
+    "Description": "torr per metre"
+  },
+  {
+    "Code": "P86",
+    "Description": "psi per inch"
+  },
+  {
+    "Code": "P87",
+    "Description": "cubic metre per second square metre"
+  },
+  {
+    "Code": "P88",
+    "Description": "rhe"
+  },
+  {
+    "Code": "P89",
+    "Description": "pound-force foot per inch"
+  },
+  {
+    "Code": "P90",
+    "Description": "pound-force inch per inch"
+  },
+  {
+    "Code": "P91",
+    "Description": "perm (0 ÂºC)"
+  },
+  {
+    "Code": "P92",
+    "Description": "perm (23 ÂºC)"
+  },
+  {
+    "Code": "P93",
+    "Description": "byte per second"
+  },
+  {
+    "Code": "P94",
+    "Description": "kilobyte per second"
+  },
+  {
+    "Code": "P95",
+    "Description": "megabyte per second"
+  },
+  {
+    "Code": "P96",
+    "Description": "reciprocal volt"
+  },
+  {
+    "Code": "P97",
+    "Description": "reciprocal radian"
+  },
+  {
+    "Code": "P98",
+    "Description": "pascal to the power sum of stoichiometric numbers"
+  },
+  {
+    "Code": "P99",
+    "Description": "mole per cubiv metre to the power sum of stoichiometric numbers"
+  },
+  {
+    "Code": "PAL",
+    "Description": "pascal"
+  },
+  {
+    "Code": "PD",
+    "Description": "pad"
+  },
+  {
+    "Code": "PFL",
+    "Description": "proof litre"
+  },
+  {
+    "Code": "PGL",
+    "Description": "proof gallon"
+  },
+  {
+    "Code": "PI",
+    "Description": "pitch"
+  },
+  {
+    "Code": "PLA",
+    "Description": "degree Plato"
+  },
+  {
+    "Code": "PO",
+    "Description": "pound per inch of length"
+  },
+  {
+    "Code": "PQ",
+    "Description": "page per inch"
+  },
+  {
+    "Code": "PR",
+    "Description": "pair"
+  },
+  {
+    "Code": "PS",
+    "Description": "pound-force per square inch"
+  },
+  {
+    "Code": "PTD",
+    "Description": "dry pint (US)"
+  },
+  {
+    "Code": "PTI",
+    "Description": "pint (UK)"
+  },
+  {
+    "Code": "PTL",
+    "Description": "liquid pint (US)"
+  },
+  {
+    "Code": "PTN",
+    "Description": "portion"
+  },
+  {
+    "Code": "Q10",
+    "Description": "joule per tesla"
+  },
+  {
+    "Code": "Q11",
+    "Description": "erlang"
+  },
+  {
+    "Code": "Q12",
+    "Description": "octet"
+  },
+  {
+    "Code": "Q13",
+    "Description": "octet per second"
+  },
+  {
+    "Code": "Q14",
+    "Description": "shannon"
+  },
+  {
+    "Code": "Q15",
+    "Description": "hartley"
+  },
+  {
+    "Code": "Q16",
+    "Description": "natural unit of information"
+  },
+  {
+    "Code": "Q17",
+    "Description": "shannon per second"
+  },
+  {
+    "Code": "Q18",
+    "Description": "hartley per second"
+  },
+  {
+    "Code": "Q19",
+    "Description": "natural unit of information per second"
+  },
+  {
+    "Code": "Q20",
+    "Description": "second per kilogramm"
+  },
+  {
+    "Code": "Q21",
+    "Description": "watt square metre"
+  },
+  {
+    "Code": "Q22",
+    "Description": "second per radian cubic metre"
+  },
+  {
+    "Code": "Q23",
+    "Description": "weber to the power minus one"
+  },
+  {
+    "Code": "Q24",
+    "Description": "reciprocal inch"
+  },
+  {
+    "Code": "Q25",
+    "Description": "dioptre"
+  },
+  {
+    "Code": "Q26",
+    "Description": "one per one"
+  },
+  {
+    "Code": "Q27",
+    "Description": "newton metre per metre"
+  },
+  {
+    "Code": "Q28",
+    "Description": "kilogram per square metre pascal second"
+  },
+  {
+    "Code": "Q29",
+    "Description": "microgram per hectogram"
+  },
+  {
+    "Code": "Q3",
+    "Description": "meal"
+  },
+  {
+    "Code": "Q30",
+    "Description": "pH (potential of Hydrogen)"
+  },
+  {
+    "Code": "Q31",
+    "Description": "kilojoule per gram"
+  },
+  {
+    "Code": "Q32",
+    "Description": "femtolitre"
+  },
+  {
+    "Code": "Q33",
+    "Description": "picolitre"
+  },
+  {
+    "Code": "Q34",
+    "Description": "nanolitre"
+  },
+  {
+    "Code": "Q35",
+    "Description": "megawatts per minute"
+  },
+  {
+    "Code": "Q36",
+    "Description": "square metre per cubic metre"
+  },
+  {
+    "Code": "Q37",
+    "Description": "Standard cubic metre per day"
+  },
+  {
+    "Code": "Q38",
+    "Description": "Standard cubic metre per hour"
+  },
+  {
+    "Code": "Q39",
+    "Description": "Normalized cubic metre per day"
+  },
+  {
+    "Code": "Q40",
+    "Description": "Normalized cubic metre per hour"
+  },
+  {
+    "Code": "Q41",
+    "Description": "Joule per normalised cubic metre"
+  },
+  {
+    "Code": "Q42",
+    "Description": "Joule per standard cubic metre"
+  },
+  {
+    "Code": "QA",
+    "Description": "page - facsimile"
+  },
+  {
+    "Code": "QAN",
+    "Description": "quarter (of a year)"
+  },
+  {
+    "Code": "QB",
+    "Description": "page - hardcopy"
+  },
+  {
+    "Code": "QR",
+    "Description": "quire"
+  },
+  {
+    "Code": "QTD",
+    "Description": "dry quart (US)"
+  },
+  {
+    "Code": "QTI",
+    "Description": "quart (UK)"
+  },
+  {
+    "Code": "QTL",
+    "Description": "liquid quart (US)"
+  },
+  {
+    "Code": "QTR",
+    "Description": "quarter (UK)"
+  },
+  {
+    "Code": "R1",
+    "Description": "pica"
+  },
+  {
+    "Code": "R9",
+    "Description": "thousand cubic metre"
+  },
+  {
+    "Code": "RH",
+    "Description": "running or operating hour"
+  },
+  {
+    "Code": "RM",
+    "Description": "ream"
+  },
+  {
+    "Code": "ROM",
+    "Description": "room"
+  },
+  {
+    "Code": "RP",
+    "Description": "pound per ream"
+  },
+  {
+    "Code": "RPM",
+    "Description": "revolutions per minute"
+  },
+  {
+    "Code": "RPS",
+    "Description": "revolutions per second"
+  },
+  {
+    "Code": "RT",
+    "Description": "revenue ton mile"
+  },
+  {
+    "Code": "S3",
+    "Description": "square foot per second"
+  },
+  {
+    "Code": "S4",
+    "Description": "square metre per second"
+  },
+  {
+    "Code": "SAN",
+    "Description": "half year (6 months)"
+  },
+  {
+    "Code": "SCO",
+    "Description": "score"
+  },
+  {
+    "Code": "SCR",
+    "Description": "scruple"
+  },
+  {
+    "Code": "SEC",
+    "Description": "second [unit of time]"
+  },
+  {
+    "Code": "SET",
+    "Description": "set"
+  },
+  {
+    "Code": "SG",
+    "Description": "segment"
+  },
+  {
+    "Code": "SIE",
+    "Description": "siemens"
+  },
+  {
+    "Code": "SM3",
+    "Description": "Standard cubic metre"
+  },
+  {
+    "Code": "SMI",
+    "Description": "mile (statute mile)"
+  },
+  {
+    "Code": "SQ",
+    "Description": "square"
+  },
+  {
+    "Code": "SQR",
+    "Description": "square, roofing"
+  },
+  {
+    "Code": "SR",
+    "Description": "strip"
+  },
+  {
+    "Code": "STC",
+    "Description": "stick"
+  },
+  {
+    "Code": "STI",
+    "Description": "stone (UK)"
+  },
+  {
+    "Code": "STK",
+    "Description": "stick, cigarette"
+  },
+  {
+    "Code": "STL",
+    "Description": "standard litre"
+  },
+  {
+    "Code": "STN",
+    "Description": "ton (US) or short ton (UK/US)"
+  },
+  {
+    "Code": "STW",
+    "Description": "straw"
+  },
+  {
+    "Code": "SW",
+    "Description": "skein"
+  },
+  {
+    "Code": "SX",
+    "Description": "shipment"
+  },
+  {
+    "Code": "SYR",
+    "Description": "syringe"
+  },
+  {
+    "Code": "T0",
+    "Description": "telecommunication line in service"
+  },
+  {
+    "Code": "T3",
+    "Description": "thousand piece"
+  },
+  {
+    "Code": "TAH",
+    "Description": "kiloampere hour (thousand ampere hour)"
+  },
+  {
+    "Code": "TAN",
+    "Description": "total acid number"
+  },
+  {
+    "Code": "TI",
+    "Description": "thousand square inch"
+  },
+  {
+    "Code": "TIC",
+    "Description": "metric ton, including container"
+  },
+  {
+    "Code": "TIP",
+    "Description": "metric ton, including inner packaging"
+  },
+  {
+    "Code": "TKM",
+    "Description": "tonne kilometre"
+  },
+  {
+    "Code": "TMS",
+    "Description": "kilogram of imported meat, less offal"
+  },
+  {
+    "Code": "TNE",
+    "Description": "tonne (metric ton)"
+  },
+  {
+    "Code": "TP",
+    "Description": "ten pack"
+  },
+  {
+    "Code": "TPI",
+    "Description": "teeth per inch"
+  },
+  {
+    "Code": "TPR",
+    "Description": "ten pair"
+  },
+  {
+    "Code": "TQD",
+    "Description": "thousand cubic metre per day"
+  },
+  {
+    "Code": "TRL",
+    "Description": "trillion (EUR)"
+  },
+  {
+    "Code": "TST",
+    "Description": "ten set"
+  },
+  {
+    "Code": "TTS",
+    "Description": "ten thousand sticks"
+  },
+  {
+    "Code": "U1",
+    "Description": "treatment"
+  },
+  {
+    "Code": "U2",
+    "Description": "tablet"
+  },
+  {
+    "Code": "UB",
+    "Description": "telecommunication line in service average"
+  },
+  {
+    "Code": "UC",
+    "Description": "telecommunication port"
+  },
+  {
+    "Code": "VA",
+    "Description": "volt - ampere per kilogram"
+  },
+  {
+    "Code": "VLT",
+    "Description": "volt"
+  },
+  {
+    "Code": "VP",
+    "Description": "percent volume"
+  },
+  {
+    "Code": "W2",
+    "Description": "wet kilo"
+  },
+  {
+    "Code": "WA",
+    "Description": "watt per kilogram"
+  },
+  {
+    "Code": "WB",
+    "Description": "wet pound"
+  },
+  {
+    "Code": "WCD",
+    "Description": "cord"
+  },
+  {
+    "Code": "WE",
+    "Description": "wet ton"
+  },
+  {
+    "Code": "WEB",
+    "Description": "weber"
+  },
+  {
+    "Code": "WEE",
+    "Description": "week"
+  },
+  {
+    "Code": "WG",
+    "Description": "wine gallon"
+  },
+  {
+    "Code": "WHR",
+    "Description": "watt hour"
+  },
+  {
+    "Code": "WM",
+    "Description": "working month"
+  },
+  {
+    "Code": "WSD",
+    "Description": "standard"
+  },
+  {
+    "Code": "WTT",
+    "Description": "watt"
+  },
+  {
+    "Code": "X1",
+    "Description": "Gunter’s chain"
+  },
+  {
+    "Code": "YDK",
+    "Description": "square yard"
+  },
+  {
+    "Code": "YDQ",
+    "Description": "cubic yard"
+  },
+  {
+    "Code": "YRD",
+    "Description": "yard"
+  },
+  {
+    "Code": "Z11",
+    "Description": "hanging container"
+  },
+  {
+    "Code": "Z9",
+    "Description": "nanomole"
+  },
+  {
+    "Code": "ZP",
+    "Description": "page"
+  },
+  {
+    "Code": "ZZ",
+    "Description": "mutually defined"
+  },
+  {
+    "Code": "X1A",
+    "Description": "Drum, steel"
+  },
+  {
+    "Code": "X1B",
+    "Description": "Drum, aluminium"
+  },
+  {
+    "Code": "X1D",
+    "Description": "Drum, plywood"
+  },
+  {
+    "Code": "X1F",
+    "Description": "Container, flexible"
+  },
+  {
+    "Code": "X1G",
+    "Description": "Drum, fibre"
+  },
+  {
+    "Code": "X1W",
+    "Description": "Drum, wooden"
+  },
+  {
+    "Code": "X2C",
+    "Description": "Barrel, wooden"
+  },
+  {
+    "Code": "X3A",
+    "Description": "Jerrican, steel"
+  },
+  {
+    "Code": "X3H",
+    "Description": "Jerrican, plastic"
+  },
+  {
+    "Code": "X43",
+    "Description": "Bag, super bulk"
+  },
+  {
+    "Code": "X44",
+    "Description": "Bag, polybag"
+  },
+  {
+    "Code": "X4A",
+    "Description": "Box, steel"
+  },
+  {
+    "Code": "X4B",
+    "Description": "Box, aluminium"
+  },
+  {
+    "Code": "X4C",
+    "Description": "Box, natural wood"
+  },
+  {
+    "Code": "X4D",
+    "Description": "Box, plywood"
+  },
+  {
+    "Code": "X4F",
+    "Description": "Box, reconstituted wood"
+  },
+  {
+    "Code": "X4G",
+    "Description": "Box, fibreboard"
+  },
+  {
+    "Code": "X4H",
+    "Description": "Box, plastic"
+  },
+  {
+    "Code": "X5H",
+    "Description": "Bag, woven plastic"
+  },
+  {
+    "Code": "X5L",
+    "Description": "Bag, textile"
+  },
+  {
+    "Code": "X5M",
+    "Description": "Bag, paper"
+  },
+  {
+    "Code": "X6H",
+    "Description": "Composite packaging, plastic receptacle"
+  },
+  {
+    "Code": "X6P",
+    "Description": "Composite packaging, glass receptacle"
+  },
+  {
+    "Code": "X7A",
+    "Description": "Case, car"
+  },
+  {
+    "Code": "X7B",
+    "Description": "Case, wooden"
+  },
+  {
+    "Code": "X8A",
+    "Description": "Pallet, wooden"
+  },
+  {
+    "Code": "X8B",
+    "Description": "Crate, wooden"
+  },
+  {
+    "Code": "X8C",
+    "Description": "Bundle, wooden"
+  },
+  {
+    "Code": "XAA",
+    "Description": "Intermediate bulk container, rigid plastic"
+  },
+  {
+    "Code": "XAB",
+    "Description": "Receptacle, fibre"
+  },
+  {
+    "Code": "XAC",
+    "Description": "Receptacle, paper"
+  },
+  {
+    "Code": "XAD",
+    "Description": "Receptacle, wooden"
+  },
+  {
+    "Code": "XAE",
+    "Description": "Aerosol"
+  },
+  {
+    "Code": "XAF",
+    "Description": "Pallet, modular, collars 80cms * 60cms"
+  },
+  {
+    "Code": "XAG",
+    "Description": "Pallet, shrinkwrapped"
+  },
+  {
+    "Code": "XAH",
+    "Description": "Pallet, 100cms * 110cms"
+  },
+  {
+    "Code": "XAI",
+    "Description": "Clamshell"
+  },
+  {
+    "Code": "XAJ",
+    "Description": "Cone"
+  },
+  {
+    "Code": "XAL",
+    "Description": "Ball"
+  },
+  {
+    "Code": "XAM",
+    "Description": "Ampoule, non-protected"
+  },
+  {
+    "Code": "XAP",
+    "Description": "Ampoule, protected"
+  },
+  {
+    "Code": "XAT",
+    "Description": "Atomizer"
+  },
+  {
+    "Code": "XAV",
+    "Description": "Capsule"
+  },
+  {
+    "Code": "XB4",
+    "Description": "Belt"
+  },
+  {
+    "Code": "XBA",
+    "Description": "Barrel"
+  },
+  {
+    "Code": "XBB",
+    "Description": "Bobbin"
+  },
+  {
+    "Code": "XBC",
+    "Description": "Bottlecrate / bottlerack"
+  },
+  {
+    "Code": "XBD",
+    "Description": "Board"
+  },
+  {
+    "Code": "XBE",
+    "Description": "Bundle"
+  },
+  {
+    "Code": "XBF",
+    "Description": "Balloon, non-protected"
+  },
+  {
+    "Code": "XBG",
+    "Description": "Bag"
+  },
+  {
+    "Code": "XBH",
+    "Description": "Bunch"
+  },
+  {
+    "Code": "XBI",
+    "Description": "Bin"
+  },
+  {
+    "Code": "XBJ",
+    "Description": "Bucket"
+  },
+  {
+    "Code": "XBK",
+    "Description": "Basket"
+  },
+  {
+    "Code": "XBL",
+    "Description": "Bale, compressed"
+  },
+  {
+    "Code": "XBM",
+    "Description": "Basin"
+  },
+  {
+    "Code": "XBN",
+    "Description": "Bale, non-compressed"
+  },
+  {
+    "Code": "XBO",
+    "Description": "Bottle, non-protected, cylindrical"
+  },
+  {
+    "Code": "XBP",
+    "Description": "Balloon, protected"
+  },
+  {
+    "Code": "XBQ",
+    "Description": "Bottle, protected cylindrical"
+  },
+  {
+    "Code": "XBR",
+    "Description": "Bar"
+  },
+  {
+    "Code": "XBS",
+    "Description": "Bottle, non-protected, bulbous"
+  },
+  {
+    "Code": "XBT",
+    "Description": "Bolt"
+  },
+  {
+    "Code": "XBU",
+    "Description": "Butt"
+  },
+  {
+    "Code": "XBV",
+    "Description": "Bottle, protected bulbous"
+  },
+  {
+    "Code": "XBW",
+    "Description": "Box, for liquids"
+  },
+  {
+    "Code": "XBX",
+    "Description": "Box"
+  },
+  {
+    "Code": "XBY",
+    "Description": "Board, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XBZ",
+    "Description": "Bars, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XCA",
+    "Description": "Can, rectangular"
+  },
+  {
+    "Code": "XCB",
+    "Description": "Crate, beer"
+  },
+  {
+    "Code": "XCC",
+    "Description": "Churn"
+  },
+  {
+    "Code": "XCD",
+    "Description": "Can, with handle and spout"
+  },
+  {
+    "Code": "XCE",
+    "Description": "Creel"
+  },
+  {
+    "Code": "XCF",
+    "Description": "Coffer"
+  },
+  {
+    "Code": "XCG",
+    "Description": "Cage"
+  },
+  {
+    "Code": "XCH",
+    "Description": "Chest"
+  },
+  {
+    "Code": "XCI",
+    "Description": "Canister"
+  },
+  {
+    "Code": "XCJ",
+    "Description": "Coffin"
+  },
+  {
+    "Code": "XCK",
+    "Description": "Cask"
+  },
+  {
+    "Code": "XCL",
+    "Description": "Coil"
+  },
+  {
+    "Code": "XCM",
+    "Description": "Card"
+  },
+  {
+    "Code": "XCN",
+    "Description": "Container, not otherwise specified as transport equipment"
+  },
+  {
+    "Code": "XCO",
+    "Description": "Carboy, non-protected"
+  },
+  {
+    "Code": "XCP",
+    "Description": "Carboy, protected"
+  },
+  {
+    "Code": "XCQ",
+    "Description": "Cartridge"
+  },
+  {
+    "Code": "XCR",
+    "Description": "Crate"
+  },
+  {
+    "Code": "XCS",
+    "Description": "Case"
+  },
+  {
+    "Code": "XCT",
+    "Description": "Carton"
+  },
+  {
+    "Code": "XCU",
+    "Description": "Cup"
+  },
+  {
+    "Code": "XCV",
+    "Description": "Cover"
+  },
+  {
+    "Code": "XCW",
+    "Description": "Cage, roll"
+  },
+  {
+    "Code": "XCX",
+    "Description": "Can, cylindrical"
+  },
+  {
+    "Code": "XCY",
+    "Description": "Cylinder"
+  },
+  {
+    "Code": "XCZ",
+    "Description": "Canvas"
+  },
+  {
+    "Code": "XDA",
+    "Description": "Crate, multiple layer, plastic"
+  },
+  {
+    "Code": "XDB",
+    "Description": "Crate, multiple layer, wooden"
+  },
+  {
+    "Code": "XDC",
+    "Description": "Crate, multiple layer, cardboard"
+  },
+  {
+    "Code": "XDG",
+    "Description": "Cage, Commonwealth Handling Equipment Pool (CHEP)"
+  },
+  {
+    "Code": "XDH",
+    "Description": "Box, Commonwealth Handling Equipment Pool (CHEP), Eurobox"
+  },
+  {
+    "Code": "XDI",
+    "Description": "Drum, iron"
+  },
+  {
+    "Code": "XDJ",
+    "Description": "Demijohn, non-protected"
+  },
+  {
+    "Code": "XDK",
+    "Description": "Crate, bulk, cardboard"
+  },
+  {
+    "Code": "XDL",
+    "Description": "Crate, bulk, plastic"
+  },
+  {
+    "Code": "XDM",
+    "Description": "Crate, bulk, wooden"
+  },
+  {
+    "Code": "XDN",
+    "Description": "Dispenser"
+  },
+  {
+    "Code": "XDP",
+    "Description": "Demijohn, protected"
+  },
+  {
+    "Code": "XDR",
+    "Description": "Drum"
+  },
+  {
+    "Code": "XDS",
+    "Description": "Tray, one layer no cover, plastic"
+  },
+  {
+    "Code": "XDT",
+    "Description": "Tray, one layer no cover, wooden"
+  },
+  {
+    "Code": "XDU",
+    "Description": "Tray, one layer no cover, polystyrene"
+  },
+  {
+    "Code": "XDV",
+    "Description": "Tray, one layer no cover, cardboard"
+  },
+  {
+    "Code": "XDW",
+    "Description": "Tray, two layers no cover, plastic tray"
+  },
+  {
+    "Code": "XDX",
+    "Description": "Tray, two layers no cover, wooden"
+  },
+  {
+    "Code": "XDY",
+    "Description": "Tray, two layers no cover, cardboard"
+  },
+  {
+    "Code": "XEC",
+    "Description": "Bag, plastic"
+  },
+  {
+    "Code": "XED",
+    "Description": "Case, with pallet base"
+  },
+  {
+    "Code": "XEE",
+    "Description": "Case, with pallet base, wooden"
+  },
+  {
+    "Code": "XEF",
+    "Description": "Case, with pallet base, cardboard"
+  },
+  {
+    "Code": "XEG",
+    "Description": "Case, with pallet base, plastic"
+  },
+  {
+    "Code": "XEH",
+    "Description": "Case, with pallet base, metal"
+  },
+  {
+    "Code": "XEI",
+    "Description": "Case, isothermic"
+  },
+  {
+    "Code": "XEN",
+    "Description": "Envelope"
+  },
+  {
+    "Code": "XFB",
+    "Description": "Flexibag"
+  },
+  {
+    "Code": "XFC",
+    "Description": "Crate, fruit"
+  },
+  {
+    "Code": "XFD",
+    "Description": "Crate, framed"
+  },
+  {
+    "Code": "XFE",
+    "Description": "Flexitank"
+  },
+  {
+    "Code": "XFI",
+    "Description": "Firkin"
+  },
+  {
+    "Code": "XFL",
+    "Description": "Flask"
+  },
+  {
+    "Code": "XFO",
+    "Description": "Footlocker"
+  },
+  {
+    "Code": "XFP",
+    "Description": "Filmpack"
+  },
+  {
+    "Code": "XFR",
+    "Description": "Frame"
+  },
+  {
+    "Code": "XFT",
+    "Description": "Foodtainer"
+  },
+  {
+    "Code": "XFW",
+    "Description": "Cart, flatbed"
+  },
+  {
+    "Code": "XFX",
+    "Description": "Bag, flexible container"
+  },
+  {
+    "Code": "XGB",
+    "Description": "Bottle, gas"
+  },
+  {
+    "Code": "XGI",
+    "Description": "Girder"
+  },
+  {
+    "Code": "XGL",
+    "Description": "Container, gallon"
+  },
+  {
+    "Code": "XGR",
+    "Description": "Receptacle, glass"
+  },
+  {
+    "Code": "XGU",
+    "Description": "Tray, containing horizontally stacked flat items"
+  },
+  {
+    "Code": "XGY",
+    "Description": "Bag, gunny"
+  },
+  {
+    "Code": "XGZ",
+    "Description": "Girders, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XHA",
+    "Description": "Basket, with handle, plastic"
+  },
+  {
+    "Code": "XHB",
+    "Description": "Basket, with handle, wooden"
+  },
+  {
+    "Code": "XHC",
+    "Description": "Basket, with handle, cardboard"
+  },
+  {
+    "Code": "XHG",
+    "Description": "Hogshead"
+  },
+  {
+    "Code": "XHN",
+    "Description": "Hanger"
+  },
+  {
+    "Code": "XHR",
+    "Description": "Hamper"
+  },
+  {
+    "Code": "XIA",
+    "Description": "Package, display, wooden"
+  },
+  {
+    "Code": "XIB",
+    "Description": "Package, display, cardboard"
+  },
+  {
+    "Code": "XIC",
+    "Description": "Package, display, plastic"
+  },
+  {
+    "Code": "XID",
+    "Description": "Package, display, metal"
+  },
+  {
+    "Code": "XIE",
+    "Description": "Package, show"
+  },
+  {
+    "Code": "XIF",
+    "Description": "Package, flow"
+  },
+  {
+    "Code": "XIG",
+    "Description": "Package, paper wrapped"
+  },
+  {
+    "Code": "XIH",
+    "Description": "Drum, plastic"
+  },
+  {
+    "Code": "XIK",
+    "Description": "Package, cardboard, with bottle grip-holes"
+  },
+  {
+    "Code": "XIL",
+    "Description": "Tray, rigid, lidded stackable (CEN TS 14482:2002)"
+  },
+  {
+    "Code": "XIN",
+    "Description": "Ingot"
+  },
+  {
+    "Code": "XIZ",
+    "Description": "Ingots, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XJB",
+    "Description": "Bag, jumbo"
+  },
+  {
+    "Code": "XJC",
+    "Description": "Jerrican, rectangular"
+  },
+  {
+    "Code": "XJG",
+    "Description": "Jug"
+  },
+  {
+    "Code": "XJR",
+    "Description": "Jar"
+  },
+  {
+    "Code": "XJT",
+    "Description": "Jutebag"
+  },
+  {
+    "Code": "XJY",
+    "Description": "Jerrican, cylindrical"
+  },
+  {
+    "Code": "XKG",
+    "Description": "Keg"
+  },
+  {
+    "Code": "XKI",
+    "Description": "Kit"
+  },
+  {
+    "Code": "XLE",
+    "Description": "Luggage"
+  },
+  {
+    "Code": "XLG",
+    "Description": "Log"
+  },
+  {
+    "Code": "XLT",
+    "Description": "Lot"
+  },
+  {
+    "Code": "XLU",
+    "Description": "Lug"
+  },
+  {
+    "Code": "XLV",
+    "Description": "Liftvan"
+  },
+  {
+    "Code": "XLZ",
+    "Description": "Logs, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XMA",
+    "Description": "Crate, metal"
+  },
+  {
+    "Code": "XMB",
+    "Description": "Bag, multiply"
+  },
+  {
+    "Code": "XMC",
+    "Description": "Crate, milk"
+  },
+  {
+    "Code": "XME",
+    "Description": "Container, metal"
+  },
+  {
+    "Code": "XMR",
+    "Description": "Receptacle, metal"
+  },
+  {
+    "Code": "XMS",
+    "Description": "Sack, multi-wall"
+  },
+  {
+    "Code": "XMT",
+    "Description": "Mat"
+  },
+  {
+    "Code": "XMW",
+    "Description": "Receptacle, plastic wrapped"
+  },
+  {
+    "Code": "XMX",
+    "Description": "Matchbox"
+  },
+  {
+    "Code": "XNA",
+    "Description": "Not available"
+  },
+  {
+    "Code": "XNE",
+    "Description": "Unpacked or unpackaged"
+  },
+  {
+    "Code": "XNF",
+    "Description": "Unpacked or unpackaged, single unit"
+  },
+  {
+    "Code": "XNG",
+    "Description": "Unpacked or unpackaged, multiple units"
+  },
+  {
+    "Code": "XNS",
+    "Description": "Nest"
+  },
+  {
+    "Code": "XNT",
+    "Description": "Net"
+  },
+  {
+    "Code": "XNU",
+    "Description": "Net, tube, plastic"
+  },
+  {
+    "Code": "XNV",
+    "Description": "Net, tube, textile"
+  },
+  {
+    "Code": "XO1",
+    "Description": "Two sided cage on wheels with fixing strap"
+  },
+  {
+    "Code": "XO2",
+    "Description": "Trolley"
+  },
+  {
+    "Code": "XO3",
+    "Description": "Oneway pallet ISO 0 - 1/2 EURO Pallet"
+  },
+  {
+    "Code": "XO4",
+    "Description": "Oneway pallet ISO 1 - 1/1 EURO Pallet"
+  },
+  {
+    "Code": "XO5",
+    "Description": "Oneway pallet ISO 2 - 2/1 EURO Pallet"
+  },
+  {
+    "Code": "XO6",
+    "Description": "Pallet with exceptional dimensions"
+  },
+  {
+    "Code": "XO7",
+    "Description": "Wooden pallet  40 cm x 80 cm"
+  },
+  {
+    "Code": "XO8",
+    "Description": "Plastic pallet SRS 60 cm x 80 cm"
+  },
+  {
+    "Code": "XO9",
+    "Description": "Plastic pallet SRS 80 cm x 120 cm"
+  },
+  {
+    "Code": "XOA",
+    "Description": "Pallet, CHEP 40 cm x 60 cm"
+  },
+  {
+    "Code": "XOB",
+    "Description": "Pallet, CHEP 80 cm x 120 cm"
+  },
+  {
+    "Code": "XOC",
+    "Description": "Pallet, CHEP 100 cm x 120 cm"
+  },
+  {
+    "Code": "XOD",
+    "Description": "Pallet, AS 4068-1993"
+  },
+  {
+    "Code": "XOE",
+    "Description": "Pallet, ISO T11"
+  },
+  {
+    "Code": "XOF",
+    "Description": "Platform, unspecified weight or dimension"
+  },
+  {
+    "Code": "XOG",
+    "Description": "Pallet ISO 0 - 1/2 EURO Pallet"
+  },
+  {
+    "Code": "XOH",
+    "Description": "Pallet ISO 1 - 1/1 EURO Pallet"
+  },
+  {
+    "Code": "XOI",
+    "Description": "Pallet ISO 2 â€“ 2/1 EURO Pallet"
+  },
+  {
+    "Code": "XOJ",
+    "Description": "1/4 EURO Pallet"
+  },
+  {
+    "Code": "XOK",
+    "Description": "Block"
+  },
+  {
+    "Code": "XOL",
+    "Description": "1/8 EURO Pallet"
+  },
+  {
+    "Code": "XOM",
+    "Description": "Synthetic pallet ISO 1"
+  },
+  {
+    "Code": "XON",
+    "Description": "Synthetic pallet ISO 2"
+  },
+  {
+    "Code": "XOP",
+    "Description": "Wholesaler pallet"
+  },
+  {
+    "Code": "XOQ",
+    "Description": "Pallet 80 X 100 cm"
+  },
+  {
+    "Code": "XOR",
+    "Description": "Pallet 60 X 100 cm"
+  },
+  {
+    "Code": "XOS",
+    "Description": "Oneway pallet"
+  },
+  {
+    "Code": "XOT",
+    "Description": "Octabin"
+  },
+  {
+    "Code": "XOU",
+    "Description": "Container, outer"
+  },
+  {
+    "Code": "XOV",
+    "Description": "Returnable pallet"
+  },
+  {
+    "Code": "XOW",
+    "Description": "Large bag, pallet sized"
+  },
+  {
+    "Code": "XOX",
+    "Description": "A wheeled pallet with raised rim (81 x 67 x 135)"
+  },
+  {
+    "Code": "XOY",
+    "Description": "A Wheeled pallet with raised rim (81 x 72 x 135)"
+  },
+  {
+    "Code": "XOZ",
+    "Description": "Wheeled pallet with raised rim ( 81 x 60 x 16)"
+  },
+  {
+    "Code": "XP1",
+    "Description": "CHEP pallet 60 cm x 80 cm"
+  },
+  {
+    "Code": "XP2",
+    "Description": "Pan"
+  },
+  {
+    "Code": "XP3",
+    "Description": "LPR pallet 60 cm x 80 cm"
+  },
+  {
+    "Code": "XP4",
+    "Description": "LPR pallet 80 cm x 120 cm"
+  },
+  {
+    "Code": "XPA",
+    "Description": "Packet"
+  },
+  {
+    "Code": "XPB",
+    "Description": "Pallet, box Combined open-ended box and pallet"
+  },
+  {
+    "Code": "XPC",
+    "Description": "Parcel"
+  },
+  {
+    "Code": "XPD",
+    "Description": "Pallet, modular, collars 80cms * 100cms"
+  },
+  {
+    "Code": "XPE",
+    "Description": "Pallet, modular, collars 80cms * 120cms"
+  },
+  {
+    "Code": "XPF",
+    "Description": "Pen"
+  },
+  {
+    "Code": "XPG",
+    "Description": "Plate"
+  },
+  {
+    "Code": "XPH",
+    "Description": "Pitcher"
+  },
+  {
+    "Code": "XPI",
+    "Description": "Pipe"
+  },
+  {
+    "Code": "XPJ",
+    "Description": "Punnet"
+  },
+  {
+    "Code": "XPK",
+    "Description": "Package"
+  },
+  {
+    "Code": "XPL",
+    "Description": "Pail"
+  },
+  {
+    "Code": "XPN",
+    "Description": "Plank"
+  },
+  {
+    "Code": "XPO",
+    "Description": "Pouch"
+  },
+  {
+    "Code": "XPP",
+    "Description": "Piece"
+  },
+  {
+    "Code": "XPR",
+    "Description": "Receptacle, plastic"
+  },
+  {
+    "Code": "XPT",
+    "Description": "Pot"
+  },
+  {
+    "Code": "XPU",
+    "Description": "Tray"
+  },
+  {
+    "Code": "XPV",
+    "Description": "Pipes, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XPX",
+    "Description": "Pallet"
+  },
+  {
+    "Code": "XPY",
+    "Description": "Plates, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XPZ",
+    "Description": "Planks, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XQA",
+    "Description": "Drum, steel, non-removable head"
+  },
+  {
+    "Code": "XQB",
+    "Description": "Drum, steel, removable head"
+  },
+  {
+    "Code": "XQC",
+    "Description": "Drum, aluminium, non-removable head"
+  },
+  {
+    "Code": "XQD",
+    "Description": "Drum, aluminium, removable head"
+  },
+  {
+    "Code": "XQF",
+    "Description": "Drum, plastic, non-removable head"
+  },
+  {
+    "Code": "XQG",
+    "Description": "Drum, plastic, removable head"
+  },
+  {
+    "Code": "XQH",
+    "Description": "Barrel, wooden, bung type"
+  },
+  {
+    "Code": "XQJ",
+    "Description": "Barrel, wooden, removable head"
+  },
+  {
+    "Code": "XQK",
+    "Description": "Jerrican, steel, non-removable head"
+  },
+  {
+    "Code": "XQL",
+    "Description": "Jerrican, steel, removable head"
+  },
+  {
+    "Code": "XQM",
+    "Description": "Jerrican, plastic, non-removable head"
+  },
+  {
+    "Code": "XQN",
+    "Description": "Jerrican, plastic, removable head"
+  },
+  {
+    "Code": "XQP",
+    "Description": "Box, wooden, natural wood, ordinary"
+  },
+  {
+    "Code": "XQQ",
+    "Description": "Box, wooden, natural wood, with sift proof walls"
+  },
+  {
+    "Code": "XQR",
+    "Description": "Box, plastic, expanded"
+  },
+  {
+    "Code": "XQS",
+    "Description": "Box, plastic, solid"
+  },
+  {
+    "Code": "XRD",
+    "Description": "Rod"
+  },
+  {
+    "Code": "XRG",
+    "Description": "Ring"
+  },
+  {
+    "Code": "XRJ",
+    "Description": "Rack, clothing hanger"
+  },
+  {
+    "Code": "XRK",
+    "Description": "Rack"
+  },
+  {
+    "Code": "XRL",
+    "Description": "Reel"
+  },
+  {
+    "Code": "XRO",
+    "Description": "Roll"
+  },
+  {
+    "Code": "XRT",
+    "Description": "Rednet"
+  },
+  {
+    "Code": "XRZ",
+    "Description": "Rods, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XSA",
+    "Description": "Sack"
+  },
+  {
+    "Code": "XSB",
+    "Description": "Slab"
+  },
+  {
+    "Code": "XSC",
+    "Description": "Crate, shallow"
+  },
+  {
+    "Code": "XSD",
+    "Description": "Spindle"
+  },
+  {
+    "Code": "XSE",
+    "Description": "Sea-chest"
+  },
+  {
+    "Code": "XSH",
+    "Description": "Sachet"
+  },
+  {
+    "Code": "XSI",
+    "Description": "Skid"
+  },
+  {
+    "Code": "XSK",
+    "Description": "Case, skeleton"
+  },
+  {
+    "Code": "XSL",
+    "Description": "Slipsheet"
+  },
+  {
+    "Code": "XSM",
+    "Description": "Sheetmetal"
+  },
+  {
+    "Code": "XSO",
+    "Description": "Spool"
+  },
+  {
+    "Code": "XSP",
+    "Description": "Sheet, plastic wrapping"
+  },
+  {
+    "Code": "XSS",
+    "Description": "Case, steel"
+  },
+  {
+    "Code": "XST",
+    "Description": "Sheet"
+  },
+  {
+    "Code": "XSU",
+    "Description": "Suitcase"
+  },
+  {
+    "Code": "XSV",
+    "Description": "Envelope, steel"
+  },
+  {
+    "Code": "XSW",
+    "Description": "Shrinkwrapped"
+  },
+  {
+    "Code": "XSX",
+    "Description": "Set"
+  },
+  {
+    "Code": "XSY",
+    "Description": "Sleeve"
+  },
+  {
+    "Code": "XSZ",
+    "Description": "Sheets, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XT1",
+    "Description": "Tablet"
+  },
+  {
+    "Code": "XTB",
+    "Description": "Tub"
+  },
+  {
+    "Code": "XTC",
+    "Description": "Tea-chest"
+  },
+  {
+    "Code": "XTD",
+    "Description": "Tube, collapsible"
+  },
+  {
+    "Code": "XTE",
+    "Description": "Tyre"
+  },
+  {
+    "Code": "XTG",
+    "Description": "Tank container, generic"
+  },
+  {
+    "Code": "XTI",
+    "Description": "Tierce"
+  },
+  {
+    "Code": "XTK",
+    "Description": "Tank, rectangular"
+  },
+  {
+    "Code": "XTL",
+    "Description": "Tub, with lid"
+  },
+  {
+    "Code": "XTN",
+    "Description": "Tin"
+  },
+  {
+    "Code": "XTO",
+    "Description": "Tun"
+  },
+  {
+    "Code": "XTR",
+    "Description": "Trunk"
+  },
+  {
+    "Code": "XTS",
+    "Description": "Truss"
+  },
+  {
+    "Code": "XTT",
+    "Description": "Bag, tote"
+  },
+  {
+    "Code": "XTU",
+    "Description": "Tube"
+  },
+  {
+    "Code": "XTV",
+    "Description": "Tube, with nozzle"
+  },
+  {
+    "Code": "XTW",
+    "Description": "Pallet, triwall"
+  },
+  {
+    "Code": "XTY",
+    "Description": "Tank, cylindrical"
+  },
+  {
+    "Code": "XTZ",
+    "Description": "Tubes, in bundle/bunch/truss"
+  },
+  {
+    "Code": "XUC",
+    "Description": "Uncaged"
+  },
+  {
+    "Code": "XUN",
+    "Description": "Unit"
+  },
+  {
+    "Code": "XVA",
+    "Description": "Vat"
+  },
+  {
+    "Code": "XVG",
+    "Description": "Bulk, gas (at 1031 mbar and 15Â°C)"
+  },
+  {
+    "Code": "XVI",
+    "Description": "Vial"
+  },
+  {
+    "Code": "XVK",
+    "Description": "Vanpack"
+  },
+  {
+    "Code": "XVL",
+    "Description": "Bulk, liquid"
+  },
+  {
+    "Code": "XVN",
+    "Description": "Vehicle"
+  },
+  {
+    "Code": "XVO",
+    "Description": "Bulk, solid, large particles (â€œnodulesâ€)"
+  },
+  {
+    "Code": "XVP",
+    "Description": "Vacuum-packed"
+  },
+  {
+    "Code": "XVQ",
+    "Description": "Bulk, liquefied gas (at abnormal temperature/pressure)"
+  },
+  {
+    "Code": "XVR",
+    "Description": "Bulk, solid, granular particles (â€œgrainsâ€)"
+  },
+  {
+    "Code": "XVS",
+    "Description": "Bulk, scrap metal"
+  },
+  {
+    "Code": "XVY",
+    "Description": "Bulk, solid, fine particles (â€œpowdersâ€)"
+  },
+  {
+    "Code": "XWA",
+    "Description": "Intermediate bulk container"
+  },
+  {
+    "Code": "XWB",
+    "Description": "Wickerbottle"
+  },
+  {
+    "Code": "XWC",
+    "Description": "Intermediate bulk container, steel"
+  },
+  {
+    "Code": "XWD",
+    "Description": "Intermediate bulk container, aluminium"
+  },
+  {
+    "Code": "XWF",
+    "Description": "Intermediate bulk container, metal"
+  },
+  {
+    "Code": "XWG",
+    "Description": "Intermediate bulk container, steel, pressurised > 10 kpa"
+  },
+  {
+    "Code": "XWH",
+    "Description": "Intermediate bulk container, aluminium, pressurised > 10 kpa"
+  },
+  {
+    "Code": "XWJ",
+    "Description": "Intermediate bulk container, metal, pressure 10 kpa"
+  },
+  {
+    "Code": "XWK",
+    "Description": "Intermediate bulk container, steel, liquid"
+  },
+  {
+    "Code": "XWL",
+    "Description": "Intermediate bulk container, aluminium, liquid"
+  },
+  {
+    "Code": "XWM",
+    "Description": "Intermediate bulk container, metal, liquid"
+  },
+  {
+    "Code": "XWN",
+    "Description": "Intermediate bulk container, woven plastic, without coat/liner"
+  },
+  {
+    "Code": "XWP",
+    "Description": "Intermediate bulk container, woven plastic, coated"
+  },
+  {
+    "Code": "XWQ",
+    "Description": "Intermediate bulk container, woven plastic, with liner"
+  },
+  {
+    "Code": "XWR",
+    "Description": "Intermediate bulk container, woven plastic, coated and liner"
+  },
+  {
+    "Code": "XWS",
+    "Description": "Intermediate bulk container, plastic film"
+  },
+  {
+    "Code": "XWT",
+    "Description": "Intermediate bulk container, textile with out coat/liner"
+  },
+  {
+    "Code": "XWU",
+    "Description": "Intermediate bulk container, natural wood, with inner liner"
+  },
+  {
+    "Code": "XWV",
+    "Description": "Intermediate bulk container, textile, coated"
+  },
+  {
+    "Code": "XWW",
+    "Description": "Intermediate bulk container, textile, with liner"
+  },
+  {
+    "Code": "XWX",
+    "Description": "Intermediate bulk container, textile, coated and liner"
+  },
+  {
+    "Code": "XWY",
+    "Description": "Intermediate bulk container, plywood, with inner liner"
+  },
+  {
+    "Code": "XWZ",
+    "Description": "Intermediate bulk container, reconstituted wood, with inner liner"
+  },
+  {
+    "Code": "XXA",
+    "Description": "Bag, woven plastic, without inner coat/liner"
+  },
+  {
+    "Code": "XXB",
+    "Description": "Bag, woven plastic, sift proof"
+  },
+  {
+    "Code": "XXC",
+    "Description": "Bag, woven plastic, water resistant"
+  },
+  {
+    "Code": "XXD",
+    "Description": "Bag, plastics film"
+  },
+  {
+    "Code": "XXF",
+    "Description": "Bag, textile, without inner coat/liner"
+  },
+  {
+    "Code": "XXG",
+    "Description": "Bag, textile, sift proof"
+  },
+  {
+    "Code": "XXH",
+    "Description": "Bag, textile, water resistant"
+  },
+  {
+    "Code": "XXJ",
+    "Description": "Bag, paper, multi-wall"
+  },
+  {
+    "Code": "XXK",
+    "Description": "Bag, paper, multi-wall, water resistant"
+  },
+  {
+    "Code": "XYA",
+    "Description": "Composite packaging, plastic receptacle in steel drum"
+  },
+  {
+    "Code": "XYB",
+    "Description": "Composite packaging, plastic receptacle in steel crate box"
+  },
+  {
+    "Code": "XYC",
+    "Description": "Composite packaging, plastic receptacle in aluminium drum"
+  },
+  {
+    "Code": "XYD",
+    "Description": "Composite packaging, plastic receptacle in aluminium crate"
+  },
+  {
+    "Code": "XYF",
+    "Description": "Composite packaging, plastic receptacle in wooden box"
+  },
+  {
+    "Code": "XYG",
+    "Description": "Composite packaging, plastic receptacle in plywood drum"
+  },
+  {
+    "Code": "XYH",
+    "Description": "Composite packaging, plastic receptacle in plywood box"
+  },
+  {
+    "Code": "XYJ",
+    "Description": "Composite packaging, plastic receptacle in fibre drum"
+  },
+  {
+    "Code": "XYK",
+    "Description": "Composite packaging, plastic receptacle in fibreboard box"
+  },
+  {
+    "Code": "XYL",
+    "Description": "Composite packaging, plastic receptacle in plastic drum"
+  },
+  {
+    "Code": "XYM",
+    "Description": "Composite packaging, plastic receptacle in solid plastic box"
+  },
+  {
+    "Code": "XYN",
+    "Description": "Composite packaging, glass receptacle in steel drum"
+  },
+  {
+    "Code": "XYP",
+    "Description": "Composite packaging, glass receptacle in steel crate box"
+  },
+  {
+    "Code": "XYQ",
+    "Description": "Composite packaging, glass receptacle in aluminium drum"
+  },
+  {
+    "Code": "XYR",
+    "Description": "Composite packaging, glass receptacle in aluminium crate"
+  },
+  {
+    "Code": "XYS",
+    "Description": "Composite packaging, glass receptacle in wooden box"
+  },
+  {
+    "Code": "XYT",
+    "Description": "Composite packaging, glass receptacle in plywood drum"
+  },
+  {
+    "Code": "XYV",
+    "Description": "Composite packaging, glass receptacle in wickerwork hamper"
+  },
+  {
+    "Code": "XYW",
+    "Description": "Composite packaging, glass receptacle in fibre drum"
+  },
+  {
+    "Code": "XYX",
+    "Description": "Composite packaging, glass receptacle in fibreboard box"
+  },
+  {
+    "Code": "XYY",
+    "Description": "Composite packaging, glass receptacle in expandable plastic pack"
+  },
+  {
+    "Code": "XYZ",
+    "Description": "Composite packaging, glass receptacle in solid plastic pack"
+  },
+  {
+    "Code": "XZA",
+    "Description": "Intermediate bulk container, paper, multi-wall"
+  },
+  {
+    "Code": "XZB",
+    "Description": "Bag, large"
+  },
+  {
+    "Code": "XZC",
+    "Description": "Intermediate bulk container, paper, multi-wall, water resistant"
+  },
+  {
+    "Code": "XZD",
+    "Description": "Intermediate bulk container, rigid plastic, with structural equipment, solids"
+  },
+  {
+    "Code": "XZF",
+    "Description": "Intermediate bulk container, rigid plastic, freestanding, solids"
+  },
+  {
+    "Code": "XZG",
+    "Description": "Intermediate bulk container, rigid plastic, with structural equipment,pressurised"
+  },
+  {
+    "Code": "XZH",
+    "Description": "Intermediate bulk container, rigid plastic, freestanding, pressurised"
+  },
+  {
+    "Code": "XZJ",
+    "Description": "Intermediate bulk container, rigid plastic, with structural equipment, liquids"
+  },
+  {
+    "Code": "XZK",
+    "Description": "Intermediate bulk container, rigid plastic, freestanding, liquids"
+  },
+  {
+    "Code": "XZL",
+    "Description": "Intermediate bulk container, composite, rigid plastic, solids"
+  },
+  {
+    "Code": "XZM",
+    "Description": "Intermediate bulk container, composite, flexible plastic, solids"
+  },
+  {
+    "Code": "XZN",
+    "Description": "Intermediate bulk container, composite, rigid plastic, pressurised"
+  },
+  {
+    "Code": "XZP",
+    "Description": "Intermediate bulk container, composite, flexible plastic, pressurised"
+  },
+  {
+    "Code": "XZQ",
+    "Description": "Intermediate bulk container, composite, rigid plastic, liquids"
+  },
+  {
+    "Code": "XZR",
+    "Description": "Intermediate bulk container, composite, flexible plastic, liquids"
+  },
+  {
+    "Code": "XZS",
+    "Description": "Intermediate bulk container, composite"
+  },
+  {
+    "Code": "XZT",
+    "Description": "Intermediate bulk container, fibreboard"
+  },
+  {
+    "Code": "XZU",
+    "Description": "Intermediate bulk container, flexible"
+  },
+  {
+    "Code": "XZV",
+    "Description": "Intermediate bulk container, metal, other than steel"
+  },
+  {
+    "Code": "XZW",
+    "Description": "Intermediate bulk container, natural wood"
+  },
+  {
+    "Code": "XZX",
+    "Description": "Intermediate bulk container, plywood"
+  },
+  {
+    "Code": "XZY",
+    "Description": "Intermediate bulk container, reconstituted wood"
+  },
+  {
+    "Code": "XZZ",
+    "Description": "Mutually defined"
+  }
+]

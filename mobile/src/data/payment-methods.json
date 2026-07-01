@@ -1,0 +1,10 @@
+[
+  { "Code": "01", "Description": "Cash" },
+  { "Code": "02", "Description": "Cheque" },
+  { "Code": "03", "Description": "Bank Transfer" },
+  { "Code": "04", "Description": "Credit Card" },
+  { "Code": "05", "Description": "Debit Card" },
+  { "Code": "06", "Description": "e-Wallet / Digital Wallet" },
+  { "Code": "07", "Description": "Digital Bank" },
+  { "Code": "08", "Description": "Others" }
+]
