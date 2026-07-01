@@ -164,6 +164,14 @@ export default function SubmitScreen() {
                     </Pressable>
                   </View>
                 ) : null}
+                {/* View the printable receipt (PDF / hard copy) — flow 1 + flow 3 OUTPUT. */}
+                <Pressable
+                  style={styles.receiptBtn}
+                  onPress={() => id && router.push({ pathname: '/receipt', params: { id } })}
+                >
+                  <Ionicons name="document-text-outline" size={16} color={colors.azure} style={{ marginRight: 6 }} />
+                  <Text style={styles.receiptBtnText}>View receipt / PDF</Text>
+                </Pressable>
               </View>
             ) : null}
 
@@ -243,6 +251,8 @@ const styles = StyleSheet.create({
   docIdValue: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.ink, marginTop: 2, textAlign: 'center' },
   qrWrap: { alignItems: 'center', marginTop: space.md },
   qrLink: { fontFamily: font.body, fontSize: 12, color: colors.azure, marginTop: space.sm, textDecorationLine: 'underline' },
+  receiptBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: space.md, paddingVertical: space.sm, paddingHorizontal: space.md, borderWidth: 1, borderColor: colors.azure, borderRadius: radius.md },
+  receiptBtnText: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.azure },
   fixBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: space.md, paddingVertical: space.sm, paddingHorizontal: space.md, backgroundColor: colors.azure, borderRadius: radius.md },
   fixBtnText: { fontFamily: font.displayBold, fontSize: 14, color: colors.snow },
   sectionTitle: { fontFamily: font.displayBold, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginTop: space.xl, marginBottom: space.sm, marginLeft: space.xs },

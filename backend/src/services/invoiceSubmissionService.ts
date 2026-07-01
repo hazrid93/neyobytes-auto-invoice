@@ -33,6 +33,13 @@ import {
 } from '../lib/myinvois'
 import { buildUblJson } from '../lib/ublJson'
 import { normalizeTin } from '../lib/tin'
+import {
+  isValidEinvoiceType,
+  isValidPaymentMeans,
+  isValidStateCode,
+  isCurrencyCode,
+  fieldViolations,
+} from '../lib/codes'
 import { log } from '../lib/logger'
 import {
   transformDocument,
@@ -68,6 +75,31 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
 
   const supplierName = supplier.companyName || supplier.fullName || 'Unknown Supplier'
   const customerName = customer.name || 'Unknown Customer'
+
+  // ── Pre-flight code + field validation (Code Validator + FAQ rules) ──
+  // Fail fast with a clear message before a wasted signed LHDN call.
+  const codeViolations: string[] = []
+  if (!isValidEinvoiceType(inv.invoiceType)) codeViolations.push(`e-Invoice type '${inv.invoiceType}' is not a valid code (01-04, 11-14) — set it on the Review screen.`)
+  if (!isValidPaymentMeans(inv.paymentMeansCode)) codeViolations.push(`Payment means '${inv.paymentMeansCode}' is not a valid code (01-08).`)
+  if (supplier.stateCode && !isValidStateCode(supplier.stateCode)) codeViolations.push(`Supplier state code '${supplier.stateCode}' is not a valid code (01-17).`)
+  if (customer?.stateCode && !isValidStateCode(customer.stateCode)) codeViolations.push(`Buyer state code '${customer.stateCode}' is not a valid code (01-17).`)
+  if (!isCurrencyCode(inv.currency)) codeViolations.push(`Currency '${inv.currency}' is not a 3-letter ISO 4217 code.`)
+  const fieldViol = [
+    ...fieldViolations('name', supplierName),
+    ...fieldViolations('name', customerName),
+    ...fieldViolations('phone', supplier.contactNumber),
+    ...fieldViolations('phone', customer?.phone ?? customer?.contactNumber ?? null),
+    ...fieldViolations('email', supplier.email),
+    ...fieldViolations('email', customer?.email),
+    ...fieldViolations('sstNumber', supplier.sstNumber),
+    ...fieldViolations('sstNumber', customer?.sstNumber),
+    ...fieldViolations('ttxNumber', supplier.ttxNumber),
+  ]
+  const allViolations = [...codeViolations, ...fieldViol]
+  if (allViolations.length > 0) {
+    throw new ValidationError(`e-Invoice field validation failed: ${allViolations.join('; ')}`)
+  }
+
   const issueDate = inv.issueDate ?? new Date().toISOString().slice(0, 10)
   const invoiceNumber = inv.invoiceNumber ?? `INV-${inv.id.slice(0, 8)}`
 

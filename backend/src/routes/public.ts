@@ -12,6 +12,7 @@
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { findPublicInvoice } from '../repositories/invoiceRepo'
+import { renderReceiptHtml } from '../lib/receipt'
 import type { AppEnv } from '../types'
 
 export const publicRoutes = new Hono<AppEnv>()
@@ -50,4 +51,16 @@ publicRoutes.post('/invoices/qr', async (c) => {
   const invoice = await findPublicInvoice(ref)
   if (!invoice) return c.json({ error: 'not_found', message: 'no submitted invoice matches that QR' }, 404)
   return c.json({ invoice })
+})
+
+// GET /public/invoices/:ref/receipt — the customer's printable verify view (the
+// flow-1 OUTPUT a customer retrieves by scanning the QR / entering the
+// Document ID). Same HTML receipt, unauthenticated, built from the public view.
+publicRoutes.get('/invoices/:ref/receipt', async (c) => {
+  const ref = c.req.param('ref').trim()
+  if (!ref) return c.json({ error: 'invalid_input', message: 'reference is required' }, 400)
+  const invoice = await findPublicInvoice(ref)
+  if (!invoice) return c.json({ error: 'not_found', message: 'no submitted invoice matches that Document ID or UUID' }, 404)
+  const html = await renderReceiptHtml(invoice)
+  return c.html(html)
 })

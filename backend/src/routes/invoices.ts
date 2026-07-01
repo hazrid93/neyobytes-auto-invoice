@@ -2,6 +2,8 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 import { requireAuth } from '../middleware/auth'
 import * as invoiceService from '../services/invoiceService'
+import { loadInvoiceForSubmission } from '../repositories/invoiceRepo'
+import { renderReceiptHtml } from '../lib/receipt'
 import type { AppEnv } from '../types'
 
 export const invoices = new Hono<AppEnv>()
@@ -76,6 +78,42 @@ invoices.delete('/:id', requireAuth, async (c) => {
   const ok = await invoiceService.deleteInvoice(id, c.get('user').sub)
   if (!ok) return c.json({ error: 'not_found', message: 'invoice not found' }, 404)
   return c.json({ ok: true })
+})
+
+// GET /invoices/:id/receipt — a self-contained HTML receipt (flow-1/flow-3
+// "PDF or hard copy" OUTPUT) with the supplier/buyer/items/total + Document ID +
+// Validation UUID + "Scan to Verify" QR. Authed (the supplier's own invoice).
+invoices.get('/:id/receipt', requireAuth, async (c) => {
+  const id = c.req.param('id')
+  if (!UUID.test(id)) return c.json({ error: 'invalid_input', message: 'invoice id must be a uuid' }, 400)
+  const agg = await loadInvoiceForSubmission(id, c.get('user').sub)
+  if (!agg) return c.json({ error: 'not_found', message: 'invoice not found' }, 404)
+  const { invoice: inv, items, customer, supplier } = agg
+  const supplierName = supplier.companyName || supplier.fullName || '—'
+  const html = await renderReceiptHtml({
+    invoiceNumber: inv.invoiceNumber,
+    issueDate: inv.issueDate ? new Date(inv.issueDate).toISOString().slice(0, 10) : null,
+    currency: inv.currency,
+    subtotal: Number(inv.subtotal),
+    taxTotal: Number(inv.taxTotal),
+    total: Number(inv.total),
+    documentId: inv.myinvoisDocId,
+    validationUuid: inv.validationUuid,
+    qrUrl: inv.qrUrl,
+    supplierName,
+    supplierTin: supplier.tin,
+    supplierBrn: supplier.brn,
+    buyerName: customer?.name ?? null,
+    buyerTin: customer?.tin ?? null,
+    items: items.map((it) => ({
+      description: it.description,
+      quantity: Number(it.quantity),
+      unitPrice: Number(it.unitPrice),
+      taxRate: Number(it.taxRate),
+      amount: Number(it.amount),
+    })),
+  })
+  return c.html(html)
 })
 
 // POST /invoices — create a draft invoice (atomic: invoice + items in one tx).
