@@ -75,21 +75,27 @@ export function computeTotals(items: CalcLineInput[]): InvoiceTotals {
   })
 
   const subtotal = round2(lines.reduce((s, l) => s + l.net, 0))
-  const taxTotal = round2(lines.reduce((s, l) => s + l.tax, 0))
-  const total = round2(subtotal + taxTotal)
 
-  // Group by tax type code (default '06'). Aggregates the same way the backend
-  // builder's `taxByType` map does, so the breakdown matches the submitted UBL.
+  // Document-level tax per EN 16931 BR-CO-18 (matches backend ublJson.ts +
+  // domain/totals.ts): each per-type TaxSubtotal.TaxAmount = round2(aggregated
+  // Σ net × rate/100), NOT Σ per-line tax. Those diverge when a per-line tax
+  // rounds to 0 but the aggregate doesn't (3×RM0.08@6% → per-line 0.00 each
+  // but round2(0.24×0.06)=0.01). Keyed by `${code}:${rate}` so same-code /
+  // different-rate lines produce separate subtotals. taxTotal = Σ group tax.
   const byType = new Map<string, TaxBreakRow>()
   for (let i = 0; i < items.length; i++) {
     const code = items[i].tax_type_code?.trim() || '06'
-    const row = byType.get(code) ?? { code, taxable: 0, rate: num(items[i].tax_rate), tax: 0 }
+    const rate = num(items[i].tax_rate)
+    const key = `${code}:${rate}`
+    const row = byType.get(key) ?? { code, taxable: 0, rate, tax: 0 }
     row.taxable = round2(row.taxable + lines[i].net)
-    row.tax = round2(row.tax + lines[i].tax)
-    byType.set(code, row)
+    row.tax = round2(row.taxable * (rate / 100))
+    byType.set(key, row)
   }
   // Stable order: tax types in the order they first appear.
   const breakdown = [...byType.values()]
+  const taxTotal = round2(breakdown.reduce((s, r) => s + r.tax, 0))
+  const total = round2(subtotal + taxTotal)
 
   return { lines, subtotal, taxTotal, total, breakdown }
 }

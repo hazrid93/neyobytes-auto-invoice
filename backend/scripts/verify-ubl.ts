@@ -61,6 +61,10 @@ const baseInput: BuildUblInput = {
   paymentTerms: 'Net 30',
 }
 
+// The builder's round2 (Math.round + EPSILON) — used by BR-CO-18 assertions so
+// the test mirrors exactly what the builder emits, not Node's toFixed.
+const round2spec = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100
+
 function get(path: string, obj: unknown): unknown {
   return path.split('.').reduce<unknown>((acc, key) => {
     if (acc == null) return undefined
@@ -354,6 +358,55 @@ test('multiple tax types: Σ TaxSubtotal.TaxAmount == TaxTotal.TaxAmount across 
   assert.equal(taxAmt, sumSub, 'Σ TaxSubtotal.TaxAmount across types == invoice TaxAmount')
   // 50 (01) + 40 (02) + 0 (06) = 90
   assert.equal(taxAmt, 90)
+})
+
+test('BR-CO-18: document TaxSubtotal.TaxAmount = round2(Taxable × Percent/100), not Σ per-line tax', () => {
+  // 3×RM0.08 @ 6%: per-line tax round2(0.08×0.06)=round2(0.0048)=0.00 each (Σ=0.00),
+  // but the document-level subtotal must be round2(0.24×0.06)=round2(0.0144)=0.01.
+  const inv = JSON.parse(buildUblJson({
+    ...baseInput,
+    items: [
+      { description: 'a', quantity: 1, unitPrice: 0.08, taxRate: 6 },
+      { description: 'b', quantity: 1, unitPrice: 0.08, taxRate: 6 },
+      { description: 'c', quantity: 1, unitPrice: 0.08, taxRate: 6 },
+    ],
+  })).Invoice[0]
+  const sub = inv.TaxTotal[0].TaxSubtotal[0]
+  const taxable = Number(sub.TaxableAmount[0]._) // 0.24
+  const taxAmt = Number(sub.TaxAmount[0]._)
+  const percent = Number(sub.Percent[0]._) // 6
+  assert.equal(taxable, 0.24, 'aggregated taxable = Σ per-line net')
+  assert.equal(taxAmt, round2spec(taxable * percent / 100), 'TaxAmount == round2(Taxable × Percent/100)')
+  assert.equal(taxAmt, 0.01, 'document tax = 0.01 (NOT Σ per-line 0.00)')
+  assert.equal(Number(get('TaxTotal.0.TaxAmount.0._', inv)), 0.01, 'invoice TaxTotal.TaxAmount == Σ subtotals')
+})
+
+test('same tax-type code, different rates → separate TaxSubtotals (each BR-CO-18 valid)', () => {
+  // Two lines, both taxTypeCode '04', but 5% and 8% → two subtotals, each with
+  // its own Percent + TaxAmount = round2(taxable × its rate/100). A single
+  // merged subtotal with a last-write-wins Percent would fail BR-CO-18.
+  const inv = JSON.parse(buildUblJson({
+    ...baseInput,
+    items: [
+      { description: 'a', quantity: 1, unitPrice: 100, taxRate: 5, taxTypeCode: '04' },
+      { description: 'b', quantity: 1, unitPrice: 200, taxRate: 8, taxTypeCode: '04' },
+    ],
+  })).Invoice[0]
+  const subs = inv.TaxTotal[0].TaxSubtotal as Array<{
+    TaxableAmount: Array<{ _: number }>; TaxAmount: Array<{ _: number }>; Percent: Array<{ _: number }>
+    TaxCategory: Array<{ ID: Array<{ _: string }> }>
+  }>
+  assert.equal(subs.length, 2, 'two separate subtotals (keyed by code:rate)')
+  // both carry ID '04'
+  assert.ok(subs.every((s) => s.TaxCategory[0].ID[0]._ === '04'))
+  // each TaxAmount == round2(taxable × its percent/100)
+  for (const s of subs) {
+    const t = Number(s.TaxableAmount[0]._)
+    const pct = Number(s.Percent[0]._)
+    assert.equal(Number(s.TaxAmount[0]._), round2spec(t * pct / 100), `subtotal ${pct}%: TaxAmount == round2(Taxable×Percent/100)`)
+  }
+  // 100×5%=5 + 200×8%=16 = 21
+  assert.equal(Number(get('TaxTotal.0.TaxAmount.0._', inv)), 21)
 })
 
 test('document is JSON-stringifiable + minifiable (stable for digest)', () => {

@@ -16,7 +16,8 @@
     "public:verify": "tsx scripts/verify-public-retrieval.ts",
     "items:verify": "node --import tsx --test scripts/verify-submit-items.ts",
     "qr:verify": "node --import tsx --test scripts/verify-qr-decode.ts",
-    "totals:verify": "node --import tsx --test scripts/verify-totals.ts"
+    "totals:verify": "node --import tsx --test scripts/verify-totals.ts",
+    "lockstep:verify": "node --import tsx --test scripts/verify-lockstep.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

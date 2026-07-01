@@ -222,3 +222,24 @@ retired `buildUbl` XML in `myinvois.ts` has no live caller and can stay as-is.
 Treat the equation as unvalidated and gate behind a flag until the real submit
 confirms. Per-line `AllowanceCharge` is a larger change still (it alters each
 line's `LineExtensionAmount` math) — defer until invoice-level is validated.
+
+### Open validation risk — BR-CO-18 document-tax vs Σ-line-tax (UNVERIFIED)
+
+The document-level `TaxSubtotal.TaxAmount` now uses EN 16931 BR-CO-18
+(`round2(aggregated Σ net × rate/100)`), NOT `Σ per-line round2(net × rate/100)`.
+These diverge when a per-line tax rounds to 0 but the aggregate doesn't (e.g.
+3×RM0.08@6% → per-line 0.00 each, doc `round2(0.24×0.06)=0.01`). All three
+calc paths (mobile `calc.ts`, backend `domain/totals.ts`, `lib/ublJson.ts`) use
+the BR-CO-18 formula and agree exactly (`verify-lockstep`, 5/5 incl a 1000-line
+stress). The test suite ASSERTS this divergence is correct (EN-16931-compliant).
+
+**This has NOT been validated against the live LHDN validator** — only against
+EN 16931 logic. The mock-submit can't exercise balance equations, and the
+repo's type pages don't state whether LHDN cross-checks document-tax vs
+Σ-line-tax. If LHDN *does* enforce `TaxTotal.TaxAmount == Σ InvoiceLine tax`,
+the fix is one line (use `Σ ltax` for the document subtotal instead of
+`round2(aggregate×rate)`). Resolving this empirically needs the cert round-trip
+(the same gate as signing). Recommend submitting a fractional-cent invoice
+(3×0.08@6% or similar) to the real sandbox to confirm acceptance BEFORE building
+allowances/charges (#1) on top — which multiplies rounding-divergence
+opportunities.

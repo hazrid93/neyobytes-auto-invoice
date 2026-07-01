@@ -160,7 +160,41 @@ export function buildUblJson(input: BuildUblInput): string {
     return { lnet, ltax, rate: round2(it.taxRate), code: it.taxTypeCode || '06' }
   })
   const subtotal = lineRounded.reduce((s, l) => s + l.lnet, 0)
-  const tax = lineRounded.reduce((s, l) => s + l.ltax, 0)
+  // Document-level tax per EN 16931 BR-CO-18: each per-type TaxSubtotal.TaxAmount
+  // = round2(TaxableAmount × Percent/100) on the AGGREGATED Σ lnet for that
+  // type — NOT Σ per-line ltax (those diverge when a per-line tax rounds to 0
+  // but the aggregate doesn't, e.g. 3×RM0.08@6% → per-line 0.00 each but doc
+  // round2(0.24×0.06)=0.01). The per-line TaxSubtotal.TaxAmount (in buildLine)
+  // stays round2(lnet×rate/100). TaxTotal.TaxAmount = Σ per-type TaxAmount.
+  const taxByType = new Map<string, { taxable: number; percent: number }>()
+  for (const r of lineRounded) {
+    // Key by `${code}:${rate}` (not just `code`) so two lines sharing a
+    // tax-type code but with different rates (e.g. both '04' at 5% and 8%)
+    // produce SEPARATE TaxSubtotals — each must satisfy
+    // TaxAmount == round2(Taxable × Percent/100) for its own rate.
+    const key = `${r.code}:${r.rate}`
+    const cur = taxByType.get(key) ?? { taxable: 0, percent: r.rate }
+    cur.taxable += r.lnet
+    cur.percent = r.rate
+    taxByType.set(key, cur)
+  }
+  const invoiceTaxSubtotals = [...taxByType.entries()].map(([key, x]) => {
+    const code = key.split(':')[0]
+    const typeTax = round2(x.taxable * (x.percent / 100))
+    return {
+      TaxableAmount: money(x.taxable, currency),
+      TaxAmount: money(typeTax, currency),
+      Percent: v(x.percent),
+      TaxCategory: [
+        {
+          ID: v(code),
+          TaxScheme: [{ ID: [{ _: 'OTH', schemeID: 'UN/ECE 5153', schemeAgencyID: '6' }] }],
+        },
+      ],
+    }
+  })
+  // TaxTotal.TaxAmount = Σ document-level per-type TaxAmount (== Σ TaxSubtotal).
+  const tax = invoiceTaxSubtotals.reduce((s, t) => s + Number((t.TaxAmount as Array<{ _: number }>)[0]._), 0)
   const total = round2(subtotal + tax)
 
   // IssueTime: UTC HH:MM:SSZ. Default to now (LHDN requires issuance within 72h
@@ -221,30 +255,6 @@ export function buildUblJson(input: BuildUblInput): string {
       ItemPriceExtension: [{ Amount: money(lineNet, currency) }],
     }
   }
-
-  // Aggregate invoice-level TaxSubtotal by tax type from the ROUNDED per-line
-  // values (Code Validator wants the breakdown; the sample has one TaxSubtotal
-  // per tax type). Summing rounded line nets/taxes keeps Σ type_tax == taxTotal
-  // == Σ line tax exactly.
-  const taxByType = new Map<string, { taxable: number; tax: number; percent: number }>()
-  for (const r of lineRounded) {
-    const cur = taxByType.get(r.code) ?? { taxable: 0, tax: 0, percent: r.rate }
-    cur.taxable += r.lnet
-    cur.tax += r.ltax
-    cur.percent = r.rate
-    taxByType.set(r.code, cur)
-  }
-  const invoiceTaxSubtotals = [...taxByType.entries()].map(([code, x]) => ({
-    TaxableAmount: money(x.taxable, currency),
-    TaxAmount: money(x.tax, currency),
-    Percent: v(x.percent),
-    TaxCategory: [
-      {
-        ID: v(code),
-        TaxScheme: [{ ID: [{ _: 'OTH', schemeID: 'UN/ECE 5153', schemeAgencyID: '6' }] }],
-      },
-    ],
-  }))
 
   // Build the invoice object with keys in the canonical element order
   // (matches 1.1-Invoice-Sample.json), inserting optional sections only when
