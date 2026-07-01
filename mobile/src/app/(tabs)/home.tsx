@@ -19,6 +19,7 @@ import { useFirstRunTour } from '../../viewmodels/useFirstRunTour'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
 import { captureNavRef } from '../../theme/captureNavRef'
 import { useSafeInsets } from '../../theme/useSafeInsets'
+import { QRCode } from '../../components/QRCode'
 import type { InvoiceSummary } from '../../domain/dtos'
 
 export default function HomeScreen() {
@@ -204,18 +205,35 @@ function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
   // one pattern on web + mobile, no accidental deletes, no overlap.
   const open = () =>
     router.push({ pathname: isDraft ? '/review' : '/submit', params: { id: invoice.id } })
+  // Submitted invoices carry the LHDN Document ID + a validation QR link.
+  // Show the audit chip + a small QR on the card so the dashboard reads as a
+  // filed-e-invoice list, not just a draft queue.
+  const submitted = invoice.status === 'submitted'
+  const docId = invoice.myinvoisDocId
+  const qr = invoice.qrUrl
   return (
     <Pressable onPress={open}>
       <GlassCard style={styles.card}>
         <View style={styles.cardHead}>
-          <Text style={styles.cardNum}>{invoice.invoiceNumber ?? 'Draft'}</Text>
+          <Text style={styles.cardNum} numberOfLines={1}>{invoice.invoiceNumber ?? (submitted ? 'Submitted' : 'Draft')}</Text>
           <View style={[styles.statusPill, isDraft ? styles.statusDraft : styles.statusDone]}>
             <Text style={styles.statusText}>{invoice.status}</Text>
           </View>
         </View>
+        {submitted && docId ? (
+          <View style={styles.docRow}>
+            <Ionicons name="shield-checkmark-outline" size={13} color={colors.success} />
+            <Text style={styles.docId} numberOfLines={1}>LHDN {docId}</Text>
+          </View>
+        ) : null}
         <View style={styles.cardRow}>
           <Text style={styles.cardMeta}>{invoice.issueDate ?? 'No date'}</Text>
           <View style={styles.cardRight}>
+            {submitted && qr ? (
+              <View style={styles.cardQrWrap}>
+                <QRCode value={qr} size={40} />
+              </View>
+            ) : null}
             <Text style={styles.cardTotal}>RM {(invoice.total ?? 0).toFixed(2)}</Text>
             <Ionicons name="chevron-forward" size={16} color={colors.silver} />
           </View>
@@ -271,6 +289,9 @@ const styles = StyleSheet.create({
   cardRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardMeta: { fontFamily: font.body, fontSize: 13, color: colors.slate },
   cardTotal: { fontFamily: font.displayBold, fontSize: 15, color: colors.ink },
+  docRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: space.xs },
+  docId: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.success },
+  cardQrWrap: { backgroundColor: '#fff', borderRadius: radius.sm, padding: 2, marginRight: 2 },
   fab: {
     position: 'absolute',
     bottom: 100,

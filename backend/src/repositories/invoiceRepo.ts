@@ -20,9 +20,11 @@ export type InvoiceRow = typeof invoicesTable.$inferSelect
 export type InvoiceItemRow = typeof invoiceItems.$inferSelect
 
 // ── list: summary projection (no extractedData blob) for the dashboard ──
+// Includes the submission Document ID + QR url so the home list can show an
+// audit chip + a QR for submitted invoices without a second round-trip.
 export type InvoiceSummary = Pick<
   InvoiceRow,
-  'id' | 'invoiceNumber' | 'issueDate' | 'total' | 'currency' | 'status' | 'kind' | 'createdAt'
+  'id' | 'invoiceNumber' | 'issueDate' | 'total' | 'currency' | 'status' | 'kind' | 'createdAt' | 'myinvoisDocId' | 'qrUrl'
 >
 
 export async function listInvoicesByUser(userId: string): Promise<InvoiceSummary[]> {
@@ -38,6 +40,8 @@ export async function listInvoicesByUser(userId: string): Promise<InvoiceSummary
         status: invoicesTable.status,
         kind: invoicesTable.kind,
         createdAt: invoicesTable.createdAt,
+        myinvoisDocId: invoicesTable.myinvoisDocId,
+        qrUrl: invoicesTable.qrUrl,
       })
       .from(invoicesTable)
       .where(eq(invoicesTable.userId, userId))

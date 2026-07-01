@@ -52,6 +52,11 @@ export interface InvoiceSummary {
   status: 'draft' | 'submitted' | 'paid' | string
   kind: 'sales' | 'purchase' | string
   createdAt: string
+  // Submission audit fields (populated after a successful submit). Shown on
+  // the home list so the user sees the LHDN Document ID + QR without opening
+  // each invoice.
+  myinvoisDocId: string | null // human-readable Document ID (longId)
+  qrUrl: string | null // {envbaseurl}/{uuid}/share/{longId} → render as QR
 }
 
 /**
