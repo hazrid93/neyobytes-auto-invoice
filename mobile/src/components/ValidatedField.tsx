@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   prefix: { fontFamily: font.body, fontSize: 15, color: colors.slate, marginRight: 4 },
   input: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink, paddingVertical: space.md },
   inputMultiline: { minHeight: 60, textAlignVertical: 'top' },
-  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: space.xs },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 0 },
   error: { fontFamily: font.body, fontSize: 12, color: colors.danger, flex: 1 },
-  hint: { fontFamily: font.body, fontSize: 12, color: colors.silver, marginTop: space.xs, lineHeight: 16 },
+  hint: { fontFamily: font.body, fontSize: 12, color: colors.silver, marginTop: 0, lineHeight: 16 },
 })

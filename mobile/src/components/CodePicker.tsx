@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   rowIcon: { marginRight: space.sm },
   rowValue: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink },
   rowPlaceholder: { color: colors.slate },
-  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: space.xs },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 0 },
   error: { fontFamily: font.body, fontSize: 12, color: colors.danger },
   // ── picker modal ──
   modalOverlay: { flex: 1, backgroundColor: 'rgba(10, 37, 64, 0.45)', justifyContent: 'flex-end' },
