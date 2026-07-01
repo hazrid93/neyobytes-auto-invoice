@@ -4,7 +4,16 @@
  * GET /public/invoices/:ref returns the public invoice view (by longId OR uuid),
  * and POST /public/invoices/qr resolves a scanned validation link.
  *
- * Run: APP_ENV=stg MYINVOIS_ENV=mock npx tsx scripts/verify-public-retrieval.ts
+ * This is a PLAIN script (custom `assert()` → ✅/❌ + exit code), NOT a
+ * node:test file — run WITHOUT `--test`. Real signal = ✅/❌ lines + exit code
+ * (14 assertions), NOT any `npx tsx --test` subtest count.
+ *
+ * Must run under the LOCAL mock env — APP_ENV=local loads .env.local
+ * (MYINVOIS_ENV=mock, PORT=4001). Do NOT use APP_ENV=stg: .env.stg sets
+ * MYINVOIS_ENV=sandbox with `override:true` (load-env.ts), which trips the
+ * mock guard below. Start the local backend first, then:
+ *
+ *   npx tsx scripts/verify-public-retrieval.ts        # local mock, :4001
  */
 import '../src/load-env'
 import { env } from '../src/env'
@@ -15,7 +24,11 @@ import { eq } from 'drizzle-orm'
 async function main() {
   requireDb()
   if (env.MYINVOIS_ENV !== 'mock') {
-    console.error('Set MYINVOIS_ENV=mock.')
+    console.error(
+      `Set MYINVOIS_ENV=mock (current env.MYINVOIS_ENV=${env.MYINVOIS_ENV}). ` +
+      `Run under the LOCAL env (APP_ENV=local / .env.local), NOT stg — ` +
+      `.env.stg forces MYINVOIS_ENV=sandbox via override:true and trips this guard.`,
+    )
     process.exit(1)
   }
   const { supabase } = await import('../src/lib/supabase')

@@ -69,20 +69,32 @@ Every flow step in `docs/flow/IMPLEMENTATION-AUDIT.md` is ✅ **except**:
 ### Test suite (last-verified 2026-07-01)
 | Script | Tests | Type | What it guards |
 |---|---|---|---|
-| `signing:verify` | 14/14 | unit | UBL XML digital-signature structure |
-| `ubl:verify` | 17/17 | unit | UBL JSON structure + BR-CO-18 + same-code/different-rate |
-| `items:verify` | 17/17 | unit | `buildSubmitItems` blob→UBL mapping (no-DB) |
-| `qr:verify` | 6/6 | unit | QR-image decode (jsQR) |
-| `totals:verify` | 5/5 | unit | DB totals math |
-| `lockstep:verify` | 5/5 | unit | **calc.ts (mobile) == ublJson == totals (DB)** incl 1000-line stress |
-| `mock-submit:verify` | 9/9 | unit | submit pipeline (manual + real extract path) |
-| `public:verify` | 9/10* | **live** | public retrieval e2e — needs a backend on `:${PORT}` (default 4001); the 1 non-pass is a `fetch failed` when no server is running |
-| `llm:verify` | 6/6 | unit | LLM extraction |
-| `db:verify` | — | live | DB connectivity |
+| `signing:verify` | 14/14 | unit | UBL XML digital-signature structure (node:test) |
+| `ubl:verify` | 17/17 | unit | UBL JSON structure + BR-CO-18 + same-code/different-rate (node:test) |
+| `items:verify` | 17/17 | unit | `buildSubmitItems` blob→UBL mapping, no-DB (node:test) |
+| `qr:verify` | 6/6 | unit | QR-image decode jsQR (node:test) |
+| `totals:verify` | 5/5 | unit | DB totals math (node:test) |
+| `lockstep:verify` | 5/5 | unit | **calc.ts (mobile) == ublJson == totals (DB)** incl 1000-line stress (node:test) |
+| `mock-submit:verify` | 13/13 | **live** | submit pipeline (manual + real extract path) — custom `assert()`, needs DB (`requireDb`); run plain `npx tsx scripts/verify-mock-submit.ts` |
+| `public:verify` | 14/14 | **live** | public retrieval e2e — needs the LOCAL mock backend (`MYINVOIS_ENV=mock`, `:4001`); custom `assert()`, run WITHOUT `--test`: `npx tsx scripts/verify-public-retrieval.ts` |
+| `llm:verify` | 6/6 | **live** | real two-stage OCR pipeline (kimi-k2.7 vision + glm-5.2 text) against the live LiteLLM gateway (`:4000`); custom `ok()`/`bad()`, prints `PASS=`/`FAIL=` |
+| `db:verify` | — | **live** | DB connectivity (live Supabase pooler) |
 
-\* `public:verify` reports 10 subtests, 9 pass; the 10th is a network-dependent
-check against a running backend and fails with `ECONNREFUSED` when the server
-isn't on the expected port. Not a code regression.
+\* `mock-submit:verify`, `public:verify`, `llm:verify`, and `db:verify` are
+**live** scripts (need a running backend / DB / LLM gateway). They use a custom
+`assert()`/`ok()`/`bad()` helper that prints ✅/❌ + sets `process.exitCode` —
+NOT node:test — so their REAL signal is the ✅/❌ count + exit code, NOT the
+`npx tsx --test` subtest count (which is file-level accounting and mis-reports
+when the script exits early at an env guard or a down-server `fetch`). Run them
+plain (no `--test`).
+
+`public:verify` specifically needs the **local mock** backend
+(`MYINVOIS_ENV=mock`, `:4001`) — under `APP_ENV=stg` the `.env.stg` file sets
+`MYINVOIS_ENV=sandbox` via `override:true` (load-env.ts) and the script exits
+at its mock guard, so do NOT run it under stg. `mock-submit:verify` likewise
+needs `MYINVOIS_ENV=mock` + a reachable DB. Counts above were captured from
+plain runs against the live dependencies (all exit=0): mock-submit 13/13,
+public 14/14, llm 6/6 (one 429 auto-retried). Not a code regression.
 
 Backend + mobile `tsc --noEmit` clean.
 
