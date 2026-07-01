@@ -236,7 +236,7 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
 
   // ── 3. (sandbox/prod) sign the document + compute documentHash ──
   // Two gates, both honest about what's unverified (see docs/myinvois/
-  // RESEARCH.md §6 + TESTING-FLOWS.md §4):
+  // KNOWLEDGE-BASE.md §5 + TESTING-FLOWS.md §4):
   //   a) cert procurement  — MYINVOIS_CERT_PEM/KEY_PEM must be set (POS Digicert).
   //   b) signing target     — SignatureValue signs the bare doc digest (prose) OR
   //      c14n(SignedInfo) (standard XAdES); LHDN accepts exactly one. This is
@@ -273,7 +273,7 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
     })
     // documentHash = Step-2 digest of the TRANSFORMED (stripped+minified) doc.
     // NB: the exact minified byte serialization is itself unverified against
-    // LHDN for arbitrary invoices (see RESEARCH.md §6 / verify-signature.py);
+    // LHDN for arbitrary invoices (see KNOWLEDGE-BASE.md §5 / verify-signature.py);
     // this is the deterministic candidate. If LHDN rejects the hash, the
     // minification is the next thing to reverse-engineer (TESTING-FLOWS §4c4).
     documentBase64 = Buffer.from(signedJson, 'utf8').toString('base64')

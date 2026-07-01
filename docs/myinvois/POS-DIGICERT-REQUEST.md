@@ -126,5 +126,5 @@ pm2 restart auto-invoice-api-stg --update-env
 ```
 
 Then submit one sandbox invoice. If accepted → `docdigest` confirmed; record it
-in `docs/myinvois/RESEARCH.md §6` and the signing gate is satisfied. If rejected
+in `docs/myinvois/KNOWLEDGE-BASE.md §5` and the signing gate is satisfied. If rejected
 → flip `MYINVOIS_SIGN_TARGET=signedinfo` and retry.

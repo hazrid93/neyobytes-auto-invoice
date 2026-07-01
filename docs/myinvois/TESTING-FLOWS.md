@@ -186,7 +186,7 @@ development.
 ### 4a. Procure the signing cert
 
 The cert must come from **POS Digicert Sdn Bhd** (Malaysia's government CA,
-`posdigicert.com.my`), issued under LHDNM's Sub CA. See `docs/myinvois/RESEARCH.md §6`.
+`posdigicert.com.my`), issued under LHDNM's Sub CA. See `docs/myinvois/KNOWLEDGE-BASE.md §5`.
 
 > ⚠️ **This cannot be done for you by anyone else.** A POS Digicert signing cert is
 > issued to *your* registered business identity after identity verification, and
@@ -253,7 +253,7 @@ passes and submit proceeds to the signing step.
 ### 4b. Resolve the signing target (the coin-flip)
 
 LHDN's signing doc (`docs/myinvois/signature-creation-json.md`) is **ambiguous** on what
-`SignatureValue` signs — your own `RESEARCH.md §6` calls this a co-equal blocker:
+`SignatureValue` signs — your own `KNOWLEDGE-BASE.md §5` calls this a co-equal blocker:
 
 - **Option A — `docdigest`:** the prose literally says sign the bare Step-2 document digest
   (`SignHash(docDigest, SHA256, PKCS1)`). Analytically favoured (Step 3 precedes Step 6 in the
@@ -284,14 +284,14 @@ signature.
      -H "Authorization: Bearer $USER_TOKEN"
    ```
 3. **If accepted** → `MYINVOIS_SIGN_TARGET=docdigest` is correct; you're done. Update
-   `RESEARCH.md §6` to mark the blocker resolved and remove the throw.
+   `KNOWLEDGE-BASE.md §5` to mark the blocker resolved and remove the throw.
 4. **If rejected with a signature error** → flip to `MYINVOIS_SIGN_TARGET=signedinfo` and
    retry. If that also fails, the remaining unknown is the exact **minified-doc byte
    serialization** (the doc's v1.1 sample digest didn't reproduce from a `json.dumps`
    minify — see `scripts/verify-signature.py`). At that point you reverse-engineer the
    minification from a known-good sample (capture a successful submit's request body from the
    portal's devtools and diff the byte serialization).
-5. Either way, record the working target + minification in `RESEARCH.md §6` and the test
+5. Either way, record the working target + minification in `KNOWLEDGE-BASE.md §5` and the test
    in `scripts/verify-signing.ts` so it's locked in.
 
 ### 4d. What's already implemented + verified (no cert needed)

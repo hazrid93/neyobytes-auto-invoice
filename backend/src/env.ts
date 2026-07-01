@@ -114,12 +114,12 @@ const schema = z.object({
   // for sandbox. Only used by the native WebView auto-appoint (Option B).
   MYINVOIS_IAPI_BASE: z.string().url().default('https://api.myinvois.hasil.gov.my'),
   // PEM-encoded signing cert + private key (for sandbox/prod submit). Leave empty
-  // in mock mode. See docs/myinvois/RESEARCH.md §6 — the signing cert must come
+  // in mock mode. See docs/myinvois/KNOWLEDGE-BASE.md §5 — the signing cert must come
   // from POS Digicert (posdigicert.com.my) under LHDNM's Sub CA.
   MYINVOIS_CERT_PEM: z.string().optional(),
   MYINVOIS_KEY_PEM: z.string().optional(),
   // The LHDN signing target — which value SignatureValue signs. UNVERIFIED until
-  // a real round-trip (see docs/myinvois/RESEARCH.md §6 + TESTING-FLOWS.md §4b):
+  // a real round-trip (see docs/myinvois/KNOWLEDGE-BASE.md §5 + TESTING-FLOWS.md §4b):
   //   docdigest  → Sign(SHA256(transformed document))  [prose-literal]
   //   signedinfo → Sign(c14n(SignedInfo))              [standard XAdES]
   // If unset/empty, the submit service throws SigningTargetUnverifiedError rather

@@ -7,7 +7,7 @@
 > LHDN's own pseudo-code (C#/.NET) — kept verbatim as the algorithm spec.
 > The sample JSON values use placeholder `1436.50` for *every* monetary
 > field (mathematically impossible) — they illustrate structure, not totals.
-> See `KNOWLEDGE-BASE.md` §5 + `RESEARCH.md` §6 for the distilled algorithm.
+> See `KNOWLEDGE-BASE.md` §5 for the distilled algorithm.
 
 ---
 

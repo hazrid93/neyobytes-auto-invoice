@@ -47,7 +47,7 @@ every gap against those flows.
 - The prod identity host is inferred by host-parity with sandbox (the SDK HTML
   is JS-rendered, no host table). Verify against the LHDN portal on first prod
   registration. Does not block sandbox work.
-- Source: `docs/myinvois/env-sandbox.json`, `env-prod.json`, `RESEARCH.md §1`.
+- Source: `docs/myinvois/env-sandbox.json`, `env-prod.json`.
 
 ---
 
@@ -128,6 +128,21 @@ POST /api/v1.0/documentsubmissions/   Content-Type: application/json
 - Response: `{ submissionId, documentId (uuid) }` → persist as
   `validation_uuid` / `longId` for retrieval + QR.
 
+### Standard error response
+
+Shape (typical LHDN): `{ "error": "...", "error_description": "...",
+"timestamp": "...", "traceId": "...", "errors": [ ... ] }`.
+
+| HTTP | Meaning |
+|---|---|
+| **401** | token expired → re-login (`/connect/token`) |
+| **400** | validation error — see response body for which field/rule failed |
+
+**Server-side validation rules** (`/document-validation-rules/`) define
+accept/reject at submission and differ per document type/version; the readable
+extracts are under `docs/myinvois/sdk-ref/api/` (the HTML pages are
+JS-rendered). Client-side field constraints live separately in §9 (`FIELD_RULES`).
+
 ---
 
 ## 4. The UBL document (v1.1, JSON variant)
@@ -206,7 +221,13 @@ order, join with `", "`); serial as `BigInt('0x'+cert.serialNumber).toString(10)
 2. **Signing target** — the doc's prose says sign the bare Step-2 `docDigest`
    (`SignHash(docDigest)`), but the wire sample carries a full `SignedInfo`
    (standard XAdES implies `Sign(c14n(SignedInfo))`). LHDN accepts exactly one;
-   the public artifact couldn't disambiguate.
+   the public artifact couldn't disambiguate (RSA-verify of `SignatureValue`
+   was inconclusive: the page's Step-1 transform block is the v1.0 invoice but
+   the signed wire sample is v1.1, so the digests can't match by construction).
+   Analytical evidence favours the prose: Step 3 (sign) is sequenced *before*
+   Step 6 (signed-properties digest) — only sensible if Step 3 signs the bare
+   doc digest, since `SignedInfo` can't be serialized without its
+   `SignedProperties` `Reference.DigestValue` first.
    - **Gated behind `MYINVOIS_SIGN_TARGET`** env (`'docdigest' | 'signedinfo'`).
      `signSignatureValue` throws `SigningTargetUnverifiedError` until a real
      round-trip confirms which the verifier accepts. **Never ship a guessed
@@ -472,7 +493,6 @@ Mirrors the LHDN v1.1 data structure. Validators in `mobile/src/lib/validation.t
 
 | Doc | What it covers |
 |---|---|
-| `RESEARCH.md` | The original deep-dive: envs, auth, endpoints, UBL structure, signing, knowns/unknowns |
 | `SDK-ANALYSIS.md` | Gap audit of our UBL builder vs the canonical sample; party-structure notes |
 | `TESTING-FLOWS.md` | Flow 1/2 test guide + the signing round-trip runbook (resolves the two blockers) |
 | `POS-DIGICERT-REQUEST.md` | How to procure the POS Digicert cert (sandbox trial → production) |

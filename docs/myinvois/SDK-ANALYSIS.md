@@ -254,7 +254,7 @@ Our current builder would be **rejected by the Core Fields Validator** for missi
 ---
 
 ## 7. Out of scope / deferred
-- Digital signing + prod send (gated, RESEARCH.md §6 / TESTING-FLOWS.md §4).
+- Digital signing + prod send (gated, KNOWLEDGE-BASE.md §5 / TESTING-FLOWS.md §4).
 - Self-billed flows (11-14) full support — structurally same as 01-04 with buyer/issuer
   swapped; add once notes (02-04) are proven.
 - Search Documents / Get Recent / Search Taxpayer TIN / Taxpayer QR Code APIs — lower
@@ -305,7 +305,7 @@ signed LHDN call (proven: '99' rejected, valid passes). TIN normalization
 (tin.ts 6/6) applied in validateTin + submit. Doc artifacts: codes-*.json.
 
 ### Deferred (out of scope / product decisions)
-- Digital signing + prod send (gated, RESEARCH.md §6 / TESTING-FLOWS.md §4).
+- Digital signing + prod send (gated, KNOWLEDGE-BASE.md §5 / TESTING-FLOWS.md §4).
 - Cancel/Reject/Get-Recent/Search/Search-TIN/Taxpayer-QR APIs — lower
   priority; customer retrieval (Get Document / public) covers the flow-1 loop.
 - Self-billed (11-14) full flows — structurally identical; invoiceType is

@@ -8,7 +8,7 @@
  * SignedProperties digest and `KKBSTy…` cert digest both reproduce byte-exact.
  *
  * ⚠️ TWO BLOCKERS remain, co-equal — both must be resolved before a real
- * sandbox/prod submit succeeds (see docs/myinvois/RESEARCH.md §6 + the
+ * sandbox/prod submit succeeds (see docs/myinvois/KNOWLEDGE-BASE.md §5 + the
  * TESTING-FLOWS.md runbook):
  *
  *   1. CERT PROCUREMENT — the signing cert must come from POS Digicert under

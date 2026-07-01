@@ -4,7 +4,7 @@
  * WHY JSON (not XML): the only LHDN signing documentation (the 7-step
  * "Securing JSON Files with Digital Signatures" guide + PDF) operates on the
  * JSON UBL variant (Step 1 minifies a JSON doc; Step 7 "Create the signed JSON
- * document"). The submit API accepts `format: "JSON"` (RESEARCH.md §3/§5), so
+ * document"). The submit API accepts `format: "JSON"` (KNOWLEDGE-BASE.md §3/§4), so
  * building the document in JSON makes the *documented* signing path applicable.
  *
  * Shape: OASIS UBL Invoice encoded as JSON with namespace prefixes (`_D`,`_A`,

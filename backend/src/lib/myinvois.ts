@@ -13,7 +13,7 @@ import { normalizeTin } from './tin'
  *   - 'prod'    : api.myinvois.hasil.gov.my (client creds + prod cert required).
  *
  * The real submit path (sandbox/prod) requires XML signing with a cert issued
- * under LHDNM's Sub CA via POS Digicert — see docs/myinvois/RESEARCH.md §6.
+ * under LHDNM's Sub CA via POS Digicert — see docs/myinvois/KNOWLEDGE-BASE.md §5.
  * That cert is not yet in hand; mock mode lets the whole product flow
  * (capture → review → submit → status) be exercised without it.
  *

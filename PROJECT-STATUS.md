@@ -149,7 +149,6 @@ exists (Tier 4).
 
 ## Reference docs
 - `docs/flow/IMPLEMENTATION-AUDIT.md` — per-flow-step status tables (authoritative)
-- `docs/myinvois/KNOWLEDGE-BASE.md` — MyInvois/LHDN API reference
-- `docs/myinvois/RESEARCH.md` — API research, §6 signing
+- `docs/myinvois/KNOWLEDGE-BASE.md` — MyInvois/LHDN API reference (§5 signing, §3 endpoints, §4 UBL)
 - `docs/myinvois/SDK-ANALYSIS.md` — SDK analysis
 - `docs/myinvois/TESTING-FLOWS.md` — §4 signing + prod send

@@ -3,7 +3,7 @@
 Date: 2026-06-30
 Scope: everything the three flow diagrams require, **excluding** (per your instruction)
 (1) digital signing of the payload and (2) the live production API send.
-Those two are tracked in `docs/myinvois/TESTING-FLOWS.md` §4 + RESEARCH.md §6.
+Those two are tracked in `docs/myinvois/TESTING-FLOWS.md` §4 + KNOWLEDGE-BASE.md §5.
 
 Legend: ✅ implemented · ⚠️ partial · ❌ missing
 
