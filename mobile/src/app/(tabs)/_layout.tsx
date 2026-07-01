@@ -39,9 +39,10 @@ const TABS: { key: TabKey; icon: keyof typeof Ionicons.glyphMap; label: string; 
   { key: 'contact', icon: 'chatbubble-outline', label: 'Contact', href: '/(tabs)/contact' },
 ]
 
-/** Bar height = just a small tab (icon + label). The white pill is ONLY this
- *  tall on the left/right — the center bump is the only thing that rises. */
-const BAR_HEIGHT = 48
+/** Bar height = a small tab stacked vertically (icon over label). Taller than
+ *  the old 48px side-by-side so the icon + label both fit without clipping;
+ *  still a compact pill on the left/right, only the center bump rises. */
+const BAR_HEIGHT = 56
 /** Capture circle diameter. Bigger than BAR_HEIGHT → the `/-\` bump rises
  *  CIRCLE/2 (=29px) above the bar; its bottom half merges into the bar. */
 const CIRCLE = 58
@@ -102,7 +103,7 @@ export function GlassTabBar({ state, navigation }: any) {
   return (
     <View style={[styles.tabWrap, { bottom: space.lg + bottom }]} pointerEvents="box-none">
       <View style={styles.barContainer}>
-        {/* The short flat white pill — only as tall as the small tabs (48px).
+        {/* The short flat white pill — only as tall as the small tabs.
             The center gap reserves room for the Capture bump. */}
         <GlassCard strong style={styles.tabBar}>
           <View style={styles.tabsRow}>
@@ -165,11 +166,12 @@ const styles = StyleSheet.create({
   },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   tabInner: {
-    flexDirection: 'row',
+    // Vertical: icon on top, label centered below — both horizontally centered.
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
-    paddingVertical: 6,
+    gap: 2,
+    paddingVertical: 4,
     paddingHorizontal: space.sm,
     borderRadius: radius.md,
   },
