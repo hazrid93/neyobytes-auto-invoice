@@ -99,6 +99,9 @@ export default function ReviewScreen() {
         taxTotal: ex.tax_total ?? 0,
         total: ex.total ?? 0,
         extractedData: ex as unknown as Record<string, unknown>,
+        invoiceType: form.invoice_type || null,
+        paymentMeansCode: form.payment_means_code || null,
+        paymentAccount: form.payment_account || null,
       })
       setDraft(updated)
       setEditing(false)
@@ -365,6 +368,9 @@ function EditView({ form, setForm, cur }: { form: EditForm; setForm: (f: EditFor
         <EditField label="Due date" value={form.due_date} onChange={(v) => set('due_date', v)} placeholder="YYYY-MM-DD" />
         <EditField label="Currency" value={form.currency} onChange={(v) => set('currency', v)} />
         <EditField label="Payment" value={form.payment_method} onChange={(v) => set('payment_method', v)} />
+        <EditField label="e-Invoice type (01 Inv, 02 CN, 03 DN, 04 RN)" value={form.invoice_type} onChange={(v) => set('invoice_type', v)} placeholder="01" autoCap="characters" />
+        <EditField label="Payment means code (01 Cash … 08 Others)" value={form.payment_means_code} onChange={(v) => set('payment_means_code', v)} placeholder="03" autoCap="characters" />
+        <EditField label="Supplier bank account no" value={form.payment_account} onChange={(v) => set('payment_account', v)} placeholder="1234567890123" autoCap="characters" />
       </Section>
 
       <Section title="Line items">
@@ -418,6 +424,9 @@ interface EditForm {
   due_date: string
   currency: string
   payment_method: string
+  invoice_type: string
+  payment_means_code: string
+  payment_account: string
   seller_name: string
   seller_tin: string
   seller_phone: string
@@ -443,6 +452,9 @@ function toForm(d: InvoiceDetail | null): EditForm {
     due_date: ex?.due_date ?? d?.dueDate ?? '',
     currency: d?.currency || ex?.currency || 'MYR',
     payment_method: ex?.payment_method ?? '',
+    invoice_type: d?.invoiceType ?? '01',
+    payment_means_code: d?.paymentMeansCode ?? '',
+    payment_account: d?.paymentAccount ?? '',
     seller_name: s?.name ?? '',
     seller_tin: s?.tin ?? '',
     seller_phone: s?.phone ?? '',

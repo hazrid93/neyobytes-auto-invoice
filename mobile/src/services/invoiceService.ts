@@ -28,6 +28,10 @@ export async function updateInvoice(
     taxTotal?: number
     total?: number
     extractedData?: Record<string, unknown> | null
+    invoiceType?: string | null
+    issueTime?: string | null
+    paymentMeansCode?: string | null
+    paymentAccount?: string | null
   },
 ): Promise<InvoiceDetail> {
   const { invoice } = await request<{ invoice: InvoiceDetail }>(`/invoices/${id}`, {

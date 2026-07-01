@@ -32,6 +32,7 @@ import {
   type TinValidationResult,
 } from '../lib/myinvois'
 import { buildUblJson } from '../lib/ublJson'
+import { normalizeTin } from '../lib/tin'
 import { log } from '../lib/logger'
 import {
   transformDocument,
@@ -84,7 +85,7 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
     currency: inv.currency,
     invoiceType: inv.invoiceType ?? '01',
     supplier: {
-      tin: supplier.tin,
+      tin: normalizeTin(supplier.tin),
       brn: supplier.brn ?? null,
       sstNumber: supplier.sstNumber ?? null,
       ttxNumber: supplier.ttxNumber ?? null,
@@ -107,7 +108,7 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
           : null,
     },
     customer: {
-      tin: customer.tin,
+      tin: normalizeTin(customer.tin),
       brn: customer.brn ?? null,
       brnScheme: customer.brnScheme ?? 'BRN',
       sstNumber: customer.sstNumber ?? null,

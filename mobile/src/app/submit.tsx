@@ -4,8 +4,8 @@
  * accept/reject outcome, and the submission history (including error rows
  * the backend writes on failure, so the trail is always complete).
  */
-import { useEffect, useRef } from 'react'
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Linking } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useSubmit } from '../viewmodels/useSubmit'
@@ -13,7 +13,9 @@ import { useSession } from '../viewmodels/useSession'
 import { GradientBackground, GlassCard } from '../theme/glass'
 import { pageContentStyle } from '../theme/page'
 import { TourButton, type TourStep } from '../components/TourButton'
+import { QRCode } from '../components/QRCode'
 import { useAuthGate } from '../components/RequireAuth'
+import { getInvoice } from '../services/invoiceService'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { useSafeInsets } from '../theme/useSafeInsets'
 
@@ -23,6 +25,11 @@ export default function SubmitScreen() {
   const vm = useSubmit()
   const session = useSession()
   const gate = useAuthGate()
+  // The authoritative validation link + Document ID come from the invoice row
+  // (persisted server-side after a successful submit). Fetch it after each
+  // submit so we can render the "Scan to Verify" QR.
+  const [qrUrl, setQrUrl] = useState<string | null>(null)
+  const [docId, setDocId] = useState<string | null>(null)
 
   const headerRef = useRef<View>(null)
   const submitRef = useRef<View>(null)
@@ -49,6 +56,20 @@ export default function SubmitScreen() {
     if (id) vm.loadSubmissions(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
+
+  // After a successful submit, pull the persisted qrUrl + Document ID (longId)
+  // from the invoice row for the QR + "Document ID" display.
+  useEffect(() => {
+    if (id && vm.lastResult?.accepted) {
+      getInvoice(id)
+        .then((inv) => {
+          setQrUrl(inv.qrUrl ?? null)
+          setDocId(inv.myinvoisDocId ?? null)
+        })
+        .catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, vm.lastResult?.accepted])
 
   const supplierReady = Boolean(session.profile?.tin && session.profile?.companyName)
   // Auth gate — an anonymous user hitting /submit directly goes to /login.
@@ -124,6 +145,39 @@ export default function SubmitScreen() {
             {last.documentUuid ? (
               <Text style={styles.resultMeta}>Doc: {last.documentUuid.slice(0, 8)}…</Text>
             ) : null}
+
+            {/* Accepted → show the Document ID (longId) + the validation-link QR
+                (flow 1 OUTPUT + flow 3 “Scan to Verify”). */}
+            {lastIsOk ? (
+              <View style={styles.qrBox}>
+                {docId ? (
+                  <Text style={styles.docIdLabel}>Document ID</Text>
+                ) : null}
+                {docId ? (
+                  <Text style={styles.docIdValue}>{docId}</Text>
+                ) : null}
+                {qrUrl ? (
+                  <View style={styles.qrWrap}>
+                    <QRCode value={qrUrl} size={180} label="Scan to Verify" />
+                    <Pressable onPress={() => qrUrl && Linking.openURL(qrUrl)} hitSlop={8}>
+                      <Text style={styles.qrLink}>Open validation link</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
+
+            {/* Rejected → route back to the review screen to fix & resubmit
+                (the flow 1 “Fix & Resubmit” loop). */}
+            {!lastIsOk ? (
+              <Pressable
+                style={styles.fixBtn}
+                onPress={() => id && router.push({ pathname: '/review', params: { id } })}
+              >
+                <Ionicons name="create-outline" size={16} color={colors.snow} style={{ marginRight: 6 }} />
+                <Text style={styles.fixBtnText}>Fix & resubmit</Text>
+              </Pressable>
+            ) : null}
           </GlassCard>
         ) : null}
 
@@ -184,6 +238,13 @@ const styles = StyleSheet.create({
   resultHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   resultStatus: { fontFamily: font.displayBold, fontSize: 18, color: colors.ink },
   resultMeta: { fontFamily: font.body, fontSize: 13, color: colors.slate, marginTop: space.xs },
+  qrBox: { marginTop: space.md, alignItems: 'center' },
+  docIdLabel: { fontFamily: font.body, fontSize: 11, color: colors.slate, textTransform: 'uppercase' },
+  docIdValue: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.ink, marginTop: 2, textAlign: 'center' },
+  qrWrap: { alignItems: 'center', marginTop: space.md },
+  qrLink: { fontFamily: font.body, fontSize: 12, color: colors.azure, marginTop: space.sm, textDecorationLine: 'underline' },
+  fixBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: space.md, paddingVertical: space.sm, paddingHorizontal: space.md, backgroundColor: colors.azure, borderRadius: radius.md },
+  fixBtnText: { fontFamily: font.displayBold, fontSize: 14, color: colors.snow },
   sectionTitle: { fontFamily: font.displayBold, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginTop: space.xl, marginBottom: space.sm, marginLeft: space.xs },
   emptyHistory: { padding: space.lg, alignItems: 'center' },
   muted: { fontFamily: font.body, fontSize: 14, color: colors.slate },

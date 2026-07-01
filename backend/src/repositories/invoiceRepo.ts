@@ -176,6 +176,154 @@ export async function getInvoiceById(
   }
 }
 
+// ── public lookup (customer retrieval — flow 1 right-hand loop) ───────────
+// Find a submitted (accepted) invoice by its human-readable Document ID (longId)
+// or its MyInvois validation UUID, plus its line items. This is the unauthed
+// lookup a customer uses to verify an e-invoice by scanning the QR or entering
+// the Document ID. Returns only submitted invoices (status='submitted').
+// The supplier's public identity is joined from profiles (name/TIN/SSM).
+export interface PublicInvoiceView {
+  id: string
+  invoiceNumber: string | null
+  issueDate: string | null
+  currency: string
+  total: number
+  taxTotal: number
+  subtotal: number
+  status: string
+  documentId: string | null // longId
+  validationUuid: string | null
+  qrUrl: string | null
+  supplierName: string | null
+  supplierTin: string | null
+  supplierBrn: string | null
+  buyerName: string | null
+  buyerTin: string | null
+  items: Array<{ description: string; quantity: number; unitPrice: number; taxRate: number; amount: number }>
+}
+
+export async function findPublicInvoice(
+  ref: string,
+): Promise<PublicInvoiceView | undefined> {
+  const q = requireDb()
+  try {
+    const [row] = await q
+      .select({
+        id: invoicesTable.id,
+        invoiceNumber: invoicesTable.invoiceNumber,
+        issueDate: invoicesTable.issueDate,
+        currency: invoicesTable.currency,
+        total: invoicesTable.total,
+        taxTotal: invoicesTable.taxTotal,
+        subtotal: invoicesTable.subtotal,
+        status: invoicesTable.status,
+        documentId: invoicesTable.myinvoisDocId,
+        validationUuid: invoicesTable.validationUuid,
+        qrUrl: invoicesTable.qrUrl,
+        userId: invoicesTable.userId,
+        extractedData: invoicesTable.extractedData,
+      })
+      .from(invoicesTable)
+      .where(
+        and(
+          eq(invoicesTable.status, 'submitted'),
+          eq(invoicesTable.myinvoisDocId, ref),
+        ),
+      )
+      .limit(1)
+    // Also try matching by validation UUID (a UUID string) — but only if `ref`
+    // parses as a UUID, otherwise Postgres throws 'invalid input syntax for
+    // type uuid' on the equality (the column is typed uuid).
+    let r = row
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!r && UUID_RE.test(ref)) {
+      const [byUuid] = await q
+        .select({
+          id: invoicesTable.id,
+          invoiceNumber: invoicesTable.invoiceNumber,
+          issueDate: invoicesTable.issueDate,
+          currency: invoicesTable.currency,
+          total: invoicesTable.total,
+          taxTotal: invoicesTable.taxTotal,
+          subtotal: invoicesTable.subtotal,
+          status: invoicesTable.status,
+          documentId: invoicesTable.myinvoisDocId,
+          validationUuid: invoicesTable.validationUuid,
+          qrUrl: invoicesTable.qrUrl,
+          userId: invoicesTable.userId,
+          extractedData: invoicesTable.extractedData,
+        })
+        .from(invoicesTable)
+        .where(and(eq(invoicesTable.status, 'submitted'), eq(invoicesTable.validationUuid, ref)))
+        .limit(1)
+      r = byUuid
+    }
+    if (!r) return undefined
+
+    // Supplier public identity (name/TIN/SSM).
+    const [sup] = await q
+      .select({
+        companyName: profilesTable.companyName,
+        fullName: profilesTable.fullName,
+        tin: profilesTable.tin,
+        brn: profilesTable.brn,
+      })
+      .from(profilesTable)
+      .where(eq(profilesTable.id, r.userId))
+      .limit(1)
+
+    // Line items.
+    const items = await q
+      .select({
+        description: invoiceItems.description,
+        quantity: invoiceItems.quantity,
+        unitPrice: invoiceItems.unitPrice,
+        taxRate: invoiceItems.taxRate,
+        amount: invoiceItems.amount,
+      })
+      .from(invoiceItems)
+      .where(eq(invoiceItems.invoiceId, r.id))
+      .orderBy(invoiceItems.sortOrder)
+
+    // Buyer from extractedData (captured invoices store the buyer there).
+    let buyerName: string | null = null
+    let buyerTin: string | null = null
+    const ex = r.extractedData as { buyer?: { name?: string; tin?: string } } | null
+    if (ex?.buyer) {
+      buyerName = ex.buyer.name ?? null
+      buyerTin = ex.buyer.tin ?? null
+    }
+
+    return {
+      id: r.id,
+      invoiceNumber: r.invoiceNumber,
+      issueDate: r.issueDate ? new Date(r.issueDate).toISOString().slice(0, 10) : null,
+      currency: r.currency,
+      total: Number(r.total),
+      taxTotal: Number(r.taxTotal),
+      subtotal: Number(r.subtotal),
+      status: r.status,
+      documentId: r.documentId,
+      validationUuid: r.validationUuid,
+      qrUrl: r.qrUrl,
+      supplierName: sup?.companyName ?? sup?.fullName ?? null,
+      supplierTin: sup?.tin ?? null,
+      supplierBrn: sup?.brn ?? null,
+      buyerName,
+      buyerTin,
+      items: items.map((it) => ({
+        description: it.description,
+        quantity: Number(it.quantity),
+        unitPrice: Number(it.unitPrice),
+        taxRate: Number(it.taxRate),
+        amount: Number(it.amount),
+      })),
+    }
+  } catch (e) {
+    throw classifyDbError(e, 'findPublicInvoice')
+  }
+}
+
 // ── update: edit a draft's scalar columns + the extractedData blob ──
 // Only the keys present in `patch` are written (undefined keys are skipped so
 // a partial PATCH doesn't null out untouched fields). extractedData is replaced
@@ -192,6 +340,10 @@ export async function updateInvoice(
     taxTotal?: number
     total?: number
     extractedData?: Record<string, unknown> | null
+    invoiceType?: string | null
+    issueTime?: string | null
+    paymentMeansCode?: string | null
+    paymentAccount?: string | null
   },
 ): Promise<InvoiceRow | undefined> {
   const q = requireDb()
@@ -204,6 +356,10 @@ export async function updateInvoice(
   if (patch.taxTotal !== undefined) set.taxTotal = patch.taxTotal
   if (patch.total !== undefined) set.total = patch.total
   if (patch.extractedData !== undefined) set.extractedData = patch.extractedData
+  if (patch.invoiceType !== undefined) set.invoiceType = patch.invoiceType
+  if (patch.issueTime !== undefined) set.issueTime = patch.issueTime
+  if (patch.paymentMeansCode !== undefined) set.paymentMeansCode = patch.paymentMeansCode
+  if (patch.paymentAccount !== undefined) set.paymentAccount = patch.paymentAccount
   try {
     const [row] = await q
       .update(invoicesTable)

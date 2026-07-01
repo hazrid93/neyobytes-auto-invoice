@@ -63,6 +63,10 @@ export async function updateInvoice(
     taxTotal?: number
     total?: number
     extractedData?: Record<string, unknown> | null
+    invoiceType?: string | null
+    issueTime?: string | null
+    paymentMeansCode?: string | null
+    paymentAccount?: string | null
   },
 ): Promise<InvoiceRow | undefined> {
   return updateInvoiceRepo(invoiceId, userId, patch)

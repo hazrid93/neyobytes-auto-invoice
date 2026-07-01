@@ -1,6 +1,7 @@
 import { env } from '../env'
 import { getMyInvoisCredentials, getTaxpayerTin } from '../repositories/profileRepo'
 import { MyInvoisNotConnectedError, ValidationError } from '../domain/errors'
+import { normalizeTin } from './tin'
 
 /**
  * LHDN MyInvois e-Invoicing client.
@@ -180,7 +181,7 @@ export interface TinValidationResult {
  * `userId` selects the caller's own LHDN credentials for the token (ignored in mock).
  */
 export async function validateTin(tin: string, userId: string): Promise<TinValidationResult> {
-  const clean = tin.replace(/[\s-]/g, '').toUpperCase()
+  const clean = normalizeTin(tin.replace(/[\s-]/g, ''))
 
   if (isMock) {
     // Malaysian TIN format: starts with letters (e.g. SG, OG, C, D, T) + digits,

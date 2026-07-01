@@ -9,6 +9,7 @@ import { health } from './routes/health'
 import { auth } from './routes/auth'
 import { invoices } from './routes/invoices'
 import { myinvois } from './routes/myinvois'
+import { publicRoutes } from './routes/public'
 import { mapDomainError } from './lib/httpErrors'
 import type { AppEnv } from './types'
 
@@ -37,6 +38,7 @@ app.get('/', (c) =>
 app.route('/health', health)
 app.route('/auth', auth)
 app.route('/invoices', invoices)
+app.route('/public', publicRoutes)
 app.route('/myinvois', myinvois)
 
 app.notFound((c) => c.json({ error: 'not_found' }, 404))

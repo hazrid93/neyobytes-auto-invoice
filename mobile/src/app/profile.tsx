@@ -23,6 +23,19 @@ export default function ProfileScreen() {
   const [fullName, setFullName] = useState(p?.fullName ?? '')
   const [companyName, setCompanyName] = useState(p?.companyName ?? '')
   const [tin, setTin] = useState(p?.tin ?? '')
+  // Supplier identity fields for the MyInvois Core Fields Validator (the
+  // mandatory party structure). 'NA' defaults where the FAQ allows it.
+  const [brn, setBrn] = useState(p?.brn ?? '')
+  const [sstNumber, setSstNumber] = useState(p?.sstNumber ?? '')
+  const [ttxNumber, setTtxNumber] = useState(p?.ttxNumber ?? '')
+  const [msicCode, setMsicCode] = useState(p?.msicCode ?? '')
+  const [msicDescription, setMsicDescription] = useState(p?.msicDescription ?? '')
+  const [contactNumber, setContactNumber] = useState(p?.contactNumber ?? '')
+  const [addressLine1, setAddressLine1] = useState(p?.addressLine1 ?? '')
+  const [addressLine2, setAddressLine2] = useState(p?.addressLine2 ?? '')
+  const [city, setCity] = useState(p?.city ?? '')
+  const [postalZone, setPostalZone] = useState(p?.postalZone ?? '')
+  const [stateCode, setStateCode] = useState(p?.stateCode ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [ok, setOk] = useState(false)
@@ -58,7 +71,22 @@ export default function ProfileScreen() {
     setError(null)
     setOk(false)
     try {
-      await updateProfile({ fullName, companyName: companyName || null, tin: tin || null })
+      await updateProfile({
+        fullName,
+        companyName: companyName || null,
+        tin: tin || null,
+        brn: brn || null,
+        sstNumber: sstNumber || null,
+        ttxNumber: ttxNumber || null,
+        msicCode: msicCode || null,
+        msicDescription: msicDescription || null,
+        contactNumber: contactNumber || null,
+        addressLine1: addressLine1 || null,
+        addressLine2: addressLine2 || null,
+        city: city || null,
+        postalZone: postalZone || null,
+        stateCode: stateCode || null,
+      })
       await session.refreshProfile()
       setOk(true)
     } catch (e) {
@@ -90,6 +118,26 @@ export default function ProfileScreen() {
         </GlassCard>
       </View>
 
+        <Text style={styles.sectionTitle}>Supplier identity (for LHDN e-invoice)</Text>
+        <Text style={styles.subtitle}>Required by the MyInvois Core Fields Validator. Leave blank/NA where not applicable.</Text>
+        <GlassCard strong style={styles.form}>
+          <Field label="BRN / SSM (Business Reg. No.)" icon="document-text-outline" value={brn} onChange={setBrn} placeholder="202001234567" autoCap="characters" />
+          <Field label="SST number (NA if none)" icon="receipt-outline" value={sstNumber} onChange={setSstNumber} placeholder="A01-2345-67891012 or NA" autoCap="characters" />
+          <Field label="Tourism Tax / TTX (NA if none)" icon="boat-outline" value={ttxNumber} onChange={setTtxNumber} placeholder="123-4567-89012345 or NA" autoCap="characters" />
+          <Field label="MSIC code (5-digit)" icon="pricetag-outline" value={msicCode} onChange={setMsicCode} placeholder="46510" autoCap="characters" />
+          <Field label="Business activity" icon="briefcase-outline" value={msicDescription} onChange={setMsicDescription} placeholder="Wholesale of computer hardware" />
+          <Field label="Contact number (E.164)" icon="call-outline" value={contactNumber} onChange={setContactNumber} placeholder="+60123456789" keyboardType="phone-pad" />
+        </GlassCard>
+
+        <Text style={styles.sectionTitle}>Business address</Text>
+        <GlassCard strong style={styles.form}>
+          <Field label="Address line 1" icon="location-outline" value={addressLine1} onChange={setAddressLine1} placeholder="Lot 66" />
+          <Field label="Address line 2 (optional)" icon="location-outline" value={addressLine2} onChange={setAddressLine2} placeholder="Bangunan Merdeka" />
+          <Field label="City" icon="business-outline" value={city} onChange={setCity} placeholder="Kuala Lumpur" />
+          <Field label="Postal zone" icon="mail-outline" value={postalZone} onChange={setPostalZone} placeholder="50480" keyboardType="numeric" />
+          <Field label="State code (01–17)" icon="map-outline" value={stateCode} onChange={setStateCode} placeholder="10" keyboardType="numeric" />
+        </GlassCard>
+
         {error ? (
           <View style={styles.errorRow}>
             <Ionicons name="alert-circle" size={15} color={colors.danger} />
@@ -117,8 +165,8 @@ export default function ProfileScreen() {
 }
 
 function Field({
-  label, icon, value, onChange, placeholder, autoCap,
-}: { label: string; icon: keyof typeof Ionicons.glyphMap; value: string; onChange: (v: string) => void; placeholder?: string; autoCap?: 'characters' | 'none' | 'words' }) {
+  label, icon, value, onChange, placeholder, autoCap, keyboardType,
+}: { label: string; icon: keyof typeof Ionicons.glyphMap; value: string; onChange: (v: string) => void; placeholder?: string; autoCap?: 'characters' | 'none' | 'words'; keyboardType?: 'phone-pad' | 'numeric' | 'default' }) {
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -131,6 +179,7 @@ function Field({
           placeholder={placeholder}
           placeholderTextColor={colors.slate}
           autoCapitalize={autoCap ?? 'none'}
+          keyboardType={keyboardType ?? 'default'}
         />
       </View>
     </View>
@@ -142,6 +191,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: space.sm },
   title: { fontFamily: font.displayBold, fontSize: 28, color: colors.ink, letterSpacing: -0.5 },
   subtitle: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginBottom: space.lg, lineHeight: 20 },
+  sectionTitle: { fontFamily: font.displayBold, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginTop: space.xl, marginBottom: space.xs, marginLeft: space.xs },
   form: { padding: space.xl, gap: space.lg },
   field: { gap: space.xs },
   label: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },

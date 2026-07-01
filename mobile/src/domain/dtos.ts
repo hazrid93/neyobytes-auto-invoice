@@ -21,6 +21,19 @@ export interface AuthResult {
 export interface Profile extends AuthUser {
   companyName: string | null
   tin: string | null
+  // Supplier identity fields for the MyInvois Core Fields Validator.
+  brn: string | null
+  sstNumber: string | null
+  ttxNumber: string | null
+  msicCode: string | null
+  msicDescription: string | null
+  contactNumber: string | null
+  addressLine1: string | null
+  addressLine2: string | null
+  addressLine3: string | null
+  city: string | null
+  postalZone: string | null
+  stateCode: string | null
   // Per-user LHDN MyInvois ERP credentials (Login as Taxpayer System).
   // Only the public client_id half + the connection timestamp are surfaced;
   // the secret never leaves the backend.
@@ -59,7 +72,14 @@ export interface InvoiceDetail {
   kind: string
   rawImagePath: string | null
   extractedData: ExtractedInvoice | null
-  myinvoisDocId: string | null
+  myinvoisDocId: string | null // the human-readable Document ID (longId)
+  validationUuid: string | null // the MyInvois document UUID
+  qrUrl: string | null // the validation link {base}/{uuid}/share/{longId} → render as QR
+  // e-Invoice submission fields (MyInvois Core Fields Validator + flow 2).
+  invoiceType: string | null
+  issueTime: string | null
+  paymentMeansCode: string | null
+  paymentAccount: string | null
   createdAt: string
 }
 

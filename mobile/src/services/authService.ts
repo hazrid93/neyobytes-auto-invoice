@@ -47,6 +47,18 @@ export interface ProfilePatch {
   fullName?: string
   companyName?: string | null
   tin?: string | null
+  brn?: string | null
+  sstNumber?: string | null
+  ttxNumber?: string | null
+  msicCode?: string | null
+  msicDescription?: string | null
+  contactNumber?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  addressLine3?: string | null
+  city?: string | null
+  postalZone?: string | null
+  stateCode?: string | null
 }
 
 export async function updateProfile(patch: ProfilePatch): Promise<Profile> {

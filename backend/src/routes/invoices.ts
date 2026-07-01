@@ -46,6 +46,11 @@ const patchSchema = z.object({
   taxTotal: z.number().optional(),
   total: z.number().optional(),
   extractedData: z.record(z.string(), z.unknown()).optional(),
+  // e-Invoice submission fields (MyInvois Core Fields Validator + flow 2):
+  invoiceType: z.string().max(2).nullable().optional(), // 01-04, 11-14
+  issueTime: z.string().nullable().optional(), // UTC HH:MM:SSZ
+  paymentMeansCode: z.string().max(2).nullable().optional(), // 01-08
+  paymentAccount: z.string().max(150).nullable().optional(), // bank account no
 })
 invoices.patch('/:id', requireAuth, async (c) => {
   const id = c.req.param('id')

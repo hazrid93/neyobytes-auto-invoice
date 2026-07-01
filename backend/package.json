@@ -12,7 +12,8 @@
     "llm:verify": "tsx scripts/verify-llm.ts",
     "signing:verify": "node --import tsx --test scripts/verify-signing.ts",
     "ubl:verify": "tsx scripts/verify-ubl.ts",
-    "mock-submit:verify": "tsx scripts/verify-mock-submit.ts"
+    "mock-submit:verify": "tsx scripts/verify-mock-submit.ts",
+    "public:verify": "tsx scripts/verify-public-retrieval.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
