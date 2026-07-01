@@ -71,7 +71,7 @@ Every flow step in `docs/flow/IMPLEMENTATION-AUDIT.md` is ✅ **except**:
 |---|---|---|---|
 | `signing:verify` | 14/14 | unit | UBL XML digital-signature structure (node:test) |
 | `ubl:verify` | 17/17 | unit | UBL JSON structure + BR-CO-18 + same-code/different-rate (node:test) |
-| `items:verify` | 17/17 | unit | `buildSubmitItems` blob→UBL mapping, no-DB (node:test) |
+| `items:verify` | 17/17 | unit | `buildSubmitItems` blob→UBL mapping, no-DB (node:test; 8 tests in the script + 9 auto-discovered in imported `lib/tin.ts`+`lib/codes.ts` = 17) |
 | `qr:verify` | 6/6 | unit | QR-image decode jsQR (node:test) |
 | `totals:verify` | 5/5 | unit | DB totals math (node:test) |
 | `lockstep:verify` | 5/5 | unit | **calc.ts (mobile) == ublJson == totals (DB)** incl 1000-line stress (node:test) |
