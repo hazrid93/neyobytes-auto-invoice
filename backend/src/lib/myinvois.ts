@@ -473,6 +473,7 @@ export interface UblLineItem {
   taxTypeCode?: string | null // tax-type code 01-06|E; default '06' (Not Applicable)
   unitCode?: string | null // UN/ECE Rec 20 unit code; default 'C62' (unit)
   classification?: string | null // Item.CommodityClassification[CLASS] (3-char); default '000'
+  originCountry?: string | null // Item.OriginCountry/IdentificationCode ISO-3166-1; default 'MYS'
 }
 
 export interface BuildUblInput {

@@ -172,6 +172,7 @@ export function buildUblJson(input: BuildUblInput): string {
     const taxTypeCode = it.taxTypeCode || '06' // 06 = Not Applicable
     const unitCode = it.unitCode || 'C62'
     const classification = it.classification || '000'
+    const originCountry = it.originCountry || 'MYS'
     return {
       ID: v(String(i + 1)),
       InvoicedQuantity: [{ _: it.quantity, unitCode }],
@@ -204,7 +205,7 @@ export function buildUblJson(input: BuildUblInput): string {
           CommodityClassification: [
             { ItemClassificationCode: [{ _: classification, listID: 'CLASS' }] },
           ],
-          OriginCountry: [{ IdentificationCode: v('MYS') }],
+          OriginCountry: [{ IdentificationCode: v(originCountry) }],
         },
       ],
       Price: [{ PriceAmount: money(it.unitPrice, currency) }],

@@ -63,7 +63,54 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
   const agg = await loadInvoiceForSubmission(invoiceId, userId)
   if (!agg) throw new NotFoundError('invoice_not_found')
 
-  const { invoice: inv, items, customer, supplier } = agg
+  const { invoice: inv, items: tableItems, customer, supplier } = agg
+
+  // ── Source the UBL line items (with LHDN codes) ────────────────────
+  // Captured invoices store their items ONLY in the extractedData JSONB
+  // blob (createDraftFromExtraction writes no invoice_items rows); the
+  // review screen edits that blob, including the user-picked codes via the
+  // CodePickers (tax_type_code / unit_code / classification /
+  // origin_country). So the blob is the authoritative source — table rows
+  // exist only for invoices created manually via POST /invoices (which carry
+  // no codes). Prefer the blob; fall back to the table only when the blob has
+  // no items, so BOTH paths submit a real InvoiceLine[] (LHDN rejects an
+  // empty one). This also closes the audit gap where the four line-item codes
+  // were captured in the form but dropped at submission (UBL fell back to
+  // '06'/'C62'/'000'/'MYS').
+  type ExtractedItem = {
+    description?: string | null
+    quantity?: number | string | null
+    unit_price?: number | string | null
+    tax_rate?: number | string | null
+    tax_type_code?: string | null
+    unit_code?: string | null
+    classification?: string | null
+    origin_country?: string | null
+  }
+  const exItems =
+    (inv.extractedData as { items?: ExtractedItem[] } | null)?.items ?? []
+  const ublItems = exItems.length > 0
+    ? exItems.map((it) => ({
+        description: String(it.description ?? '').trim() || 'Item',
+        quantity: Number(it.quantity ?? 1),
+        unitPrice: Number(it.unit_price ?? 0),
+        taxRate: Number(it.tax_rate ?? 0),
+        taxTypeCode: it.tax_type_code ?? null,
+        unitCode: it.unit_code ?? null,
+        classification: it.classification ?? null,
+        originCountry: it.origin_country ?? null,
+      }))
+    : tableItems.map((it) => ({
+        description: it.description,
+        quantity: Number(it.quantity),
+        unitPrice: Number(it.unitPrice),
+        taxRate: Number(it.taxRate),
+      }))
+  if (ublItems.length === 0) {
+    throw new ValidationError(
+      'This invoice has no line items. Capture or add at least one item before submitting.',
+    )
+  }
 
   // ── Supplier & customer TINs are mandatory for LHDN submission ──
   if (!supplier.tin) {
@@ -162,12 +209,7 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
             : customer.address ?? null
           : null,
     },
-    items: items.map((it) => ({
-      description: it.description,
-      quantity: Number(it.quantity),
-      unitPrice: Number(it.unitPrice),
-      taxRate: Number(it.taxRate),
-    })),
+    items: ublItems,
     paymentMeansCode: inv.paymentMeansCode ?? null,
     paymentAccount: inv.paymentAccount ?? null,
     paymentTerms: inv.dueDate ? `Due ${inv.dueDate}` : null,

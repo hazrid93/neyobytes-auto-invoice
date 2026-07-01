@@ -253,6 +253,41 @@ test('IssueTime can be overridden (caller supplies UTC time)', () => {
   assert.equal(get('IssueTime.0._', inv), '00:30:00Z')
 })
 
+test('line-item codes (taxTypeCode/unitCode/classification/originCountry) thread through to the UBL', () => {
+  const input: BuildUblInput = {
+    ...baseInput,
+    items: [
+      {
+        description: 'Laptop',
+        quantity: 2,
+        unitPrice: 2500,
+        taxRate: 6,
+        taxTypeCode: '01', // Sales Tax
+        unitCode: 'C62',
+        classification: '003',
+        originCountry: 'GBR',
+      },
+    ],
+  }
+  const line = JSON.parse(buildUblJson(input)).Invoice[0].InvoiceLine[0]
+  // taxTypeCode → per-line TaxCategory.ID
+  assert.equal(get('TaxTotal.0.TaxSubtotal.0.TaxCategory.0.ID.0._', line), '01')
+  // unitCode → InvoicedQuantity.unitCode
+  assert.equal(get('InvoicedQuantity.0.unitCode', line), 'C62')
+  // classification → CommodityClassification[CLASS]
+  assert.equal(get('Item.0.CommodityClassification.0.ItemClassificationCode.0._', line), '003')
+  // originCountry → Item.OriginCountry.IdentificationCode (NOT hardcoded MYS)
+  assert.equal(get('Item.0.OriginCountry.0.IdentificationCode.0._', line), 'GBR')
+  // invoice-level TaxSubtotal reflects the line's taxTypeCode too
+  const inv = JSON.parse(buildUblJson(input)).Invoice[0]
+  assert.equal(get('TaxTotal.0.TaxSubtotal.0.TaxCategory.0.ID.0._', inv), '01')
+})
+
+test('absent originCountry falls back to MYS (default)', () => {
+  const line = JSON.parse(buildUblJson(baseInput)).Invoice[0].InvoiceLine[0]
+  assert.equal(get('Item.0.OriginCountry.0.IdentificationCode.0._', line), 'MYS')
+})
+
 test('document is JSON-stringifiable + minifiable (stable for digest)', () => {
   const a = buildUblJson(baseInput)
   const b = buildUblJson(baseInput)
