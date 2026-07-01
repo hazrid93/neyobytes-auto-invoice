@@ -1,6 +1,6 @@
 # neyobytes-auto-invoice — Project Status
 
-> Snapshot: 2026-07-01 · HEAD `fc66249` · 70 commits · local == remote (clean tree)
+> Snapshot: 2026-07-01 · tracked on `main` (working tree clean; see `git log` for the latest commit)
 > Backend live on staging (PM2 `auto-invoice-api-stg`, :4002, healthy) · web export deployed
 
 ---
