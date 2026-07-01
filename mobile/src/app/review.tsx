@@ -10,7 +10,7 @@
  *
  * Actions: Edit/Save (toggle), Delete (DELETE → home), Confirm & submit.
  */
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useMemo, useState } from 'react'
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -29,6 +29,7 @@ import { useSafeInsets } from '../theme/useSafeInsets'
 import type { ExtractedInvoice, InvoiceDetail } from '../domain/dtos'
 import { E_INVOICE_TYPES, PAYMENT_METHODS, CURRENCIES, TAX_TYPES, CLASSIFICATION_CODES, UNIT_TYPES, COUNTRIES, FIELD_RULES } from '../data/codes'
 import { compose, required, minLength, maxLength, isoDate, decimal, positiveNumber } from '../lib/validation'
+import { computeTotals, money, num as num2, type CalcLineInput } from '../lib/calc'
 
 export default function ReviewScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -357,8 +358,18 @@ function ReadView({
       </Section>
 
       <Section title="Totals">
-        <Row label="Subtotal" value={cfmt(ex?.subtotal ?? draft.subtotal)} />
-        <Row label="Tax" value={cfmt(ex?.tax_total ?? draft.taxTotal)} />
+        <Row label="Subtotal (excl. tax)" value={cfmt(ex?.subtotal ?? draft.subtotal)} />
+        <Row label="Total tax" value={cfmt(ex?.tax_total ?? draft.taxTotal)} />
+        {(() => {
+          const items = (ex?.items ?? []) as Array<{ quantity: number; unit_price: number; tax_rate: number; tax_type_code?: string | null }>
+          if (items.length === 0) return null
+          const t = computeTotals(items.map((it) => ({ quantity: num2(it.quantity), unit_price: num2(it.unit_price), tax_rate: num2(it.tax_rate), tax_type_code: it.tax_type_code })))
+          const shown = t.breakdown.filter((r) => r.tax > 0)
+          if (shown.length === 0) return null
+          return shown.map((r) => (
+            <Row key={r.code} label={`  ${codeLabel(TAX_TYPES, r.code)} (${r.code}) · ${r.rate}%`} value={cfmt(r.tax)} />
+          ))
+        })()}
         <Row label="Total" value={cfmt(ex?.total ?? draft.total)} bold />
       </Section>
     </>
@@ -391,6 +402,16 @@ function EditView({ form, setForm, cur, refs, formError }: {
   const addItem = () =>
     setForm({ ...form, items: [...form.items, { description: '', quantity: '1', unit_price: '0', tax_rate: '0', tax_type_code: '', unit_code: '', classification: '', origin_country: '' }] })
   const removeItem = (i: number) => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) })
+
+  // Totals are DERIVED from line items — never typed. Recomputed on every edit
+  // so the panel mirrors exactly what the backend UBL builder will submit.
+  const currency = form.currency || 'MYR'
+  const calcItems: CalcLineInput[] = useMemo(
+    () => form.items.map((it) => ({ quantity: num2(it.quantity), unit_price: num2(it.unit_price), tax_rate: num2(it.tax_rate), tax_type_code: it.tax_type_code })),
+    [form.items],
+  )
+  const totals = useMemo(() => computeTotals(calcItems), [calcItems])
+  const lineTotals = totals.lines
 
   return (
     <>
@@ -456,6 +477,20 @@ function EditView({ form, setForm, cur, refs, formError }: {
               </View>
             </View>
             <CodePicker label="Country of origin" icon="globe-outline" options={COUNTRIES} value={it.origin_country} onChange={(v) => setItem(i, { origin_country: v })} />
+            <View style={styles.lineTotals}>
+              <View style={styles.lineTotalCell}>
+                <Text style={styles.lineTotalLabel}>Net</Text>
+                <Text style={styles.lineTotalValue} numberOfLines={1}>{money(lineTotals[i].net, currency)}</Text>
+              </View>
+              <View style={styles.lineTotalCell}>
+                <Text style={styles.lineTotalLabel}>Tax</Text>
+                <Text style={styles.lineTotalValue} numberOfLines={1}>{money(lineTotals[i].tax, currency)}</Text>
+              </View>
+              <View style={[styles.lineTotalCell, styles.lineTotalCellEmph]}>
+                <Text style={styles.lineTotalLabel}>Line total</Text>
+                <Text style={styles.lineTotalValueEmph} numberOfLines={1}>{money(lineTotals[i].total, currency)}</Text>
+              </View>
+            </View>
           </View>
         ))}
         <Pressable style={styles.addItem} onPress={addItem}>
@@ -465,9 +500,49 @@ function EditView({ form, setForm, cur, refs, formError }: {
       </Section>
 
       <Section title="Totals" edit>
-        <EditField label="Subtotal" value={form.subtotal} onChange={(v) => set('subtotal', v)} keyboardType="numeric" prefix={cur} />
-        <EditField label="Tax" value={form.tax_total} onChange={(v) => set('tax_total', v)} keyboardType="numeric" prefix={cur} />
-        <EditField label="Total" value={form.total} onChange={(v) => set('total', v)} keyboardType="numeric" prefix={cur} />
+        <View style={styles.calcNote}>
+          <Ionicons name="calculator-outline" size={14} color={colors.slate} />
+          <Text style={styles.calcNoteText}>Auto-calculated from line items.</Text>
+        </View>
+        <View style={styles.totalsGrid}>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Subtotal (excl. tax)</Text>
+            <Text style={styles.totalValue}>{money(totals.subtotal, currency)}</Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total tax</Text>
+            <Text style={styles.totalValue}>{money(totals.taxTotal, currency)}</Text>
+          </View>
+          {totals.breakdown.length > 0 && totals.breakdown.some((r) => r.tax > 0) ? (
+            <View style={styles.breakWrap}>
+              <Text style={styles.totalSubLabel}>by tax type</Text>
+              {totals.breakdown.map((r) => (
+                <View key={r.code} style={styles.breakRow}>
+                  <Text style={styles.breakLabel} numberOfLines={1}>
+                    {codeLabel(TAX_TYPES, r.code)} ({r.code}) · {r.rate}%
+                  </Text>
+                  <Text style={styles.breakValue}>{money(r.tax, currency)}</Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Discount (line)</Text>
+            <Text style={styles.totalValueMuted}>{money(0, currency)}</Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Charges (line)</Text>
+            <Text style={styles.totalValueMuted}>{money(0, currency)}</Text>
+          </View>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Rounding</Text>
+            <Text style={styles.totalValueMuted}>{money(0, currency)}</Text>
+          </View>
+        </View>
+        <View style={styles.grandTotalRow}>
+          <Text style={styles.grandTotalLabel}>Grand total</Text>
+          <Text style={styles.grandTotalValue}>{money(totals.total, currency)}</Text>
+        </View>
       </Section>
 
       {formError ? (
@@ -559,6 +634,13 @@ function num(s: string): number {
 }
 
 function fromForm(f: EditForm): ExtractedInvoice {
+  // Totals are derived from line items (the review screen shows them
+  // auto-calculated, non-editable). Compute here so what we persist matches
+  // exactly what the user saw, regardless of any stale subtotal/tax/total
+  // strings carried over from an older draft.
+  const t = computeTotals(
+    f.items.map((it) => ({ quantity: num(it.quantity), unit_price: num(it.unit_price), tax_rate: num(it.tax_rate), tax_type_code: it.tax_type_code })),
+  )
   return {
     invoice_number: f.invoice_number.trim() || null,
     issue_date: f.issue_date.trim() || null,
@@ -589,9 +671,9 @@ function fromForm(f: EditForm): ExtractedInvoice {
       classification: it.classification || null,
       origin_country: it.origin_country || null,
     })),
-    subtotal: f.subtotal.trim() ? num(f.subtotal) : null,
-    tax_total: f.tax_total.trim() ? num(f.tax_total) : null,
-    total: f.total.trim() ? num(f.total) : null,
+    subtotal: t.subtotal,
+    tax_total: t.taxTotal,
+    total: t.total,
     payment_method: f.payment_method.trim() || null,
     bank_detail: null,
     qr_verification: null,
@@ -703,6 +785,29 @@ const styles = StyleSheet.create({
   itemEditRow: { flexDirection: 'row', alignItems: 'flex-end' },
   addItem: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: space.md },
   addItemText: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.azure },
+  // ── per-line net/tax/total summary (computed) ──
+  lineTotals: { flexDirection: 'row', gap: space.sm, marginTop: space.xs, paddingTop: space.sm, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.silver + '55' },
+  lineTotalCell: { flex: 1 },
+  lineTotalCellEmph: { flex: 1.2 },
+  lineTotalLabel: { fontFamily: font.body, fontSize: 11, color: colors.slate, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.3 },
+  lineTotalValue: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.ink },
+  lineTotalValueEmph: { fontFamily: font.displayBold, fontSize: 14, color: colors.azure },
+  // ── computed Totals panel ──
+  calcNote: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: space.md },
+  calcNoteText: { fontFamily: font.body, fontSize: 12, color: colors.slate },
+  totalsGrid: { gap: space.xs },
+  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  totalLabel: { fontFamily: font.body, fontSize: 14, color: colors.slate },
+  totalValue: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.ink, textAlign: 'right' },
+  totalValueMuted: { fontFamily: font.body, fontSize: 14, color: colors.silver, textAlign: 'right' },
+  breakWrap: { paddingLeft: space.md, marginTop: space.xs, gap: 2 },
+  totalSubLabel: { fontFamily: font.body, fontSize: 12, color: colors.slate, marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.3 },
+  breakRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  breakLabel: { flex: 1, fontFamily: font.body, fontSize: 12, color: colors.slate, marginRight: space.sm },
+  breakValue: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.ink },
+  grandTotalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: space.md, paddingTop: space.md, borderTopWidth: 1, borderTopColor: colors.silver + '66' },
+  grandTotalLabel: { fontFamily: font.displayBold, fontSize: 16, color: colors.ink },
+  grandTotalValue: { fontFamily: font.displayBold, fontSize: 18, color: colors.azure },
   // ── edit form error ──
   formErrorRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.md },
   formError: { flex: 1, fontFamily: font.body, fontSize: 13, color: colors.danger },

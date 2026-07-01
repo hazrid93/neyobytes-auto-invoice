@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   // Grab handle — a small centered bar that signals the sheet is dismissible.
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.silver, alignSelf: 'center', marginTop: space.sm, marginBottom: space.xs },
-  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: space.lg, paddingBottom: space.lg, paddingHorizontal: sheetPad, borderBottomWidth: 1, borderBottomColor: colors.silver + '55' },
+  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: space.xs, paddingBottom: space.lg, paddingHorizontal: sheetPad, borderBottomWidth: 1, borderBottomColor: colors.silver + '55' },
   sheetTitle: { flex: 1, fontFamily: font.displayBold, fontSize: 18, color: colors.ink },
   sheetClose: { padding: 6 },
   searchWrap: { flexDirection: 'row', alignItems: 'center', marginTop: space.lg, marginHorizontal: sheetPad, marginBottom: space.sm, backgroundColor: colors.mist, borderRadius: radius.md, paddingHorizontal: space.md },
