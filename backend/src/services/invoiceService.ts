@@ -23,6 +23,7 @@ import {
   type ExtractedInvoice,
 } from '../lib/extraction'
 import { parseExtracted } from '../lib/extract-parse'
+import { decodeQrFromDataUrl } from '../lib/qrDecode'
 import {
   listInvoicesByUser,
   getInvoiceById,
@@ -270,7 +271,20 @@ export async function extractInvoice(
     throw new ExternalError('llm', `Structuring failed: ${msg}`, 502)
   }
 
-  // 3. Persist as a draft. Totals come from the model; the confirm step
+  // 3. QR-image decode (the real purchase-side P7 source). Stage B can't
+  // read a QR matrix reliably (it transcribes text), so attempt a dedicated
+  // 2D-barcode decode over the captured image pixels. On success, override
+  // the (unreliable) text-captured qr_verification with the decoded payload
+  // (the LHDN validation link the existing POST /public/invoices/qr can
+  // resolve). Non-destructive: a miss leaves Stage B's value (or null).
+  try {
+    const decoded = decodeQrFromDataUrl(imageDataUrl)
+    if (decoded) extracted.qr_verification = decoded
+  } catch {
+    // never let a decode miss fail extraction
+  }
+
+  // 4. Persist as a draft. Totals come from the model; the confirm step
   // recomputes from items anyway. On DB failure → { ok: false, extracted }
   // so the user doesn't lose the model's output.
   const subtotal = extracted.subtotal ?? 0
