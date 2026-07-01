@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   // ── short flat pill ──
   tabBar: {
     height: BAR_HEIGHT,
-    paddingHorizontal: space.sm,
+    paddingHorizontal: space.md,
     borderRadius: BAR_HEIGHT / 2,
   },
   tabsRow: {
@@ -163,6 +163,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     height: BAR_HEIGHT,
+    // Breathing room between every item (Home↔Settings↔Capture↔FAQ↔Contact).
+    gap: space.sm,
   },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   tabInner: {
@@ -186,8 +188,10 @@ const styles = StyleSheet.create({
   tabLabelActive: {
     color: colors.snow,
   },
-  // ── center gap (empty spacer for the Capture bump) ──
-  captureSlot: { width: CIRCLE },
+  // ── center gap (empty spacer for the Capture bump). Wider than the circle
+  //  itself so there's EXTRA padding on both sides of the bump (between
+  //  Settings↔Capture and Capture↔FAQ), on top of the row `gap` above. ──
+  captureSlot: { width: CIRCLE + space.md * 2 },
   // ── Capture bump (circle whose center sits on the bar's top edge) ──
   capturePress: {
     position: 'absolute',
