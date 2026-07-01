@@ -66,19 +66,23 @@ Every flow step in `docs/flow/IMPLEMENTATION-AUDIT.md` is ✅ **except**:
 - MyInvois intermediary: auto-appoint WebView, connect-myinvois screen
 - Web export deployed; production nginx + PM2
 
-### Test suite (all green)
-| Script | Tests | What it guards |
-|---|---|---|
-| `signing:verify` | 14/14 | UBL XML digital-signature structure |
-| `ubl:verify` | 17/17 | UBL JSON structure + BR-CO-18 + same-code/different-rate |
-| `items:verify` | 17/17 | `buildSubmitItems` blob→UBL mapping (no-DB) |
-| `qr:verify` | 6/6 | QR-image decode (jsQR) |
-| `totals:verify` | 5/5 | DB totals math |
-| `lockstep:verify` | 5/5 | **calc.ts (mobile) == ublJson == totals (DB)** incl 1000-line stress |
-| `mock-submit:verify` | 9/9 | submit pipeline (manual + real extract path) |
-| `public:verify` | 9/9 | public retrieval e2e |
-| `llm:verify` | 6/6 | LLM extraction |
-| `db:verify` | — | DB connectivity |
+### Test suite (last-verified 2026-07-01)
+| Script | Tests | Type | What it guards |
+|---|---|---|---|
+| `signing:verify` | 14/14 | unit | UBL XML digital-signature structure |
+| `ubl:verify` | 17/17 | unit | UBL JSON structure + BR-CO-18 + same-code/different-rate |
+| `items:verify` | 17/17 | unit | `buildSubmitItems` blob→UBL mapping (no-DB) |
+| `qr:verify` | 6/6 | unit | QR-image decode (jsQR) |
+| `totals:verify` | 5/5 | unit | DB totals math |
+| `lockstep:verify` | 5/5 | unit | **calc.ts (mobile) == ublJson == totals (DB)** incl 1000-line stress |
+| `mock-submit:verify` | 9/9 | unit | submit pipeline (manual + real extract path) |
+| `public:verify` | 9/10* | **live** | public retrieval e2e — needs a backend on `:${PORT}` (default 4001); the 1 non-pass is a `fetch failed` when no server is running |
+| `llm:verify` | 6/6 | unit | LLM extraction |
+| `db:verify` | — | live | DB connectivity |
+
+\* `public:verify` reports 10 subtests, 9 pass; the 10th is a network-dependent
+check against a running backend and fails with `ECONNREFUSED` when the server
+isn't on the expected port. Not a code regression.
 
 Backend + mobile `tsc --noEmit` clean.
 
