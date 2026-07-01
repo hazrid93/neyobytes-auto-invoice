@@ -121,12 +121,12 @@ export const ValidatedField = forwardRef<ValidatedFieldHandle, ValidatedFieldPro
 )
 
 const styles = StyleSheet.create({
-  field: { gap: space.xs },
+  field: { gap: space.sm },
   label: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
   inputWrap: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: colors.snow + 'CC', borderColor: colors.silver, borderWidth: 1,
-    borderRadius: radius.md, paddingHorizontal: space.md,
+    borderRadius: radius.md, paddingHorizontal: space.md, minHeight: 48,
   },
   inputWrapError: { borderColor: colors.danger },
   inputWrapDisabled: { opacity: 0.55 },
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   prefix: { fontFamily: font.body, fontSize: 15, color: colors.slate, marginRight: 4 },
   input: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink, paddingVertical: space.md },
   inputMultiline: { minHeight: 60, textAlignVertical: 'top' },
-  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: space.xs },
   error: { fontFamily: font.body, fontSize: 12, color: colors.danger, flex: 1 },
-  hint: { fontFamily: font.body, fontSize: 12, color: colors.silver, marginTop: 2, lineHeight: 16 },
+  hint: { fontFamily: font.body, fontSize: 12, color: colors.silver, marginTop: space.xs, lineHeight: 16 },
 })

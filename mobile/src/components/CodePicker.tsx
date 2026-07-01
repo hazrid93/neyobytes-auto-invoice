@@ -18,6 +18,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, Pressable, StyleSheet, Modal, ScrollView, TextInput, KeyboardAvoidingView, Platform, Animated, Easing, Dimensions } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
+import { useSafeInsets } from '../theme/useSafeInsets'
 import { codeLabel, findEntry, type CodeEntry } from '../data/codes'
 
 // Full viewport height — the sheet starts translated this far below so only the
@@ -26,6 +27,11 @@ import { codeLabel, findEntry, type CodeEntry } from '../data/codes'
 // scrim up too, which is what made the background look wrong.) The close path
 // also animates: closePicker slides the sheet back down before unmounting.
 const SCREEN_H = Dimensions.get('window').height
+
+// Shared horizontal inset for the drawer header, search box, and option list
+// so their left/right edges line up cleanly. Bumping only one would ragged the
+// search field against the rows beneath it.
+const sheetPad = space.xl
 
 interface CodePickerProps {
   label: string
@@ -53,6 +59,10 @@ export function CodePicker({
   const [helpOpen, setHelpOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [touched, setTouched] = useState(false)
+
+  // Notch / home-indicator inset so the last option row never tucks under the
+  // bottom edge on notched iOS. Zero on web + non-notched devices.
+  const { bottom: safeBottom } = useSafeInsets()
 
   // Bottom-sheet slide-up. The scrim appears instantly via the Modal; only the
   // sheet translates. Initialized off-screen (SCREEN_H) so the first painted
@@ -132,7 +142,8 @@ export function CodePicker({
       <Modal transparent visible={pickerOpen} animationType="none" onRequestClose={closePicker}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalOverlay}>
           <Pressable style={StyleSheet.absoluteFill} onPress={closePicker} />
-          <Animated.View style={[styles.sheet, { transform: [{ translateY: sheetY }] }]}>
+          <Animated.View style={[styles.sheet, { transform: [{ translateY: sheetY }], paddingBottom: space.xxl + safeBottom }]}>
+            <View style={styles.handle} />
             <View style={styles.sheetHead}>
               <Text style={styles.sheetTitle} numberOfLines={1}>{label}</Text>
               <Pressable onPress={closePicker} hitSlop={10} style={styles.sheetClose}>
@@ -219,7 +230,7 @@ export function CodePicker({
 export { codeLabel }
 
 const styles = StyleSheet.create({
-  field: { gap: space.xs },
+  field: { gap: space.sm },
   labelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   label: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
   asterisk: { color: colors.danger },
@@ -234,24 +245,26 @@ const styles = StyleSheet.create({
   rowIcon: { marginRight: space.sm },
   rowValue: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink },
   rowPlaceholder: { color: colors.slate },
-  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
+  errorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: space.xs },
   error: { fontFamily: font.body, fontSize: 12, color: colors.danger },
   // ── picker modal ──
   modalOverlay: { flex: 1, backgroundColor: 'rgba(10, 37, 64, 0.45)', justifyContent: 'flex-end' },
   sheet: {
     backgroundColor: colors.snow, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl,
-    maxHeight: '85%', paddingBottom: space.xl, ...shadow.cardHigh,
+    maxHeight: '85%', paddingBottom: space.xxl, ...shadow.cardHigh,
   },
-  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: space.lg, borderBottomWidth: 1, borderBottomColor: colors.silver + '55' },
+  // Grab handle — a small centered bar that signals the sheet is dismissible.
+  handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.silver, alignSelf: 'center', marginTop: space.sm, marginBottom: space.xs },
+  sheetHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: space.lg, paddingBottom: space.lg, paddingHorizontal: sheetPad, borderBottomWidth: 1, borderBottomColor: colors.silver + '55' },
   sheetTitle: { flex: 1, fontFamily: font.displayBold, fontSize: 18, color: colors.ink },
-  sheetClose: { padding: 4 },
-  searchWrap: { flexDirection: 'row', alignItems: 'center', margin: space.lg, marginBottom: space.sm, backgroundColor: colors.mist, borderRadius: radius.md, paddingHorizontal: space.md },
+  sheetClose: { padding: 6 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', marginTop: space.lg, marginHorizontal: sheetPad, marginBottom: space.sm, backgroundColor: colors.mist, borderRadius: radius.md, paddingHorizontal: space.md },
   searchIcon: { marginRight: space.sm },
   searchInput: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink, paddingVertical: space.md },
   searchClear: { padding: 4 },
-  list: { paddingHorizontal: space.lg },
-  empty: { fontFamily: font.body, fontSize: 14, color: colors.slate, textAlign: 'center', paddingVertical: space.xl },
-  option: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, borderBottomWidth: 1, borderBottomColor: colors.silver + '33' },
+  list: { paddingHorizontal: sheetPad, paddingBottom: space.lg },
+  empty: { fontFamily: font.body, fontSize: 14, color: colors.slate, textAlign: 'center', paddingVertical: space.xxl },
+  option: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.silver + '33' },
   optionPressed: { backgroundColor: colors.mist },
   optionActive: { backgroundColor: colors.azure + '0F' },
   optionLabel: { fontFamily: font.bodyMedium, fontSize: 15, color: colors.ink },
@@ -261,13 +274,13 @@ const styles = StyleSheet.create({
   // ── help modal ──
   helpCard: {
     backgroundColor: colors.snow, borderRadius: radius.lg,
-    width: '100%', maxWidth: 480, maxHeight: '80%', padding: space.lg, ...shadow.cardHigh,
+    width: '100%', maxWidth: 480, maxHeight: '80%', padding: space.xl, ...shadow.cardHigh,
   },
-  helpHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.xs },
+  helpHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.sm },
   helpTitle: { flex: 1, fontFamily: font.displayBold, fontSize: 17, color: colors.ink },
-  helpSub: { fontFamily: font.body, fontSize: 12, color: colors.slate, marginBottom: space.md },
+  helpSub: { fontFamily: font.body, fontSize: 12, color: colors.slate, marginBottom: space.lg, lineHeight: 16 },
   helpList: { },
-  helpRow: { flexDirection: 'row', gap: space.md, paddingVertical: space.sm, borderBottomWidth: 1, borderBottomColor: colors.silver + '33' },
+  helpRow: { flexDirection: 'row', gap: space.md, paddingVertical: space.md, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.silver + '33' },
   helpCode: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.azure, backgroundColor: colors.azure + '14', paddingHorizontal: 8, paddingVertical: 3, borderRadius: radius.sm, overflow: 'hidden', minWidth: 36, textAlign: 'center' },
   helpLabel: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.ink },
   helpDesc: { fontFamily: font.body, fontSize: 12, color: colors.slate, marginTop: 2, lineHeight: 17 },

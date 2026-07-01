@@ -394,7 +394,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
 
   return (
     <>
-      <Section title="Seller">
+      <Section title="Seller" edit>
         <ValidatedField ref={refs.sellerNameRef} label="Name" value={form.seller_name} onChange={(v) => set('seller_name', v)}
           validate={compose(required('Seller name'), maxLength('Seller name', 300))} />
         <ValidatedField ref={refs.sellerTinRef} label="TIN" value={form.seller_tin} onChange={(v) => set('seller_tin', v)}
@@ -404,7 +404,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
         <EditField label="Address" value={form.seller_address} onChange={(v) => set('seller_address', v)} multiline />
       </Section>
 
-      <Section title="Buyer">
+      <Section title="Buyer" edit>
         <ValidatedField ref={refs.buyerNameRef} label="Name" value={form.buyer_name} onChange={(v) => set('buyer_name', v)}
           validate={compose(required('Buyer name'), maxLength('Buyer name', 300))} />
         <ValidatedField ref={refs.buyerTinRef} label="TIN" value={form.buyer_tin} onChange={(v) => set('buyer_tin', v)}
@@ -413,7 +413,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
         <EditField label="Address" value={form.buyer_address} onChange={(v) => set('buyer_address', v)} multiline />
       </Section>
 
-      <Section title="Invoice details">
+      <Section title="Invoice details" edit>
         <ValidatedField ref={refs.invNumRef} label="Invoice #" value={form.invoice_number} onChange={(v) => set('invoice_number', v)}
           validate={compose(required('Invoice number'), minLength('Invoice number', 1), maxLength('Invoice number', FIELD_RULES.invoiceNumber.max))} />
         <ValidatedField ref={refs.issueDateRef} label="Issue date" value={form.issue_date} onChange={(v) => set('issue_date', v)}
@@ -425,7 +425,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
         <EditField label="Supplier bank account no" value={form.payment_account} onChange={(v) => set('payment_account', v)} placeholder="1234567890123" autoCap="characters" />
       </Section>
 
-      <Section title="Line items">
+      <Section title="Line items" edit>
         {form.items.map((it, i) => (
           <View key={i} style={styles.itemEdit}>
             <View style={styles.itemEditHead}>
@@ -464,7 +464,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
         </Pressable>
       </Section>
 
-      <Section title="Totals">
+      <Section title="Totals" edit>
         <EditField label="Subtotal" value={form.subtotal} onChange={(v) => set('subtotal', v)} keyboardType="numeric" prefix={cur} />
         <EditField label="Tax" value={form.tax_total} onChange={(v) => set('tax_total', v)} keyboardType="numeric" prefix={cur} />
         <EditField label="Total" value={form.total} onChange={(v) => set('total', v)} keyboardType="numeric" prefix={cur} />
@@ -601,11 +601,11 @@ function fromForm(f: EditForm): ExtractedInvoice {
 }
 
 // ── Shared bits ────────────────────────────────────────────────────────────
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, edit }: { title: string; children: React.ReactNode; edit?: boolean }) {
   return (
-    <GlassCard style={styles.section}>
+    <GlassCard style={[styles.section, edit && styles.sectionEdit]}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      {children}
+      <View style={edit ? styles.editFields : undefined}>{children}</View>
     </GlassCard>
   )
 }
@@ -671,7 +671,9 @@ const styles = StyleSheet.create({
   confLabel: { flex: 1, fontFamily: font.body, fontSize: 13, color: colors.slate },
   confValue: { fontFamily: font.displayBold, fontSize: 14, color: colors.ink },
   section: { padding: space.lg, marginBottom: space.lg },
-  sectionTitle: { fontFamily: font.displayBold, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginBottom: space.sm },
+  sectionEdit: { padding: space.xl, marginBottom: space.xl },
+  editFields: { gap: space.md },
+  sectionTitle: { fontFamily: font.displayBold, fontSize: 12, color: colors.slate, textTransform: 'uppercase', marginBottom: space.md, letterSpacing: 0.4 },
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: space.xs },
   rowLabel: { fontFamily: font.body, fontSize: 14, color: colors.slate },
   rowValue: { fontFamily: font.body, fontSize: 14, color: colors.ink },
@@ -684,18 +686,18 @@ const styles = StyleSheet.create({
   itemMeta: { fontFamily: font.body, fontSize: 13, color: colors.slate, marginTop: 2 },
   muted: { fontFamily: font.body, fontSize: 14, color: colors.slate },
   // ── edit mode ──
-  editField: { marginBottom: space.md },
-  editLabel: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate, marginBottom: 4 },
+  editField: { gap: space.sm },
+  editLabel: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
   editInputWrap: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: colors.snow, borderColor: colors.silver, borderWidth: 1,
-    borderRadius: radius.md, paddingHorizontal: space.md,
+    borderRadius: radius.md, paddingHorizontal: space.md, minHeight: 48,
   },
   editPrefix: { fontFamily: font.body, fontSize: 15, color: colors.slate, marginRight: 4 },
-  editInput: { flex: 1, fontFamily: font.body, fontSize: 15, color: colors.ink, paddingVertical: space.sm, paddingHorizontal: 0 },
+  editInput: { flex: 1, fontFamily: font.body, fontSize: 16, color: colors.ink, paddingVertical: space.md, paddingHorizontal: 0 },
   editInputMultiline: { minHeight: 60, textAlignVertical: 'top' },
-  itemEdit: { paddingVertical: space.sm, borderBottomWidth: 1, borderBottomColor: colors.silver + '55' },
-  itemEditHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: space.xs },
+  itemEdit: { paddingVertical: space.md, paddingHorizontal: space.md, marginBottom: space.md, gap: space.md, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.silver + '55' },
+  itemEditHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   itemEditIndex: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
   itemRemove: { padding: 4 },
   itemEditRow: { flexDirection: 'row', alignItems: 'flex-end' },
