@@ -14,11 +14,18 @@
  * The selected value renders as the code's label; if the current code isn't in
  * the table (e.g. a legacy value) it still shows so the user can see + change it.
  */
-import { useMemo, useState } from 'react'
-import { View, Text, Pressable, StyleSheet, Modal, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { View, Text, Pressable, StyleSheet, Modal, ScrollView, TextInput, KeyboardAvoidingView, Platform, Animated, Easing, Dimensions } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { codeLabel, findEntry, type CodeEntry } from '../data/codes'
+
+// Full viewport height — the sheet starts translated this far below so only the
+// sheet slides up on open, while the scrim (dark overlay) appears instantly via
+// the Modal's animationType="none". (Previously animationType="slide" slid the
+// scrim up too, which is what made the background look wrong.) The close path
+// also animates: closePicker slides the sheet back down before unmounting.
+const SCREEN_H = Dimensions.get('window').height
 
 interface CodePickerProps {
   label: string
@@ -47,6 +54,18 @@ export function CodePicker({
   const [query, setQuery] = useState('')
   const [touched, setTouched] = useState(false)
 
+  // Bottom-sheet slide-up. The scrim appears instantly via the Modal; only the
+  // sheet translates. Initialized off-screen (SCREEN_H) so the first painted
+  // frame is already below the viewport — no flash before the effect runs.
+  const sheetY = useRef(new Animated.Value(SCREEN_H)).current
+  useEffect(() => {
+    if (pickerOpen) {
+      Animated.timing(sheetY, {
+        toValue: 0, duration: 280, easing: Easing.out(Easing.cubic), useNativeDriver: true,
+      }).start()
+    }
+  }, [pickerOpen, sheetY])
+
   const selected = findEntry(options, value)
   const showError = required && touched && !value
   const display = selected ? selected.label : value ? value : ''
@@ -59,10 +78,17 @@ export function CodePicker({
     )
   }, [options, query])
 
+  // Close: slide the sheet back down, then unmount. Shared by the row tap,
+  // close button, and back/overlay dismiss so the exit always animates.
+  const closePicker = () => {
+    Animated.timing(sheetY, {
+      toValue: SCREEN_H, duration: 200, easing: Easing.in(Easing.cubic), useNativeDriver: true,
+    }).start(() => { setPickerOpen(false); setQuery('') })
+  }
+
   const pick = (code: string) => {
     onChange(code)
-    setPickerOpen(false)
-    setQuery('')
+    closePicker()
   }
 
   return (
@@ -99,13 +125,14 @@ export function CodePicker({
         </View>
       ) : null}
 
-      {/* Picker modal */}
-      <Modal transparent visible={pickerOpen} animationType="slide" onRequestClose={() => setPickerOpen(false)}>
+      {/* Picker modal — scrim appears instantly, only the sheet slides up */}
+      <Modal transparent visible={pickerOpen} animationType="none" onRequestClose={closePicker}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalOverlay}>
-          <View style={styles.sheet}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={closePicker} />
+          <Animated.View style={[styles.sheet, { transform: [{ translateY: sheetY }] }]}>
             <View style={styles.sheetHead}>
               <Text style={styles.sheetTitle} numberOfLines={1}>{label}</Text>
-              <Pressable onPress={() => setPickerOpen(false)} hitSlop={10} style={styles.sheetClose}>
+              <Pressable onPress={closePicker} hitSlop={10} style={styles.sheetClose}>
                 <Ionicons name="close" size={22} color={colors.slate} />
               </Pressable>
             </View>
@@ -150,7 +177,7 @@ export function CodePicker({
                 })
               )}
             </ScrollView>
-          </View>
+          </Animated.View>
         </KeyboardAvoidingView>
       </Modal>
 
