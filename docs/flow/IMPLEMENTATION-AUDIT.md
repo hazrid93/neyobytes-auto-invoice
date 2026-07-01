@@ -23,7 +23,7 @@ You issue an invoice → submit to LHDN → customer retrieves/verifies.
 ### B. Data generation
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
-| B1 | Generate data (JSON/XML) | ⚠️ | `lib/ublJson.ts` builds the JSON UBL variant (XML retired from submit path). **Only `InvoiceTypeCode: '01'` (Invoice)** — credit/debit/refund notes are NOT supported (hardcoded). |
+| B1 | Generate data (JSON/XML) | ✅ | `lib/ublJson.ts` builds the JSON UBL variant (XML retired from submit path). e-Invoice type is configurable (01-04, 11-14) via the Review screen CodePicker + `isValidEinsteinType` validation; builder emits `InvoiceTypeCode` from `input.invoiceType` (`6a9534a`). |
 | B2 | Generate instant invoice | ✅ | `createDraftInvoice` / `createDraftFromExtraction` → `invoices` row (status `draft`). |
 
 ### C. Output / display
@@ -49,15 +49,15 @@ You issue an invoice → submit to LHDN → customer retrieves/verifies.
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
 | F1 | Reject handling | ✅ | `status='rejected'` + `error` in audit row; rejection error parsed from `rejectedDocuments`. |
-| F2 | Fix & resubmit | ⚠️ | `PATCH /invoices/:id` edits any invoice; `POST /myinvois/submit/:invoiceId` re-runs with no status gate. **But no guided flow**: on reject, `submit.tsx` offers "Back to home" / "Edit profile" (TIN-missing only) — not "edit the rejected invoice & resubmit". |
+| F2 | Fix & resubmit | ✅ | `submit.tsx` rejects show a “Fix & resubmit” button routing to `/review?id=…` (the flow-1 loop) plus “Back to home”; `PATCH /invoices/:id` + re-`POST /myinvois/submit` re-runs. |
 
 ### G. Customer retrieval (the right-hand loop in flow 1)
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
-| G1 | Request by Document ID | ❌ | No customer-facing lookup endpoint/screen. |
-| G2 | Request by QR verify code | ❌ | No QR-scan/verify screen. |
-| G3 | Retrieval reads Audit Repository | ❌ | No retrieval endpoint. (`GET /myinvois/document/:uuid` is supplier-side status, not customer retrieval.) |
-| G4 | Retrieved data → OUTPUT display | ❌ | No display path. |
+| G1 | Request by Document ID | ✅ | `GET /public/invoices/:ref` public lookup by Document ID (longId) or UUID (`6a9534a`). |
+| G2 | Request by QR verify code | ✅ | `POST /public/invoices/qr` decodes a scanned QR payload (full validation link or raw uuid/longId) → resolves to the public invoice (`6a9534a`). |
+| G3 | Retrieval reads Audit Repository | ✅ | `findPublicInvoice(ref)` reads the submitted `invoices` row (audit repository) by `myinvois_doc_id` or `validation_uuid` (`6a9534a`). |
+| G4 | Retrieved data → OUTPUT display | ✅ | `GET /public/invoices/:ref` returns a `PublicInvoiceView` (supplier name/TIN/SSM, items, total, Document ID, Validation UUID, QR) — raw `extractedData` NOT exposed. Verified 9/9 e2e (`verify-public-retrieval.ts`). |
 
 ---
 
@@ -68,13 +68,13 @@ You receive a supplier invoice → photograph → AI extracts → store → fina
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
 | P1 | Take picture & upload in APP | ✅ | `capture.tsx` (camera + image picker). |
-| P2 | Add input — Payment Details (1. method, 2. account detail) | ⚠️ | Only `payment_method` is captured (review screen). **No account/bank-detail field.** |
+| P2 | Add input — Payment Details (1. method, 2. account detail) | ✅ | `payment_method` (means code 01-08) + `payment_account` (supplier bank account) both captured on the Review screen, persisted, and emitted as UBL `PaymentMeans` + `PayeeFinancialAccount` (`6a9534a`). |
 | P3 | Image processing, retrieve info (AI model 1) | ✅ | Stage A — pure-OCR vision model (`VISION_TRANSCRIBE_PROMPT`). |
 | P4 | Process info into data JSON/XML (AI model 2) | ✅ | Stage B — text structuring (`STRUCTURING_SYSTEM_PROMPT`). |
 | P5 | APP store data output | ✅ | `createDraftFromExtraction` → `invoices` row (`kind: 'purchase'`). |
 | P6 | → Financial Account | ❌ | No accounting/ERP integration. (Likely out of scope, but the diagram draws the arrow.) |
 | P7 | OUTPUT JSON — seller Document ID / UUID / QR verification | ⚠️ | `extractedData.qr_verification` is now populated by Stage B (explicit extraction guidance for the printed verification reference near the "Scan to Verify" QR) and surfaced + editable on the Review screen (commit `c693dba`). A true QR-**image** decode (camera → QR reader → link) is a separate native-module step, not the LLM pipeline. |
-| P8 | OUTPUT JSON — items include Payment method + Bank detail | ⚠️ | `payment_method` ✅; bank/account detail ❌ (no field). |
+| P8 | OUTPUT JSON — items include Payment method + Bank detail | ✅ | `payment_method` (PaymentMeansCode) + `payment_account` (PayeeFinancialAccount) both in the review form + UBL builder (`6a9534a`). |
 
 ---
 
@@ -83,14 +83,14 @@ You receive a supplier invoice → photograph → AI extracts → store → fina
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
 | F3-1 | e-Invoice in IRBM format: XML or JSON | ✅ | JSON variant (`buildUblJson`). |
-| F3-2 | 4 document types: Invoice, Credit note, Debit note, Refund note | ❌ | Only Invoice (`InvoiceTypeCode '01'` hardcoded in `ublJson.ts`). |
+| F3-2 | 4 document types: Invoice, Credit note, Debit note, Refund note | ✅ | e-Invoice type is configurable (01-04, 11-14) via the Review screen CodePicker; `buildUblJson` emits `InvoiceTypeCode` from `input.invoiceType`; `isValidEinsteinType` validates (`6a9534a`). |
 | F3-3 | JSON structure (invoiceNumber, issueDate, supplier, buyer, items, totalAmount) | ✅ | `buildUblJson` covers these and more (per canonical sample). |
-| F3-4 | OUTPUT rendered invoice — header (company, TIN, **SSM/BRN**) | ⚠️ | Supplier name + TIN ✅. **SSM/BRN not stored** — `profiles` has no `brn` column; UBL emits `'NA'` (documented follow-up). |
+| F3-4 | OUTPUT rendered invoice — header (company, TIN, **SSM/BRN**) | ✅ | Supplier name + TIN + BRN (SSM) all stored (`profiles.brn`, `6a9534a`) and emitted in UBL `PartyIdentification` + `PartyLegalEntity/RegistrationName`. |
 | F3-5 | OUTPUT — **MyInvois Document ID** (longId) | ✅ | Fetched via Get Submission API (06) on acceptance and persisted to `invoices.myinvois_doc_id` (`6a9534a`); shown on the home list + submit screen. |
 | F3-6 | OUTPUT — **Validation UUID** | ✅ | Persisted to `invoices.validation_uuid` on acceptance (`6a9534a`). |
 | F3-7 | OUTPUT — **QR code "Scan to Verify"** | ✅ | `qr_url` stored on acceptance + rendered as a QR on the submit result screen (`QRCode.tsx`) and the home list card (`6a9534a`, `663d28d`). |
-| F3-8 | OUTPUT — bank details | ❌ | No account/bank field captured. |
-| F3-9 | OUTPUT — PDF / hard copy render | ❌ | No PDF generation. |
+| F3-8 | OUTPUT — bank details | ✅ | `invoices.payment_account` captured on the Review screen + emitted as UBL `PayeeFinancialAccount/ID` (`6a9534a`). |
+| F3-9 | OUTPUT — PDF / hard copy render | ✅ | `lib/receipt.ts` renders a self-contained HTML receipt (QR as server-side PNG data URL, Document ID, validation UUID, supplier/buyer, items, totals) served at `GET /invoices/:id/receipt` (auth) + `GET /public/invoices/:ref/receipt` (public); `mobile/src/app/receipt.tsx` renders it in a WebView with a “View receipt / PDF” button on the submit screen. Browser print-to-PDF satisfies the PDF requirement (`6a9534a`). |
 
 ---
 
