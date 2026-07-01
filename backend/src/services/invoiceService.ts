@@ -19,6 +19,7 @@ import { env } from '../env'
 import {
   messagesForTranscription,
   messagesForStructuring,
+  stripReasoningPreamble,
   type ExtractedInvoice,
 } from '../lib/extraction'
 import { parseExtracted } from '../lib/extract-parse'
@@ -175,7 +176,11 @@ export async function extractInvoice(
   //     text-model hiccup doesn't sink the whole extraction.
   const deadline = AbortSignal.timeout(60_000)
 
-  // Stage A — vision transcription.
+  // Stage A — vision transcription (raw) + its post-filtered form.
+  // `rawOcrText` = exactly what the vision model emitted (audit trail);
+  // `ocrText` = the same with any leading reasoning preamble stripped
+  // (what Stage B consumes).
+  let rawOcrText = ''
   let ocrText: string
   const tA = Date.now()
   try {
@@ -191,11 +196,18 @@ export async function extractInvoice(
       maxTokens: 2048,
       signal: deadline,
     })
-    ocrText = a.content
+    // Stage A is pure OCR; the model may still emit a leading reasoning
+    // preamble before the transcription. stripReasoningPreamble (defense-in-
+    // depth) drops only that leading preamble — Stage B sees the clean
+    // transcription, and the RAW output is preserved in _ocrText for audit.
+    rawOcrText = a.content
+    ocrText = stripReasoningPreamble(rawOcrText)
     log.info('extract', 'stage=A done', {
       ms: Date.now() - tA,
       model: a.model,
+      ocr_raw_len: rawOcrText.length,
       ocr_len: ocrText.length,
+      preamble_stripped: rawOcrText.length - ocrText.length,
       preview: ocrText.slice(0, 160),
     })
   } catch (e) {
@@ -207,8 +219,16 @@ export async function extractInvoice(
     throw new ExternalError('llm', `OCR transcription failed: ${msg}`, 502)
   }
   if (!ocrText.trim()) {
-    log.error('extract', 'stage=A empty', { ms: Date.now() - tA })
-    throw new ExternalError('llm', 'OCR transcription returned no text.', 502)
+    log.error('extract', 'stage=A empty', {
+      ms: Date.now() - tA,
+      raw_len: rawOcrText.length,
+    })
+    throw new ExternalError(
+      'llm',
+      'OCR transcription returned no document text ' +
+        '(the model emitted only reasoning or an empty response).',
+      502,
+    )
   }
 
   // Stage B — text structuring.
@@ -273,7 +293,7 @@ export async function extractInvoice(
       // ever disagrees with the photo.
       extractedData: {
         ...(extracted as unknown as Record<string, unknown>),
-        _ocrText: ocrText,
+        _ocrText: rawOcrText,
       },
     })
     return { ok: true, invoiceId: inv.id, rawImagePath, ocrText, extracted, createdAt: inv.createdAt }

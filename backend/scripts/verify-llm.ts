@@ -10,7 +10,7 @@
 // Run:  npm run llm:verify   (uses .env.local/.env.stg/.env.prod via load-env; APP_ENV picks which)
 import '../src/load-env'
 import { chat } from '../src/lib/llm'
-import { messagesForTranscription, messagesForStructuring } from '../src/lib/extraction'
+import { messagesForTranscription, messagesForStructuring, stripReasoningPreamble } from '../src/lib/extraction'
 import { parseExtracted } from '../src/lib/extract-parse'
 import { env } from '../src/env'
 import { buildInvoiceImage } from './text-png'
@@ -84,7 +84,11 @@ async function main() {
       signal: deadline,
     })
     ocrText = a.content
-    ok(`stage A vision transcription (${a.model}, ${ocrText.length} chars)`)
+    const rawLen = ocrText.length
+    // Mirror production: strip any leading reasoning preamble before Stage B.
+    ocrText = stripReasoningPreamble(ocrText)
+    const stripped = rawLen - ocrText.length
+    ok(`stage A vision transcription (${a.model}, ${rawLen} raw → ${ocrText.length} chars${stripped ? `, stripped ${stripped} preamble` : ''})`)
     console.log(`     ocr preview: ${ocrText.slice(0, 120).replace(/\n/g, ' | ')}`)
   } catch (e) {
     bad('stage A vision transcription', e)
