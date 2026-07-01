@@ -3,12 +3,13 @@
  *
  * Per-user model (Login as Taxpayer System): the taxpayer generates an ERP
  * client_id/client_secret pair on the MyInvois portal
- * (profile.myinvois.hasil.gov.my → Generate ERP), then pastes it here. The
- * backend stores the secret encrypted; only the client_id + connection date
- * are ever returned. Submit/validate-tin use this pair to fetch a per-user
- * OAuth2 token, so a user MUST connect before any real (non-mock) LHDN call.
+ * (mytax.hasil.gov.my → My Invois, or myinvois.hasil.gov.my → Generate ERP),
+ * then pastes it here. The backend stores the secret encrypted; only the
+ * client_id + connection date are ever returned. Submit/validate-tin use
+ * this pair to fetch a per-user OAuth2 token, so a user MUST connect before
+ * any real (non-mock) LHDN call.
  */
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import {
   View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator,
   ScrollView, Linking, Platform,
@@ -26,17 +27,13 @@ import { colors, font, space, radius, shadow } from '../theme/tokens'
 import { useSafeInsets } from '../theme/useSafeInsets'
 import { apiErrorMessage } from '../http/client'
 
-const PORTAL_URL_FALLBACK = 'https://profile.myinvois.hasil.gov.my/TaxpayerProfile'
+const MYTAX_URL = 'https://mytax.hasil.gov.my/'
+const MYINVOIS_PORTAL_URL = 'https://myinvois.hasil.gov.my/'
 
 export default function ConnectMyInvoisScreen() {
   const { top } = useSafeInsets()
   const session = useSession()
   const p = session.profile
-
-  const [portalUrl, setPortalUrl] = useState(PORTAL_URL_FALLBACK)
-  useEffect(() => {
-    myinvoisService.getStatus().then((s) => setPortalUrl(s.portalUrl || PORTAL_URL_FALLBACK)).catch(() => {})
-  }, [])
 
   const [clientId, setClientId] = useState(p?.myinvoisClientId ?? '')
   const [clientSecret, setClientSecret] = useState('')
@@ -127,8 +124,34 @@ export default function ConnectMyInvoisScreen() {
           <Text style={styles.stepsTitle}>How to get your ERP key</Text>
           <Text style={styles.stepText}>
             <Text style={styles.stepNum}>1. </Text>
-            Sign in at the MyInvois taxpayer portal (use your TIN + password).
+            Sign in to the MyInvois taxpayer portal with your TIN + password.
+            Two ways in:
           </Text>
+
+          {/* Option A — MyTax */}
+          <Pressable style={styles.portalCard} onPress={() => Linking.openURL(MYTAX_URL)}>
+            <View style={styles.portalCardTop}>
+              <Ionicons name="open-outline" size={16} color={colors.azure} />
+              <Text style={styles.portalText}>mytax.hasil.gov.my</Text>
+            </View>
+            <Text style={styles.portalSub}>
+              Log in, then open{' '}
+              <Text style={styles.stepEmph}>My Invois</Text>{' '}
+              in the navigation menu at the top.
+            </Text>
+          </Pressable>
+
+          <Text style={styles.orText}>or</Text>
+
+          {/* Option B — MyInvois direct */}
+          <Pressable style={styles.portalCard} onPress={() => Linking.openURL(MYINVOIS_PORTAL_URL)}>
+            <View style={styles.portalCardTop}>
+              <Ionicons name="open-outline" size={16} color={colors.azure} />
+              <Text style={styles.portalText}>myinvois.hasil.gov.my</Text>
+            </View>
+            <Text style={styles.portalSub}>Direct MyInvois portal login.</Text>
+          </Pressable>
+
           <Text style={styles.stepText}>
             <Text style={styles.stepNum}>2. </Text>
             Open your profile and tap{' '}
@@ -141,12 +164,6 @@ export default function ConnectMyInvoisScreen() {
             <Text style={styles.stepEmph}>Client Secret</Text> shown (the secret
             is only visible once — copy it now).
           </Text>
-          <Pressable style={styles.portalBtn} onPress={() => Linking.openURL(portalUrl)}>
-            <Ionicons name="open-outline" size={16} color={colors.azure} />
-            <Text style={styles.portalText}>
-              {Platform.OS === 'web' ? 'Open profile.myinvois.hasil.gov.my' : 'Open MyInvois portal'}
-            </Text>
-          </Pressable>
         </GlassCard>
 
         {connected ? (
@@ -303,12 +320,18 @@ const styles = StyleSheet.create({
   stepText: { fontFamily: font.body, fontSize: 13, color: colors.slate, lineHeight: 19 },
   stepNum: { fontFamily: font.bodyMedium, color: colors.azure },
   stepEmph: { fontFamily: font.bodyMedium, color: colors.ink },
-  portalBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: space.sm,
-    alignSelf: 'flex-start', paddingVertical: 6, paddingHorizontal: 10,
-    backgroundColor: colors.azure + '14', borderRadius: radius.md,
+  portalCard: {
+    gap: 2,
+    marginTop: space.sm,
+    paddingVertical: space.sm,
+    paddingHorizontal: space.md,
+    backgroundColor: colors.azure + '14',
+    borderRadius: radius.md,
   },
+  portalCardTop: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   portalText: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.azure },
+  portalSub: { fontFamily: font.body, fontSize: 12, color: colors.slate, lineHeight: 17 },
+  orText: { fontFamily: font.body, fontSize: 12, color: colors.silver, textAlign: 'center', marginVertical: 2 },
   connectedBanner: {
     flexDirection: 'row', alignItems: 'center', gap: space.sm,
     backgroundColor: colors.success + '14', borderRadius: radius.md,
