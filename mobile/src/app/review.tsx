@@ -401,7 +401,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
   const setItem = (i: number, patch: Partial<EditItem>) =>
     setForm({ ...form, items: form.items.map((it, idx) => (idx === i ? { ...it, ...patch } : it)) })
   const addItem = () =>
-    setForm({ ...form, items: [...form.items, { description: '', quantity: '1', unit_price: '0', tax_rate: '0', tax_type_code: '', unit_code: '', classification: '', origin_country: '' }] })
+    setForm({ ...form, items: [...form.items, { description: '', quantity: '1', unit_price: '0', tax_rate: '0', tax_type_code: '', unit_code: '', classification: '', origin_country: '', discount: '' }] })
   const removeItem = (i: number) => setForm({ ...form, items: form.items.filter((_, idx) => idx !== i) })
 
   // Totals are DERIVED from line items — never typed. Recomputed on every edit
@@ -567,6 +567,7 @@ interface EditItem {
   unit_code: string
   classification: string
   origin_country: string
+  discount: string
 }
 interface EditForm {
   invoice_number: string
@@ -628,6 +629,7 @@ function toForm(d: InvoiceDetail | null): EditForm {
       unit_code: it.unit_code ?? '',
       classification: it.classification ?? '',
       origin_country: it.origin_country ?? '',
+      discount: it.discount != null ? String(it.discount) : '',
     })),
   }
 }
@@ -674,6 +676,7 @@ function fromForm(f: EditForm): ExtractedInvoice {
       unit_code: it.unit_code || null,
       classification: it.classification || null,
       origin_country: it.origin_country || null,
+      discount: it.discount !== '' ? num(it.discount) : null,
     })),
     subtotal: t.subtotal,
     tax_total: t.taxTotal,

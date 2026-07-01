@@ -127,6 +127,11 @@ export interface ExtractedInvoice {
     unit_code?: string | null
     classification?: string | null
     origin_country?: string | null
+    // Per-line discount AMOUNT (Stage B captures it when printed). Preserved
+    // through the review round-trip so a captured invoice's discount isn't
+    // silently destroyed. Editing it is part of the (cert-gated, blocked)
+    // per-line allowance/charge work — kept read-only for now.
+    discount?: number | null
   }>
   subtotal: number | null
   tax_total: number | null
