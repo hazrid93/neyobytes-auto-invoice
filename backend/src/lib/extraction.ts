@@ -239,6 +239,10 @@ SELLER / BUYER
 AMOUNT IN WORDS
 - Capture the "amount in words" line verbatim into amount_in_words (e.g. "Ringgit Malaysia: Two Hundred and Fifty Five Only"). null if absent.
 
+QR VERIFICATION (e-Invoice audit)
+- Malaysian LHDN e-invoices carry a "Scan to Verify" QR code. The QR itself is an image the OCR cannot decode, but the document often PRINTS the verification reference nearby: a Document ID / long ID (e.g. "E12345678901"), a UUID, or a validation URL (e.g. "myinvois.hasil.gov.my/.../share/...").
+- If the transcription shows any such reference near a "Scan to Verify" / "QR" / "Verify" / "Document ID" / "Validation" label, capture it verbatim into qr_verification (the URL or ID string, not the label). Otherwise null. Do NOT invent or guess a URL.
+
 ABSENT vs ILLEGIBLE
 - A field not on the document, or "[illegible]" / an unreadable value → null. Never invent values.
 - Free-text fields with no schema home (delivery-order no., page count, "attention", extra footer notes) → put in notes.

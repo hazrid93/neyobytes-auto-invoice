@@ -343,6 +343,7 @@ function ReadView({
         <Row label="e-Invoice type" value={draft.invoiceType ? `${codeLabel(E_INVOICE_TYPES, draft.invoiceType)} (${draft.invoiceType})` : '—'} />
         <Row label="Payment means" value={draft.paymentMeansCode ? `${codeLabel(PAYMENT_METHODS, draft.paymentMeansCode)} (${draft.paymentMeansCode})` : (ex?.payment_method ?? '—')} />
         {draft.paymentAccount ? <Row label="Bank account" value={draft.paymentAccount} /> : null}
+        {ex?.qr_verification ? <Row label="QR verification" value={ex.qr_verification} /> : null}
       </Section>
 
       <Section title="Line items">
@@ -444,6 +445,7 @@ function EditView({ form, setForm, cur, refs, formError }: {
         <CodePicker label="e-Invoice type" icon="document-text-outline" options={E_INVOICE_TYPES} value={form.invoice_type} onChange={(v) => set('invoice_type', v)} required showCodeInList />
         <CodePicker label="Payment means" icon="card-outline" options={PAYMENT_METHODS} value={form.payment_means_code} onChange={(v) => set('payment_means_code', v)} />
         <EditField label="Supplier bank account no" value={form.payment_account} onChange={(v) => set('payment_account', v)} placeholder="1234567890123" autoCap="characters" />
+        <EditField label="QR verification" value={form.qr_verification} onChange={(v) => set('qr_verification', v)} placeholder="LHDN Document ID / UUID / validation URL" hint="Printed near the e-invoice QR (Scan to Verify). Capture it so the buyer can verify the seller's invoice." />
       </Section>
 
       <Section title="Line items" edit>
@@ -575,6 +577,7 @@ interface EditForm {
   invoice_type: string
   payment_means_code: string
   payment_account: string
+  qr_verification: string
   seller_name: string
   seller_tin: string
   seller_phone: string
@@ -603,6 +606,7 @@ function toForm(d: InvoiceDetail | null): EditForm {
     invoice_type: d?.invoiceType ?? '01',
     payment_means_code: d?.paymentMeansCode ?? '',
     payment_account: d?.paymentAccount ?? '',
+    qr_verification: ex?.qr_verification ?? '',
     seller_name: s?.name ?? '',
     seller_tin: s?.tin ?? '',
     seller_phone: s?.phone ?? '',
@@ -676,7 +680,7 @@ function fromForm(f: EditForm): ExtractedInvoice {
     total: t.total,
     payment_method: f.payment_method.trim() || null,
     bank_detail: null,
-    qr_verification: null,
+    qr_verification: f.qr_verification.trim() || null,
     notes: null,
     confidence: null,
   }
@@ -709,7 +713,7 @@ function InfoLine({ label, value }: { label: string; value: string }) {
 }
 
 function EditField({
-  label, value, onChange, placeholder, keyboardType, autoCap, multiline, prefix,
+  label, value, onChange, placeholder, keyboardType, autoCap, multiline, prefix, hint,
 }: {
   label: string
   value: string
@@ -719,6 +723,7 @@ function EditField({
   autoCap?: 'characters' | 'none' | 'words'
   multiline?: boolean
   prefix?: string
+  hint?: string
 }) {
   const webClass = (Platform.OS === 'web' ? { className: 'field-input' } : {}) as Record<string, string>
   return (
@@ -738,6 +743,7 @@ function EditField({
           multiline={multiline}
         />
       </View>
+      {hint ? <Text style={styles.editHint}>{hint}</Text> : null}
     </View>
   )
 }
@@ -770,6 +776,7 @@ const styles = StyleSheet.create({
   // ── edit mode ──
   editField: { gap: space.sm },
   editLabel: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
+  editHint: { fontFamily: font.body, fontSize: 11, color: colors.slate, marginTop: space.xs },
   editInputWrap: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: colors.snow, borderColor: colors.silver, borderWidth: 1,
