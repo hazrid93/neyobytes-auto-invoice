@@ -4,16 +4,18 @@
  * routes (capture / review / submit / profile) live OUTSIDE this group in the
  * root Stack so they render full-screen above the tabs when pushed.
  *
- * Tab bar — NATURAL layout (no SVG, no hacks):
+ * Tab bar — NOTCHED-BUMP layout (`---/-\--`), no SVG:
  *   • A flat white glass pill whose height is ONLY the small-tab height
- *     (Home/Settings/FAQ/Contact = icon + label, 48px). It never grows taller.
- *   • The Capture button is a separate, bigger white circle that floats just
- *     ABOVE the bar with a small gap. A drop shadow under it lands on the bar
- *     below, so it reads as a distinct button sitting on the bar — NOT as the
- *     bar's white background extending up to cover it. The "Capture" label sits
- *     in the bar's center, aligned with the other tab labels.
- *   • Because the Capture is absolutely positioned (a floating button), it
- *     does NOT push the bar's height taller — the bar stays exactly 48px.
+ *     (Home/Settings/FAQ/Contact = icon + label, 48px) on the left and right.
+ *     It NEVER grows taller — so the eye reads a SHORT bar with a bump, not a
+ *     tall blob.
+ *   • The Capture button is a bigger white circle (58px) whose CENTER sits on
+ *     the bar's top edge. Its bottom half overlaps the bar (white-on-white →
+ *     merges seamlessly, no seam) and its top half rises 29px above the bar
+ *     as the `/-\` bump against the page gradient. The bump silhouette + the
+ *     blue scan icon read as a circular button that is PART of the bar — not
+ *     floating above it. No text label (the bump is icon-only).
+ *   • Absolute positioning → the circle does NOT push the bar taller.
  *
  * IMPORTANT: expo-router caches this layout file. After changing it you MUST
  * fully restart Expo with the cache cleared (see TESTING-FLOWS) — a hot
@@ -26,7 +28,7 @@ import { GlassCard } from '../../theme/glass'
 import { useAuthGate } from '../../components/RequireAuth'
 import { useSafeInsets } from '../../theme/useSafeInsets'
 import { captureNavRef } from '../../theme/captureNavRef'
-import { colors, font, glass, radius, space } from '../../theme/tokens'
+import { colors, font, radius, space } from '../../theme/tokens'
 
 type TabKey = 'home' | 'settings' | 'faq' | 'contact'
 
@@ -37,13 +39,12 @@ const TABS: { key: TabKey; icon: keyof typeof Ionicons.glyphMap; label: string; 
   { key: 'contact', icon: 'chatbubble-outline', label: 'Contact', href: '/(tabs)/contact' },
 ]
 
-/** Bar height = just a small tab (icon + label). The white pill is ONLY this tall. */
+/** Bar height = just a small tab (icon + label). The white pill is ONLY this
+ *  tall on the left/right — the center bump is the only thing that rises. */
 const BAR_HEIGHT = 48
-/** Capture circle diameter. Bigger than BAR_HEIGHT → "bigger than the rest". */
+/** Capture circle diameter. Bigger than BAR_HEIGHT → the `/-\` bump rises
+ *  CIRCLE/2 (=29px) above the bar; its bottom half merges into the bar. */
 const CIRCLE = 58
-/** Gap between the circle's bottom and the bar's top — gradient shows through
- *  here, so the circle is clearly a separate button, not the bar's background. */
-const GAP = 10
 
 export default function TabsLayout() {
   // Auth gate: an anonymous user tapping any tab (Settings/Home/FAQ/Contact)
@@ -63,8 +64,9 @@ export default function TabsLayout() {
   )
 }
 
-/** Bottom nav: a short flat white glass pill (4 tabs + center "Capture" label)
- *  and a bigger white Capture circle floating just above the bar's center. */
+/** Bottom nav: a short flat white glass pill (4 side tabs + a center gap for
+ *  the bump) and a bigger white Capture circle whose center sits on the bar's
+ *  top edge — bottom half merges into the bar, top half rises as the bump. */
 export function GlassTabBar({ state, navigation }: any) {
   const { bottom } = useSafeInsets()
   const leftTabs = state.routes.slice(0, 2)
@@ -100,21 +102,23 @@ export function GlassTabBar({ state, navigation }: any) {
   return (
     <View style={[styles.tabWrap, { bottom: space.lg + bottom }]} pointerEvents="box-none">
       <View style={styles.barContainer}>
-        {/* The short flat white pill — only as tall as the small tabs. */}
+        {/* The short flat white pill — only as tall as the small tabs (48px).
+            The center gap reserves room for the Capture bump. */}
         <GlassCard strong style={styles.tabBar}>
           <View style={styles.tabsRow}>
             {leftTabs.map((route: any, i: number) => renderTab(route, i))}
-            {/* center slot: "Capture" label, aligned with the other tab labels */}
-            <View style={styles.captureSlot}>
-              <Text style={styles.captureLabel} numberOfLines={1}>Capture</Text>
-            </View>
+            {/* center gap: empty spacer so the 4 tabs stay evenly spaced and the
+                circle's lower half has white bar (no tab label) under it. */}
+            <View style={styles.captureSlot} />
             {rightTabs.map((route: any, i: number) => renderTab(route, i + 2))}
           </View>
         </GlassCard>
 
-        {/* Capture button: a separate white circle floating just ABOVE the bar
-            (GAP of gradient shows), with a drop shadow so it reads as a button
-            sitting on the bar — not as the bar's background covering it.
+        {/* Capture bump: a bigger white circle whose CENTER sits on the bar's
+            top edge. Bottom half overlaps the bar (white-on-white, seamless
+            merge → part of the bar); top half rises as the `/-\` bump against
+            the page gradient. No border (would draw a seam across the bar); a
+            subtle shadow gives depth so it reads as a raised circular button.
             Absolute → does NOT affect the bar's height (bar stays 48px). */}
         <Pressable
           ref={captureNavRef}
@@ -180,26 +184,21 @@ const styles = StyleSheet.create({
   tabLabelActive: {
     color: colors.snow,
   },
-  // ── center Capture slot (label in the bar) ──
-  captureSlot: { width: CIRCLE, alignItems: 'center', justifyContent: 'center' },
-  captureLabel: {
-    fontFamily: font.bodyMedium,
-    fontSize: 11,
-    color: colors.azure,
-  },
-  // ── Capture circle floating above the bar ──
+  // ── center gap (empty spacer for the Capture bump) ──
+  captureSlot: { width: CIRCLE },
+  // ── Capture bump (circle whose center sits on the bar's top edge) ──
   capturePress: {
     position: 'absolute',
-    // Circle bottom sits GAP above the bar's top edge → the gradient shows in
-    // the gap, so the circle is a distinct button, not the bar's background.
-    top: -(CIRCLE + GAP),
+    // Center the circle on the bar's TOP edge: top = -CIRCLE/2 means the circle
+    // spans from -29 (29px above the bar) to +29 (29px into the bar). The bottom
+    // half overlaps the bar (seamless merge); the top half is the bump.
+    top: -CIRCLE / 2,
     left: '50%',
     marginLeft: -CIRCLE / 2,
     width: CIRCLE,
     height: CIRCLE,
     alignItems: 'center',
     justifyContent: 'center',
-    // Higher elevation so the shadow renders above the bar's content.
     elevation: 6,
     zIndex: 5,
   },
@@ -208,16 +207,16 @@ const styles = StyleSheet.create({
     height: CIRCLE,
     borderRadius: CIRCLE / 2,
     backgroundColor: colors.snow,
-    borderColor: glass.border,
-    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    // Clearly-visible drop shadow lands in the gap + on the bar below → the
-    // white circle reads as a floating button, not the bar's background.
+    // No border: a border would trace the full circle outline, drawing a seam
+    // across the bar where the bottom half overlaps it. The bump silhouette
+    // (top half against the page gradient) + the blue icon already delineate
+    // the circle. A subtle shadow gives it a raised, button-like depth.
     shadowColor: colors.ink,
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 6,
   },
 })
