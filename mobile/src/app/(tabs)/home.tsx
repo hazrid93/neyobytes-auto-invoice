@@ -205,22 +205,23 @@ function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
   // one pattern on web + mobile, no accidental deletes, no overlap.
   const open = () =>
     router.push({ pathname: isDraft ? '/review' : '/submit', params: { id: invoice.id } })
-  // Submitted invoices carry the LHDN Document ID + a validation QR link.
-  // Show the audit chip + a small QR on the card so the dashboard reads as a
-  // filed-e-invoice list, not just a draft queue.
-  const submitted = invoice.status === 'submitted'
+  // Audit identity (LHDN Document ID + validation QR) is only present when LHDN
+  // accepted the submission — `myinvoisDocId` is the proof of validation, not
+  // `status` (a 'submitted' invoice that LHDN rejected keeps status but has a
+  // null docId and must NOT show a QR). Gate the audit chip + QR on docId.
   const docId = invoice.myinvoisDocId
+  const filed = docId != null
   const qr = invoice.qrUrl
   return (
     <Pressable onPress={open}>
       <GlassCard style={styles.card}>
         <View style={styles.cardHead}>
-          <Text style={styles.cardNum} numberOfLines={1}>{invoice.invoiceNumber ?? (submitted ? 'Submitted' : 'Draft')}</Text>
+          <Text style={styles.cardNum} numberOfLines={1}>{invoice.invoiceNumber ?? (filed ? 'Filed' : isDraft ? 'Draft' : 'Submitted')}</Text>
           <View style={[styles.statusPill, isDraft ? styles.statusDraft : styles.statusDone]}>
             <Text style={styles.statusText}>{invoice.status}</Text>
           </View>
         </View>
-        {submitted && docId ? (
+        {filed ? (
           <View style={styles.docRow}>
             <Ionicons name="shield-checkmark-outline" size={13} color={colors.success} />
             <Text style={styles.docId} numberOfLines={1}>LHDN {docId}</Text>
@@ -229,7 +230,7 @@ function InvoiceCard({ invoice }: { invoice: InvoiceSummary }) {
         <View style={styles.cardRow}>
           <Text style={styles.cardMeta}>{invoice.issueDate ?? 'No date'}</Text>
           <View style={styles.cardRight}>
-            {submitted && qr ? (
+            {filed && qr ? (
               <View style={styles.cardQrWrap}>
                 <QRCode value={qr} size={40} />
               </View>
