@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { env } from '../env'
 
 // Two-stage invoice extraction:
 //   Stage A (vision model, e.g. kimi-k2.7): image  → raw verbatim OCR text
@@ -89,9 +90,23 @@ OUTPUT RULES (critical):
 - Do NOT reformat, relabel, reorder, summarize, or interpret. Do NOT output JSON or field labels of your own. Transcribe only what is literally printed on the page.
 - If the photo has multiple pages, transcribe them in order, separated by one blank line.`
 
+// Dedicated-OCR backend (e.g. Unlimited-OCR): a pure image→text function, NOT an
+// instruction-tuned reasoning LLM. The anti-narration rules above are dead
+// weight (it can't chain-of-thought to leak), and 'one line per visual row'
+// would fight its natural HTML-table output (proven: a dedicated OCR model
+// emits <table> markup with explicit header rows, which Stage B maps MORE
+// reliably than whitespace-aligned plain text). So this prompt stays minimal:
+// transcribe verbatim, preserve structure, mark unreadable, don't invent.
+// Many dedicated OCR models ignore the system prompt entirely — in which case
+// this is a harmless no-op rather than counter-productive instruction.
+export const DEDICATED_OCR_TRANSCRIBE_PROMPT = `Transcribe this invoice image to text. Output only the transcribed content — the document's own text, tables, and numbers, exactly as printed. Preserve the document's structure (tables, columns, line breaks). Transcribe numbers and currency symbols exactly as shown. If a value is unreadable, write [illegible]. Do not add commentary, summaries, or descriptions of non-text regions.`
+
 export function messagesForTranscription(imageDataUrl: string): import('./llm').ChatMessage[] {
+  const backend = env.LLM_OCR_BACKEND
+  const systemPrompt =
+    backend === 'ocr' ? DEDICATED_OCR_TRANSCRIBE_PROMPT : VISION_TRANSCRIBE_PROMPT
   return [
-    { role: 'system', content: VISION_TRANSCRIBE_PROMPT },
+    { role: 'system', content: systemPrompt },
     {
       role: 'user',
       content: [

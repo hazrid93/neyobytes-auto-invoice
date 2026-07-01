@@ -31,6 +31,18 @@ const schema = z.object({
   // llm1.neyobytes.com has no DNS record yet; point at localhost until you add it.
   LITELLM_BASE_URL: z.string().url().default('http://localhost:4000/v1'),
   LITELLM_API_KEY: z.string().min(1), // LITELLM_MASTER_KEY from the gateway's env
+  // Stage A backend: an instruction-tuned VISION LLM ('vision', default) or a
+  // dedicated OCR model ('ocr'). The value selects the Stage A PROMPT — the
+  // anti-narration rules in VISION_TRANSCRIBE_PROMPT are load-bearing for a
+  // reasoning-capable vision LLM (kimi-k2.7) but dead weight for a dedicated OCR
+  // model (which can't chain-of-thought), and 'one line per visual row' would
+  // fight a dedicated OCR model's natural HTML-table output. The model NAME
+  // still comes from LLM_VISION_MODEL (repoint it to the OCR model when you
+  // swap); this flag is purely about prompt behavior. See lib/extraction.ts.
+  LLM_OCR_BACKEND: z.preprocess(
+    (v) => (v === '' ? undefined : v),
+    z.enum(['vision', 'ocr']).default('vision'),
+  ),
   // Vision-capable model used for invoice OCR/extraction (probed: accepts image_url).
   LLM_VISION_MODEL: z.string().default('kimi-k2.7'),
   // Text-only model used as extraction fallback (probed: NOT multimodal).
