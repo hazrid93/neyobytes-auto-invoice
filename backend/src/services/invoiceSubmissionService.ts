@@ -32,6 +32,8 @@ import {
   type TinValidationResult,
 } from '../lib/myinvois'
 import { buildUblJson } from '../lib/ublJson'
+import { PersistedItemSchema } from '../lib/extraction'
+import { z } from 'zod'
 import { normalizeTin } from '../lib/tin'
 import {
   isValidEinvoiceType,
@@ -77,18 +79,19 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
   // empty one). This also closes the audit gap where the four line-item codes
   // were captured in the form but dropped at submission (UBL fell back to
   // '06'/'C62'/'000'/'MYS').
-  type ExtractedItem = {
-    description?: string | null
-    quantity?: number | string | null
-    unit_price?: number | string | null
-    tax_rate?: number | string | null
-    tax_type_code?: string | null
-    unit_code?: string | null
-    classification?: string | null
-    origin_country?: string | null
-  }
-  const exItems =
-    (inv.extractedData as { items?: ExtractedItem[] } | null)?.items ?? []
+  //
+  // The blob is untyped JSONB (mobile writes snake_case codes; `updateInvoice`
+  // stores `z.record(unknown)` wholesale), so validate each item against
+  // PersistedItemSchema rather than loose-casting. A field-name drift or a
+  // stringified number then coerces to a safe default (with the code falling
+  // back to its UBL default in the builder) instead of silently dropping the
+  // code or throwing.
+  const rawExItems =
+    (inv.extractedData as { items?: unknown[] } | null)?.items ?? []
+  const exItems = rawExItems
+    .map((it) => PersistedItemSchema.safeParse(it))
+    .filter((r): r is z.SafeParseSuccess<import('../lib/extraction').PersistedItem> => r.success)
+    .map((r) => r.data)
   const ublItems = exItems.length > 0
     ? exItems.map((it) => ({
         description: String(it.description ?? '').trim() || 'Item',

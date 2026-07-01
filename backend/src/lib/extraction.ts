@@ -35,6 +35,24 @@ export const InvoiceItemSchema = z.object({
 })
 export type InvoiceItem = z.infer<typeof InvoiceItemSchema>
 
+/**
+ * The persisted line-item shape — the LHDN code fields the review screen's
+ * CodePickers add on top of Stage B's InvoiceItemSchema. Stage B does NOT
+ * populate these (it has no code-table knowledge); the mobile review form
+ * writes them snake_case into the extractedData blob, and `updateInvoice`
+ * persists the whole blob wholesale. This schema is the type-safe contract
+ * the submit service reads the blob through, so a field-name drift (or a
+ * missing code) coerces to a safe default instead of silently dropping the
+ * code or breaking the build. Mirrors UblLineItem's optional code fields.
+ */
+export const PersistedItemSchema = InvoiceItemSchema.extend({
+  tax_type_code: z.string().nullable().optional(), // 01-06|E; default '06'
+  unit_code: z.string().nullable().optional(), // UN/ECE Rec 20; default 'C62'
+  classification: z.string().nullable().optional(), // CLASS list (3-char); default '000'
+  origin_country: z.string().nullable().optional(), // ISO-3166-1; default 'MYS'
+})
+export type PersistedItem = z.infer<typeof PersistedItemSchema>
+
 export const ExtractedInvoiceSchema = z.object({
   invoice_number: z.string().nullable().optional(),
   issue_date: z.string().nullable().optional(), // YYYY-MM-DD if parseable
