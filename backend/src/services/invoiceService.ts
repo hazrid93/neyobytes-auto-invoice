@@ -187,11 +187,7 @@ export async function extractInvoice(
     const a = await chat({
       messages: messagesForTranscription(imageDataUrl),
       requireVision: true,
-      // Vision stage = minimal reasoning ("off"). The gateway's
-      // reasoning_effort:"none" is best-effort, so "low" enforces the intent
-      // more reliably — transcription is a literal copy task, not a reasoning
-      // one, and we want the model to spend tokens on the transcript not CoT.
-      reasoningEffort: 'low',
+      reasoningEffort: env.LLM_VISION_REASONING_EFFORT,
       temperature: 0,
       maxTokens: 2048,
       signal: deadline,
@@ -240,11 +236,11 @@ export async function extractInvoice(
       model: env.LLM_TEXT_MODEL,
       fallbackModel: env.LLM_VISION_MODEL,
       requireVision: false,
-      // Text stage = high reasoning. Structuring OCR text into strict JSON
-      // (currency/date normalization, null-vs-omit judgement, total
-      // reconciliation) benefits from deeper CoT; a generous max_tokens
-      // budget lets the model reason then emit `content`.
-      reasoningEffort: 'high',
+      // Text stage reasoning depth is configurable (env.LLM_TEXT_REASONING_EFFORT,
+      // default 'high'): structuring OCR text into strict JSON — date math,
+      // currency normalization, total reconciliation — benefits from deeper CoT;
+      // a generous max_tokens budget lets the model reason then emit `content`.
+      reasoningEffort: env.LLM_TEXT_REASONING_EFFORT,
       structured: true,
       temperature: 0,
       maxTokens: 4096,

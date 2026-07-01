@@ -78,7 +78,7 @@ async function main() {
     const a = await chat({
       messages: messagesForTranscription(pngDataUrl),
       requireVision: true,
-      reasoningEffort: 'low', // transcription is a literal copy task, not reasoning
+      reasoningEffort: env.LLM_VISION_REASONING_EFFORT, // mirrors production (default 'low')
       temperature: 0,
       maxTokens: 2048,
       signal: deadline,
@@ -103,7 +103,7 @@ async function main() {
       model: env.LLM_TEXT_MODEL,
       fallbackModel: env.LLM_VISION_MODEL, // kimi-k2.7 handles text fine as a fallback
       requireVision: false,
-      reasoningEffort: 'high', // currency/date normalization + total reconciliation benefit from CoT
+      reasoningEffort: env.LLM_TEXT_REASONING_EFFORT, // mirrors production (default 'high')
       structured: true, // disables reasoning_content fallback (would break JSON.parse)
       temperature: 0,
       maxTokens: 4096,

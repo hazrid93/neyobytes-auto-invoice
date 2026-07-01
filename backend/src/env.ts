@@ -35,6 +35,23 @@ const schema = z.object({
   LLM_VISION_MODEL: z.string().default('kimi-k2.7'),
   // Text-only model used as extraction fallback (probed: NOT multimodal).
   LLM_TEXT_MODEL: z.string().default('glm-5.2'),
+  // Reasoning/thinking effort per stage (sent as top-level `reasoning_effort`
+  // to the litellm gateway). Two separate knobs because the stages want
+  // opposite settings and you may need to tune either at runtime:
+  //   vision (Stage A — pure OCR transcription): default 'low'. A literal copy
+  //     task; deeper CoT only wastes tokens and risks narration leaking into
+  //     `content` (see lib/extraction.ts stripReasoningPreamble).
+  //   text   (Stage B — structuring OCR text to JSON): default 'high'. Date
+  //     math, currency normalization, total reconciliation benefit from CoT.
+  // Accepted values: low | medium | high | none. Empty string → default.
+  LLM_VISION_REASONING_EFFORT: z.preprocess(
+    (v) => (v === '' ? undefined : v),
+    z.enum(['low', 'medium', 'high', 'none']).default('low'),
+  ),
+  LLM_TEXT_REASONING_EFFORT: z.preprocess(
+    (v) => (v === '' ? undefined : v),
+    z.enum(['low', 'medium', 'high', 'none']).default('high'),
+  ),
   LLM_MAX_RETRIES: z.coerce.number().int().min(0).default(3),
   LLM_TIMEOUT_MS: z.coerce.number().int().positive().default(300_000),
 
