@@ -35,3 +35,6 @@ docs/myinvois/sdk-ref/api/*.html
 docs/myinvois/sdk-ref/types-pages/*.html
 docs/myinvois/sdk-ref/codes/*.html
 docs/myinvois/sdk-ref/urls.txt
+
+# Scratch / temporary screenshots (not source)
+docs/temp/
