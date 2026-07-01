@@ -261,3 +261,54 @@ Our current builder would be **rejected by the Core Fields Validator** for missi
   priority; customer retrieval (Get Document) covers the flow-1 loop.
 - Financial Account integration (flow 2) — product decision.
 - B2C public-TIN UX distinction — product decision.
+---
+
+## 8. Resolution status (2026-06-30/07-01)
+
+All work-plan items in §6 are implemented, verified, and pushed (excluding the
+explicitly-deferred signing + prod-send + Tier-4 product decisions).
+
+### A. Data model ✅
+Migration `0004_einvoice_fields.sql` (applied to the live DB) + Drizzle schema:
+profiles + customers + invoices carry every Core-Fields-Validator field.
+`PATCH /auth/me` + `PATCH /invoices/:id` accept them (FAQ length limits).
+
+### B. `buildUblJson` canonical overhaul ✅ (verify-ubl.ts 10/10)
+Emits IssueTime, TaxCurrencyCode, invoice+line TaxSubtotal breakdown,
+PartyLegalEntity/RegistrationName, PartyIdentification[TIN,BRN,SST,TTX],
+IndustryClassificationCode/MSIC, structured PostalAddress, Contact/Telephone,
+line CommodityClassification + ItemPriceExtension, PaymentMeans (bank detail),
+invoiceType (01-04,11-14) + BillingReference. 'NA' fallback where absent.
+
+### C. Audit-repository gap ✅ (verify-mock-submit.ts 6/6)
+Get Submission API (06) added → fetches `longId`; `buildValidationLink` builds
+`{envbaseurl}/{uuid}/share/{longId}`; on accept, persists validation_uuid,
+longId (→ myinvois_doc_id), qr_url. Submit-screen "Fix & resubmit" on reject.
+
+### D. Extraction + UI wiring ✅
+Profile screen: all supplier identity fields (BRN/SST/TTX/MSIC/contact/
+structured address). Review screen: e-Invoice type + payment means + bank
+account. DTOs + services carry the new fields end-to-end.
+
+### E. QR + PDF + customer retrieval ✅ (verify-public-retrieval.ts 14/14)
+QRCode component (pure-JS `qrcode` → PNG data URL, native+web). Submit screen
+shows Document ID + "Scan to Verify" QR. Receipt: server-side HTML render with
+inline QR (GET /invoices/:id/receipt authed; GET /public/invoices/:ref/receipt
+public) + mobile WebView screen. Public lookup: GET /public/invoices/:ref +
+POST /public/invoices/qr (decodes the validation link) — the flow-1 right-hand
+loop, no raw-data leak.
+
+### F. Code-list hygiene + FAQ validators ✅ (codes.ts 3/3)
+Official code sets embedded + pre-flight validators (Code Validator + FAQ
+field-length/format). submitInvoice fails fast on bad codes/lengths before a
+signed LHDN call (proven: '99' rejected, valid passes). TIN normalization
+(tin.ts 6/6) applied in validateTin + submit. Doc artifacts: codes-*.json.
+
+### Deferred (out of scope / product decisions)
+- Digital signing + prod send (gated, RESEARCH.md §6 / TESTING-FLOWS.md §4).
+- Cancel/Reject/Get-Recent/Search/Search-TIN/Taxpayer-QR APIs — lower
+  priority; customer retrieval (Get Document / public) covers the flow-1 loop.
+- Self-billed (11-14) full flows — structurally identical; invoiceType is
+  selectable, BillingReference wired.
+- B2C public-TIN UX distinction + Financial Account integration (flow 2) —
+  product decisions.
