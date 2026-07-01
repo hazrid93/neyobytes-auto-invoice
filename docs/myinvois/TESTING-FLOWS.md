@@ -186,11 +186,53 @@ development.
 ### 4a. Procure the signing cert
 
 The cert must come from **POS Digicert Sdn Bhd** (Malaysia's government CA,
-`posdigicert.com.my`), issued under LHDNM's **`Trial LHDNM Sub CA V1`** intermediate for
-sandbox, or the production Sub CA for prod. See `docs/myinvois/RESEARCH.md §6`.
+`posdigicert.com.my`), issued under LHDNM's Sub CA. See `docs/myinvois/RESEARCH.md §6`.
 
-- Sandbox: a **trial** cert (the doc's sample cert is `CN=Trial LHDNM Sub CA V1`).
-- Prod: a paid cert under the prod Sub CA.
+> ⚠️ **This cannot be done for you by anyone else.** A POS Digicert signing cert is
+> issued to *your* registered business identity after identity verification, and
+> the private key must be generated for and controlled by you. The cert's subject
+> IS your taxpayer identity (TIN/BRN + emailAddress), and the CA is legally
+> required to verify that identity before issuing. Having someone else buy one
+> and hand you a keypair LHDN will accept is impossible — it would be cert
+> fraud, not a shortcut. So this step is **yours to execute**.
+
+There are two tiers — do the sandbox tier first:
+
+#### Tier 1 — Sandbox: a **Trial** cert (free, do this first)
+
+- Issued under `CN=Trial LHDNM Sub CA V1, O=LHDNM, C=MY`.
+- This is **exactly** the cert the official signing sample uses (the `KKBSTy…`
+  cert digest our unit tests in `scripts/verify-signing.ts` reproduce).
+- It's meant for integration testing against `preprod-api.myinvois.hasil.gov.my`.
+- Source: the **LHDN MyInvois sandbox portal** (`preprod-mytax.hasil.gov.my`) and/or
+  POS Digicert's site, referencing the **"Digital Signature Certificate Profile"**
+  for e-invoicing (`/signature/#digital-signing-certificate-profile` on the LHDN
+  SDK site).
+
+#### Tier 2 — Production: a **paid** cert
+
+- Issued under the **production** LHDNM Sub CA.
+- Required before you submit to `api.myinvois.hasil.gov.my` (prod).
+- Same CA, identity-verified, paid. Reuse the exact same code path; only the cert
+  in `.env` differs.
+
+#### The procurement flow (you execute this — it can't be delegated)
+
+1. **Have a registered business** (SSM) with a TIN + BRN. The cert subject *is* your
+   business identity — there's no way around this.
+2. **Request the cert** through POS Digicert (their e-invoicing signing cert
+   product). They'll perform KYC: SSM business registration + the representative's
+   NRIC/passport + contact verification.
+3. **Receive the cert + private key** via secure download (some CAs issue via a USB
+   token — confirm what POS Digicert offers for e-invoicing specifically; if a
+   token is the only option, extract the PEM/key per their guidance so you can put
+   it in `.env`).
+4. **Drop it into `.env` and run the round-trip in §4c below.**
+
+> ℹ️ **Pricing / forms / turnaround:** check `posdigicert.com.my` directly for the
+> current application form, fees, and processing time — these aren't in this repo
+> and may change. The structural steps above (the parts that matter for wiring it
+> into the app) are stable.
 
 You'll receive a cert + private key. Put them in `.env.stg` (or `.env.prod`):
 ```bash
@@ -199,6 +241,11 @@ MYINVOIS_KEY_PEM=<PEM private key>
 ```
 `pm2 restart auto-invoice-api-stg --update-env`. The `SigningNotConfiguredError` gate then
 passes and submit proceeds to the signing step.
+
+> **You don't have to wait for the cert to keep building.** Both flows' token +
+> `validate-tin` already work against the live sandbox (verified end-to-end), and
+> `MYINVOIS_ENV=mock` runs the full capture → review → submit → status loop with
+> the new JSON builder. The cert only gates the final *real* submit.
 
 ### 4b. Resolve the signing target (the coin-flip)
 
