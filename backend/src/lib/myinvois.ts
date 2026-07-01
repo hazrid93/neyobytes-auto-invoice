@@ -368,6 +368,7 @@ export async function getDocumentDetails(
 // ─── UBL 2.1 XML builder (simplified, schema-aligned) ────────────────────
 export interface InvoiceParty {
   tin: string
+  brn?: string | null // Business Registration Number (SSM) — LHDN identifies a party by TIN AND BRN as peers
   name: string
   email?: string | null
   phone?: string | null

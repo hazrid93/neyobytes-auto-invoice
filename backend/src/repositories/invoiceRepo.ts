@@ -238,6 +238,7 @@ export async function deleteInvoice(invoiceId: string, userId: string): Promise<
 // in `extractedData.buyer` even though no customer row is created.
 export interface SubmissionCustomer {
   tin: string | null
+  brn: string | null // Business Registration Number (from extractedData.buyer.brn when no customers row)
   name: string | null
   email: string | null
   address: string | null
@@ -249,6 +250,7 @@ export type InvoiceAggregate = {
   customer: SubmissionCustomer | null
   supplier: {
     tin: string | null
+    brn: string | null // profiles has no brn column yet → null (supplier emits 'NA'); follow-up: add profiles.brn + settings UI
     companyName: string | null
     fullName: string | null
     email: string | null
@@ -286,7 +288,9 @@ export async function loadInvoiceForSubmission(
         .from(customersTable)
         .where(and(eq(customersTable.id, invoice.customerId), eq(customersTable.userId, userId)))
         .limit(1)
-      customer = cust ?? null
+      // customersTable has no brn column → null here (BRN only flows from
+      // extractedData.buyer.brn via customerFromExtracted for captured invoices).
+      customer = cust != null ? { ...cust, brn: null } : null
     }
     // Fallback: if no linked customer (or it has no TIN), use the buyer the
     // OCR stage extracted into extractedData.buyer. This is the common path —
@@ -296,7 +300,7 @@ export async function loadInvoiceForSubmission(
       if (fromExtraction?.tin) customer = fromExtraction
     }
 
-    const [supplier] = await q
+    const [supplierRow] = await q
       .select({
         tin: profilesTable.tin,
         companyName: profilesTable.companyName,
@@ -306,12 +310,20 @@ export async function loadInvoiceForSubmission(
       .from(profilesTable)
       .where(eq(profilesTable.id, userId))
       .limit(1)
+    // profiles currently has no brn column — the supplier's own Business
+    // Registration Number isn't stored. Pass null; ublJson falls back to 'NA'
+    // (the canonical sample's convention for absent IDs). Follow-up: add
+    // profiles.brn + a settings UI to populate it.
+    const supplier =
+      supplierRow != null
+        ? { ...supplierRow, brn: null as string | null }
+        : { tin: null, companyName: null, fullName: null, email: null, brn: null as string | null }
 
     return {
       invoice,
       items,
       customer,
-      supplier: supplier ?? { tin: null, companyName: null, fullName: null, email: null },
+      supplier,
     }
   } catch (e) {
     throw classifyDbError(e, 'loadInvoiceForSubmission')
@@ -345,6 +357,7 @@ function customerFromExtracted(data: unknown): SubmissionCustomer | null {
   const b = buyer as {
     name?: unknown
     tin?: unknown
+    brn?: unknown
     email?: unknown
     address?: unknown
   }
@@ -355,6 +368,7 @@ function customerFromExtracted(data: unknown): SubmissionCustomer | null {
   if (!tin && !name) return null
   return {
     tin,
+    brn: str(b.brn),
     name,
     email: str(b.email),
     address: str(b.address),

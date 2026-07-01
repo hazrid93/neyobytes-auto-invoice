@@ -22,6 +22,17 @@ import type { BuildUblInput } from './myinvois'
 // sit beside "_" in the same object (e.g. { "_":"01", "listVersionID":"1.1" }).
 const v = (value: string | number | boolean): Array<{ _: string | number | boolean }> => [{ _: value }]
 
+/** PartyIdentification per docs/myinvois/invoice-v1.1-sample.json: an array of
+ *  ID entries, one per scheme (TIN, BRN). BRN is the Business Registration
+ *  Number (SSM); 'NA' when absent — the sample's convention for IDs the party
+ *  doesn't have. (Previously the builder emitted a single TIN ID *plus* a
+ *  fabricated PartyTaxScheme whose CompanyID duplicated the TIN —
+ *  non-canonical, and the LHDN sample carries no PartyTaxScheme at all.) */
+const partyIds = (tin: string, brn?: string | null) => [
+  { ID: [{ _: tin, schemeID: 'TIN' }] },
+  { ID: [{ _: brn && brn.trim() ? brn.trim() : 'NA', schemeID: 'BRN' }] },
+]
+
 /** Build a minimal-but-valid UBL 2.1 Invoice as the JSON variant. Deterministic
  *  key order (insertion order) — required so transformDocument's minify is stable. */
 export function buildUblJson(input: BuildUblInput): string {
@@ -51,18 +62,13 @@ export function buildUblJson(input: BuildUblInput): string {
       {
         Party: [
           {
-            PartyIdentification: [
-              { ID: [{ _: input.supplier.tin, schemeID: 'TIN' }] },
-            ],
+            PartyIdentification: partyIds(input.supplier.tin, input.supplier.brn),
             PartyName: [{ Name: v(input.supplier.name) }],
             PostalAddress: [
               {
                 StreetName: v(input.supplier.address ?? 'Malaysia'),
                 Country: [{ IdentificationCode: v('MYS') }],
               },
-            ],
-            PartyTaxScheme: [
-              { CompanyID: v(input.supplier.tin), TaxScheme: [{ ID: v('TAX') }] },
             ],
           },
         ],
@@ -72,9 +78,7 @@ export function buildUblJson(input: BuildUblInput): string {
       {
         Party: [
           {
-            PartyIdentification: [
-              { ID: [{ _: input.customer.tin, schemeID: 'TIN' }] },
-            ],
+            PartyIdentification: partyIds(input.customer.tin, input.customer.brn),
             PartyName: [{ Name: v(input.customer.name) }],
             PostalAddress: [
               {

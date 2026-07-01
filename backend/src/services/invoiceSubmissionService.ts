@@ -78,9 +78,10 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
     issueDate,
     dueDate: inv.dueDate,
     currency: inv.currency,
-    supplier: { tin: supplier.tin, name: supplierName, email: supplier.email ?? null },
+    supplier: { tin: supplier.tin, brn: supplier.brn ?? null, name: supplierName, email: supplier.email ?? null },
     customer: {
       tin: customer.tin,
+      brn: customer.brn ?? null,
       name: customerName,
       email: customer.email ?? null,
       address: customer.address ?? null,
