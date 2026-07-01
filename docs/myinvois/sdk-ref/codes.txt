@@ -1,0 +1,28 @@
+Classification Codes
+List of the classification codes and descriptions.
+        Read more
+Country Codes
+List of country codes allowed as part of the address information as part of the document submission. Country codes are also used for the "Country of Origin" data field.
+        Read more
+Currency Codes
+List of currency codes allowed as part of the document information during document submission.
+        Read more
+e-Invoice Types
+List of e-Invoice types allowed as part of the document submission.
+        Read more
+Malaysia Standard Industrial Classification (MSIC) Codes
+List of MSIC codes allowed as part of the document and submission.
+        Read more
+Payment Modes
+Payment Mode refers to the chosen mechanism through which funds are transferred from buyer to supplier.
+        Read more
+State Codes
+List of the state codes representing the names of states and federal territories in Malaysia.
+        Read more
+Tax Types
+List of tax types allowed as part of the document and submission.
+        Read more
+Unit of measurement
+List of unit of measurement types allowed as part of the document line information as part of the document submission.
+        Read more
+					Back to homepage

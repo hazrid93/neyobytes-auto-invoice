@@ -28,3 +28,10 @@ yarn-error.*
 .vscode/
 .idea/
 backend/scripts/verify-invoice.png
+
+# LHDN SDK reference fetch (raw HTML pages — kept locally for research, not in git)
+docs/myinvois/sdk-ref/*.html
+docs/myinvois/sdk-ref/api/*.html
+docs/myinvois/sdk-ref/types-pages/*.html
+docs/myinvois/sdk-ref/codes/*.html
+docs/myinvois/sdk-ref/urls.txt
