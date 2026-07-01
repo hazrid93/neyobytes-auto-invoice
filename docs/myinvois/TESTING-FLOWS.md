@@ -222,11 +222,14 @@ There are two tiers — do the sandbox tier first:
    business identity — there's no way around this.
 2. **Request the cert** through POS Digicert (their e-invoicing signing cert
    product). They'll perform KYC: SSM business registration + the representative's
-   NRIC/passport + contact verification.
+   NRIC/passport + contact verification. A copy-paste request template (with the
+   exact information POS Digicert will ask for) is in
+   [`POS-DIGICERT-REQUEST.md`](./POS-DIGICERT-REQUEST.md).
 3. **Receive the cert + private key** via secure download (some CAs issue via a USB
    token — confirm what POS Digicert offers for e-invoicing specifically; if a
    token is the only option, extract the PEM/key per their guidance so you can put
-   it in `.env`).
+   it in `.env`). Prefer **CSR-based issuance** if offered (you generate the keypair
+   locally and submit only the public CSR — your private key never leaves you).
 4. **Drop it into `.env` and run the round-trip in §4c below.**
 
 > ℹ️ **Pricing / forms / turnaround:** check `posdigicert.com.my` directly for the
