@@ -288,6 +288,35 @@ test('absent originCountry falls back to MYS (default)', () => {
   assert.equal(get('Item.0.OriginCountry.0.IdentificationCode.0._', line), 'MYS')
 })
 
+test('monetary aggregates always derive from line items (caller overrides ignored, internally consistent)', () => {
+  // Pass deliberately-wrong stored totals — the builder must ignore them and
+  // derive from the items, else MyInvois rejects a desynced document.
+  const inv = JSON.parse(buildUblJson({
+    ...baseInput,
+    subtotal: 99999,
+    taxTotal: 99999,
+    total: 99999,
+  })).Invoice[0]
+  // LineExtensionAmount == Σ InvoiceLine.LineExtensionAmount (raw qty×price)
+  const lineExt = Number(get('LegalMonetaryTotal.0.LineExtensionAmount.0._', inv))
+  const sumLine = (inv.InvoiceLine as Array<{ LineExtensionAmount: Array<{ _: number }> }>)
+    .reduce((s, l) => s + Number(l.LineExtensionAmount[0]._), 0)
+  assert.equal(lineExt, sumLine, 'LineExtensionAmount equals sum of line LineExtensionAmounts')
+  assert.notEqual(lineExt, 99999, 'stored subtotal override was ignored')
+  // TaxTotal.TaxAmount == Σ TaxSubtotal.TaxAmount (raw Σ line tax)
+  const taxAmt = Number(get('TaxTotal.0.TaxAmount.0._', inv))
+  const sumSub = (inv.TaxTotal[0].TaxSubtotal as Array<{ TaxAmount: Array<{ _: number }> }>)
+    .reduce((s, t) => s + Number(t.TaxAmount[0]._), 0)
+  assert.equal(taxAmt, sumSub, 'TaxTotal.TaxAmount equals sum of TaxSubtotal.TaxAmounts')
+  assert.notEqual(taxAmt, 99999, 'stored taxTotal override was ignored')
+  // TaxExclusiveAmount == LineExtensionAmount (no allowance/charge yet)
+  assert.equal(get('LegalMonetaryTotal.0.TaxExclusiveAmount.0._', inv), lineExt)
+  // TaxInclusiveAmount == TaxExclusiveAmount + TaxTotal
+  assert.equal(get('LegalMonetaryTotal.0.TaxInclusiveAmount.0._', inv), Number((lineExt + taxAmt).toFixed(2)))
+  // PayableAmount == TaxInclusiveAmount (no prepaid/rounding yet)
+  assert.equal(get('LegalMonetaryTotal.0.PayableAmount.0._', inv), get('LegalMonetaryTotal.0.TaxInclusiveAmount.0._', inv))
+})
+
 test('document is JSON-stringifiable + minifiable (stable for digest)', () => {
   const a = buildUblJson(baseInput)
   const b = buildUblJson(baseInput)

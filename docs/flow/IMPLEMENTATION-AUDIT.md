@@ -29,7 +29,7 @@ You issue an invoice → submit to LHDN → customer retrieves/verifies.
 ### C. Output / display
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
-| C1 | APP display invoice — PDF / hard copy / list with doc ID + QR | ❌ | Invoice list exists (`home.tsx` cards) but shows **no Document ID, no QR, no PDF**. No PDF generation anywhere in repo. |
+| C1 | APP display invoice — PDF / hard copy / list with doc ID + QR | ⚠️ | Invoice list (`home.tsx`) now shows the LHDN Document ID chip + a small validation QR for submitted invoices (commit `663d28d`). **PDF / hard-copy render still missing** (no PDF generation). |
 
 ### D. Submission to MyInvois
 | # | Flow step | Status | Where / note |
@@ -42,8 +42,8 @@ You issue an invoice → submit to LHDN → customer retrieves/verifies.
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
 | E1 | Accept / reject detection | ✅ | `accepted` flag from document status; `status` written to audit row. |
-| E2 | Audit Repository persistence | ⚠️ | `myinvois_submissions` + `invoices` store submissionUid ✅, responseBody ✅, timestamp ✅, Cust TIN (via `customers.tin`) ✅. **BUT:** `markInvoiceSubmitted` stores the doc **uuid** into `myinvoisDocId` (semantically should be the human-readable `longId` = "Document ID"); the `longId` is captured in the response but **discarded**; the `validation_uuid` column is **never written**. |
-| E3 | QR verification link | ❌ | `invoices.qr_url` column declared but **never populated**. No QR URL generated or captured. |
+| E2 | Audit Repository persistence | ✅ | `myinvois_submissions` + `invoices` store submissionUid, responseBody, timestamp, Cust TIN. `markInvoiceSubmitted` persists the human-readable `longId`→`myinvois_doc_id`, doc `uuid`→`validation_uuid`, and the QR link→`qr_url` (fixed in `6a9534a`). |
+| E3 | QR verification link | ✅ | `buildValidationLink(uuid, longId)` constructs `{envbaseurl}/{uuid}/share/{longId}` and persists it to `invoices.qr_url` on acceptance (`6a9534a`). |
 
 ### F. Rejection / retry loop
 | # | Flow step | Status | Where / note |
@@ -73,7 +73,7 @@ You receive a supplier invoice → photograph → AI extracts → store → fina
 | P4 | Process info into data JSON/XML (AI model 2) | ✅ | Stage B — text structuring (`STRUCTURING_SYSTEM_PROMPT`). |
 | P5 | APP store data output | ✅ | `createDraftFromExtraction` → `invoices` row (`kind: 'purchase'`). |
 | P6 | → Financial Account | ❌ | No accounting/ERP integration. (Likely out of scope, but the diagram draws the arrow.) |
-| P7 | OUTPUT JSON — seller Document ID / UUID / QR verification | ❌ | `extractedData.qr_verification` field exists but is **always null**. These fields only exist post-LHDN-submission; on the received/purchase side you'd OCR the supplier's QR — not implemented. |
+| P7 | OUTPUT JSON — seller Document ID / UUID / QR verification | ⚠️ | `extractedData.qr_verification` is now populated by Stage B (explicit extraction guidance for the printed verification reference near the "Scan to Verify" QR) and surfaced + editable on the Review screen (commit `c693dba`). A true QR-**image** decode (camera → QR reader → link) is a separate native-module step, not the LLM pipeline. |
 | P8 | OUTPUT JSON — items include Payment method + Bank detail | ⚠️ | `payment_method` ✅; bank/account detail ❌ (no field). |
 
 ---
@@ -86,9 +86,9 @@ You receive a supplier invoice → photograph → AI extracts → store → fina
 | F3-2 | 4 document types: Invoice, Credit note, Debit note, Refund note | ❌ | Only Invoice (`InvoiceTypeCode '01'` hardcoded in `ublJson.ts`). |
 | F3-3 | JSON structure (invoiceNumber, issueDate, supplier, buyer, items, totalAmount) | ✅ | `buildUblJson` covers these and more (per canonical sample). |
 | F3-4 | OUTPUT rendered invoice — header (company, TIN, **SSM/BRN**) | ⚠️ | Supplier name + TIN ✅. **SSM/BRN not stored** — `profiles` has no `brn` column; UBL emits `'NA'` (documented follow-up). |
-| F3-5 | OUTPUT — **MyInvois Document ID** (longId) | ❌ | Captured in LHDN response but discarded — never persisted to `invoices.myinvois_doc_id` correctly (uuid is stored there instead). |
-| F3-6 | OUTPUT — **Validation UUID** | ❌ | `invoices.validation_uuid` column declared, never written. |
-| F3-7 | OUTPUT — **QR code "Scan to Verify"** | ❌ | No QR generation/display. `qr_url` never stored. |
+| F3-5 | OUTPUT — **MyInvois Document ID** (longId) | ✅ | Fetched via Get Submission API (06) on acceptance and persisted to `invoices.myinvois_doc_id` (`6a9534a`); shown on the home list + submit screen. |
+| F3-6 | OUTPUT — **Validation UUID** | ✅ | Persisted to `invoices.validation_uuid` on acceptance (`6a9534a`). |
+| F3-7 | OUTPUT — **QR code "Scan to Verify"** | ✅ | `qr_url` stored on acceptance + rendered as a QR on the submit result screen (`QRCode.tsx`) and the home list card (`6a9534a`, `663d28d`). |
 | F3-8 | OUTPUT — bank details | ❌ | No account/bank field captured. |
 | F3-9 | OUTPUT — PDF / hard copy render | ❌ | No PDF generation. |
 
@@ -143,3 +143,52 @@ fewest changes:
    public route + screen.
 5. Tier 1 #4 (`profiles.brn`) — already documented; do alongside #7.
 6. Tier 4 — product decisions, defer.
+
+---
+
+## Update log (post-audit)
+
+- **Line-item codes wired end-to-end** (`50b6559`): the submit service now
+  sources UBL line items (incl. `tax_type_code`/`unit_code`/`classification`/
+  `origin_country`) from `invoices.extracted_data.items` (the blob the review
+  screen edits), falling back to `invoice_items` table rows for manually-
+  created invoices. This also fixed a latent bug where captured invoices
+  (stored only in the blob) submitted with **zero** `InvoiceLine[]`. `buildLine`
+  honors `it.originCountry` (was hardcoded `MYS`). 12/12 UBL structure tests.
+- **Home list Document ID + QR** (`663d28d`): dashboard cards show the LHDN
+  Document ID chip + a 40px validation QR for submitted invoices.
+- **QR verification capture** (`c693dba`): Stage B now captures the printed
+  verification reference near the e-invoice QR into `qr_verification`; the
+  field is surfaced + editable on the Review screen (was hard-null on save).
+
+### Blocked — invoice-level AllowanceCharge / monetary fields
+
+Wiring `AllowanceTotalAmount` / `ChargeTotalAmount` / `PayableRoundingAmount` /
+`PrepaidPayment` + invoice-level `AllowanceCharge[]` into `buildUblJson` is
+**NOT shipped live**. Rationale: it is (a) **cert-gated** — the sandbox requires
+a POS Digicert/LHDNM signing cert and no real round-trip has confirmed which
+balance equation MyInvois enforces, and (b) **formula-disambiguated by nothing
+in the repo** — the KB says `Payable = TaxInclusive + rounding − prepaid` with
+`TaxExclusiveAmount = Σ line net`, while EN 16931 (UBL 2.1's basis) folds
+invoice-level allowance/charge into `TaxExclusiveAmount = ΣLineExtension −
+AllowanceTotal + ChargeTotal`. These diverge when allowance/charge ≠ 0, and
+**no sample disambiguates** — every sample with nonzero allowance/charge/rounding
+reuses the placeholder `1436.50` for all (mathematically impossible), and the
+only real-valued samples (Consolidated, MultiLineItem) have all three = 0.
+
+The current builder emits only the 4 mandatory `LegalMonetaryTotal` fields
+(LineExtension/TaxExclusive/TaxInclusive/Payable) — which the canonical 1.1
+Consolidated sample confirms is correct for a simple invoice (it OMITS the
+optional fields when there are no invoice-level allowances/charges). So the
+working zero-allowance path stays the default.
+
+**When the cert round-trip is available**, implement as first-class
+`BuildUblInput` fields (allowance/charge/prepaid/rounding) + an invoice-level
+`AllowanceCharge[]`, emit conditionally (omit when absent/zero), and ALWAYS
+*derive* `TaxExclusiveAmount`/`PayableAmount` in the builder (never accept a
+stored value that could contradict the derivation — `subtotal` must always mean
+raw Σ line-extension, `total` must mean TaxInclusive pre-prepaid/rounding). The
+retired `buildUbl` XML in `myinvois.ts` has no live caller and can stay as-is.
+Treat the equation as unvalidated and gate behind a flag until the real submit
+confirms. Per-line `AllowanceCharge` is a larger change still (it alters each
+line's `LineExtensionAmount` math) — defer until invoice-level is validated.

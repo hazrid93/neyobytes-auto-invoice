@@ -150,10 +150,17 @@ export function buildUblJson(input: BuildUblInput): string {
     (s, it) => s + it.quantity * it.unitPrice * (it.taxRate / 100),
     0,
   )
-  const grandTotal = lineExt + taxTotal
-  const subtotal = input.subtotal ?? lineExt
-  const tax = input.taxTotal ?? taxTotal
-  const total = input.total ?? grandTotal
+  // Always derive the monetary aggregates from the line items — never accept
+  // a caller-supplied subtotal/taxTotal/total override. MyInvois rejects a
+  // document where TaxTotal.TaxAmount ≠ Σ TaxSubtotal.TaxAmount or where
+  // LegalMonetaryTotal.LineExtensionAmount ≠ Σ InvoiceLine.LineExtensionAmount,
+  // and the per-line amounts are ALWAYS computed from raw items below (in
+  // buildLine), so the invoice-level aggregates must come from the same raw
+  // computation to stay consistent. (The BuildUblInput.subtotal/taxTotal/total
+  // fields remain on the type for source-compat but are intentionally ignored.)
+  const subtotal = lineExt
+  const tax = taxTotal
+  const total = lineExt + taxTotal
 
   // IssueTime: UTC HH:MM:SSZ. Default to now (LHDN requires issuance within 72h
   // of submission; IssueTime "must be the current time").
