@@ -38,17 +38,17 @@ export default function SubmitScreen() {
     {
       id: 'submit', targetRef: headerRef, badge: 'Submit',
       title: 'Send to LHDN',
-      description: 'This screen validates your invoice against LHDN and records every attempt.',
+      description: 'This is step 3, the final step. Your invoice is validated against LHDN rules and every attempt is recorded here.',
     },
     {
       id: 'button', targetRef: submitRef,
       title: 'Submit button',
-      description: 'Tap to submit. You’ll see whether LHDN accepted or rejected it, plus a submission UID.',
+      description: 'Tap to send. You’ll see whether LHDN accepted or rejected it, plus the submission UID. If it’s greyed out, your profile or LHDN connection isn’t complete yet.',
     },
     {
       id: 'history', targetRef: historyRef,
       title: 'Audit trail',
-      description: 'Every attempt is logged here — including failures — so there’s always a record of what happened.',
+      description: 'Every attempt is logged here — including failures — so there’s always a record of what happened and when.',
     },
   ]
 

@@ -51,17 +51,17 @@ export default function ConnectMyInvoisScreen() {
     {
       id: 'connect', targetRef: headerRef, badge: 'Connect LHDN',
       title: 'Link your LHDN account',
-      description: 'Each user submits using their own ERP key generated on the MyInvois portal — connect once to enable real submissions.',
+      description: 'To submit real e-invoices, you use your own ERP key from the MyInvois portal. Connect once here and submit is live — no mock responses.',
     },
     {
       id: 'form', targetRef: formRef,
       title: 'Paste your ERP credentials',
-      description: 'Copy the Client ID and Client Secret from the MyInvois portal and paste them here. The secret is stored encrypted.',
+      description: 'Copy the Client ID and Client Secret from the MyInvois portal (see the steps above) and paste them here. The secret is stored encrypted — only the Client ID is ever shown back.',
     },
     {
       id: 'save', targetRef: saveRef,
       title: 'Save',
-      description: 'Saves the connection. You can disconnect or rotate the key any time.',
+      description: 'Saves the connection. You can disconnect or rotate the key any time if it expires.',
     },
   ]
 

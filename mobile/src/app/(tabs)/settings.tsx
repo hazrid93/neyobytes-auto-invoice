@@ -36,22 +36,22 @@ export default function SettingsScreen() {
     {
       id: 'settings', targetRef: headerRef, badge: 'Settings',
       title: 'Account & LHDN config',
-      description: 'Manage your supplier profile, your LHDN connection, and your account here.',
+      description: 'Everything about your account lives here: your supplier profile, your LHDN connection, and sign-out.',
     },
     {
       id: 'profile', targetRef: profileRef,
       title: 'Supplier profile',
-      description: 'Name, company, and TIN. Tap a row to edit — company + TIN are required before you can submit.',
+      description: 'Your name, company, and TIN. Company + TIN are required before any submission goes through — tap a row to edit.',
     },
     {
       id: 'mode', targetRef: modeRef,
       title: 'MyInvois (LHDN)',
-      description: 'Shows whether submissions go to the real LHDN API or run in mock mode.',
+      description: 'Shows whether submissions hit the real LHDN API or run in Mock (practice) mode. Connect LHDN from here to go live.',
     },
     {
       id: 'signout', targetRef: signOutRef,
       title: 'Sign out',
-      description: 'Ends your session on this device.',
+      description: 'Ends your session on this device. Your invoices stay safe — sign back in to pick up where you left off.',
     },
   ]
 

@@ -13,7 +13,9 @@ import { useDashboard } from '../../viewmodels/useDashboard'
 import { useSubmit } from '../../viewmodels/useSubmit'
 import { GradientBackground, GlassCard } from '../../theme/glass'
 import { pageContentStyle } from '../../theme/page'
-import { TourButton, type TourStep } from '../../components/TourButton'
+import { type TourStep } from '../../components/TourButton'
+import { CoachmarkTour } from '../../components/CoachmarkTour'
+import { useFirstRunTour } from '../../viewmodels/useFirstRunTour'
 import { colors, font, space, radius, shadow } from '../../theme/tokens'
 import { captureNavRef } from '../../theme/captureNavRef'
 import { useSafeInsets } from '../../theme/useSafeInsets'
@@ -31,45 +33,53 @@ export default function HomeScreen() {
   const statsRef = useRef<View>(null)
   const listRef = useRef<View>(null)
   const { top } = useSafeInsets()
+  const tour = useFirstRunTour('home')
 
   const tourSteps: TourStep[] = [
     {
       id: 'welcome',
       targetRef: headerRef,
       badge: 'Welcome',
-      title: 'Your invoice dashboard',
-      description: 'This is home base — every invoice you capture or submit lives here. Let’s walk through it.',
+      title: 'Capture → review → submit',
+      description:
+        'auto-invoice turns a paper invoice into a filed LHDN e-invoice in three steps: photograph it, check the draft, then submit. Here’s where each step lives — tap Next to walk through.',
     },
     {
       id: 'capture',
       targetRef: captureNavRef,
-      badge: 'Start here',
-      title: 'Capture an invoice',
-      description: 'Tap this button to photograph a paper invoice. The app reads it with OCR and drafts an e-invoice for you to confirm.',
+      badge: 'Capture',
+      title: 'Capture a photo',
+      description:
+        'Tap this button to photograph or pick a paper invoice. The app reads it with OCR and drafts an e-invoice for you to confirm — no manual typing.',
     },
     {
-      id: 'mode',
-      targetRef: modeRef,
-      title: 'LHDN connection',
-      description: 'This banner shows your MyInvois environment. Submitting stays disabled until your supplier profile is complete.',
+      id: 'list',
+      targetRef: listRef,
+      badge: 'Review',
+      title: 'Your invoices',
+      description:
+        'Every capture lands here. Drafts (blue) still need a review; submitted ones show their LHDN audit trail. Tap a card to open it.',
     },
     {
       id: 'stats',
       targetRef: statsRef,
       title: 'At a glance',
-      description: 'Quick counts of total, draft, and submitted invoices.',
+      description:
+        'Total, drafts awaiting review, and submitted. The Drafts count is your to-do list — each one needs a review before it can go to LHDN.',
     },
     {
-      id: 'list',
-      targetRef: listRef,
-      title: 'Your invoices',
-      description: 'Tap a draft to review, edit, or delete it. Tap a submitted one to see its LHDN audit trail.',
+      id: 'mode',
+      targetRef: modeRef,
+      title: 'LHDN connection',
+      description:
+        'Shows where submissions go: Mock (practice, no real call) or your connected MyInvois env. A greyed-out submit means your profile isn’t complete yet.',
     },
     {
       id: 'profile',
       targetRef: avatarRef,
       title: 'Your supplier profile',
-      description: 'Tap your avatar to set the company name and TIN required for LHDN submission.',
+      description:
+        'Tap your avatar to set company name + TIN — both are required before LHDN accepts a submission.',
     },
   ]
 
@@ -105,7 +115,15 @@ export default function HomeScreen() {
                   {supplierReady ? 'Ready to submit to LHDN' : 'Set your TIN & company to enable submit'}
                 </Text>
               </View>
-              <TourButton steps={tourSteps} style={{ marginRight: space.sm }} />
+              <Pressable
+                onPress={tour.handleTourOpen}
+                hitSlop={10}
+                accessibilityLabel="Start page tour"
+                accessibilityRole="button"
+                style={({ pressed }) => [styles.tourBtn, pressed && styles.tourPressed, { marginRight: space.sm }]}
+              >
+                <Ionicons name="help-outline" size={20} color={colors.azure} />
+              </Pressable>
               <Pressable onPress={() => router.push('/profile')} hitSlop={10} style={styles.avatarBtn} ref={avatarRef}>
                 <Ionicons name="person-circle-outline" size={34} color={colors.azure} />
               </Pressable>
@@ -160,6 +178,12 @@ export default function HomeScreen() {
         renderItem={({ item }) => <InvoiceCard invoice={item} />}
         ItemSeparatorComponent={() => <View style={{ height: space.md }} />}
       />
+      <CoachmarkTour
+        steps={tourSteps}
+        open={tour.open}
+        onClose={tour.handleTourClose}
+        onComplete={tour.handleTourClose}
+      />
     </GradientBackground>
   )
 }
@@ -208,6 +232,12 @@ const styles = StyleSheet.create({
   greeting: { fontFamily: font.displayBold, fontSize: 30, color: colors.ink, letterSpacing: -0.5 },
   sub: { fontFamily: font.body, fontSize: 14, color: colors.slate, marginTop: 2 },
   avatarBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  tourBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: colors.snow + '99', borderWidth: 1, borderColor: colors.silver + '88',
+  },
+  tourPressed: { opacity: 0.7, transform: [{ scale: 0.94 }] },
   modeRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.lg },
   modeDot: { width: 8, height: 8, borderRadius: 4 },
   modeMock: { backgroundColor: colors.amber },

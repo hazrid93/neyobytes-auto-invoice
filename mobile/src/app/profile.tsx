@@ -47,17 +47,17 @@ export default function ProfileScreen() {
     {
       id: 'profile', targetRef: headerRef, badge: 'Profile',
       title: 'Your supplier details',
-      description: 'These details go on every e-invoice you submit to LHDN. Fill them in once.',
+      description: 'These details go on every e-invoice you submit to LHDN. Fill them in once and they’re reused on every submission.',
     },
     {
       id: 'form', targetRef: formRef,
       title: 'Required fields',
-      description: 'Company name and TIN are mandatory — submit stays disabled until both are set.',
+      description: 'Company name and TIN are mandatory — submit stays disabled until both are set. Add your SST/MSIC too for faster, complete filings.',
     },
     {
       id: 'save', targetRef: saveRef,
       title: 'Save',
-      description: 'Tap to save. Your profile is used on the next submission.',
+      description: 'Tap to save. Your profile is then used automatically on the next submission — no need to re-enter it.',
     },
   ]
 

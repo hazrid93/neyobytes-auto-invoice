@@ -22,9 +22,12 @@ interface Props {
   style?: StyleProp<ViewStyle>
   /** Force the button to render even with zero steps (renders nothing if omitted). */
   size?: number
+  /** Fired when the user finishes (Done) or skips the tour. For first-run
+   *  tracking — optional; the button opens/closes itself regardless. */
+  onComplete?: () => void
 }
 
-export function TourButton({ steps, style, size = 20 }: Props) {
+export function TourButton({ steps, style, size = 20, onComplete }: Props) {
   const [open, setOpen] = useState(false)
   if (!steps.length) return null
   return (
@@ -38,7 +41,12 @@ export function TourButton({ steps, style, size = 20 }: Props) {
       >
         <Ionicons name="help-outline" size={size} color={colors.azure} />
       </Pressable>
-      <CoachmarkTour steps={steps} open={open} onClose={() => setOpen(false)} />
+      <CoachmarkTour
+        steps={steps}
+        open={open}
+        onClose={() => setOpen(false)}
+        onComplete={onComplete}
+      />
     </>
   )
 }

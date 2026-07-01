@@ -50,17 +50,17 @@ export default function AppointIntermediaryScreen() {
     {
       id: 'appoint', targetRef: headerRef, badge: 'Intermediary',
       title: 'Appoint us once',
-      description: 'In intermediary mode you add our company in your MyInvois portal. We then submit e-invoices on your behalf.',
+      description: 'In intermediary mode you add our company in your MyInvois portal once. We then submit e-invoices on your behalf — no ERP key for you to manage.',
     },
     {
       id: 'tin', targetRef: tinRef,
       title: 'Our company TIN',
-      description: 'Copy this TIN and add it as your intermediary in the portal. Grant View + Submit permissions.',
+      description: 'Copy this TIN and add it as your intermediary in the portal. Grant View + Submit permissions so we can file on your behalf.',
     },
     {
       id: 'steps', targetRef: stepsRef,
       title: 'Follow the steps',
-      description: 'Open the portal, sign in, and add us. On mobile you can also try the beta auto-appoint.',
+      description: 'Open the portal, sign in, and add us using the steps below. On mobile you can also try the beta auto-appoint, which does it for you.',
     },
   ]
 

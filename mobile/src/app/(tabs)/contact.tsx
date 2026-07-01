@@ -24,12 +24,12 @@ export default function ContactScreen() {
     {
       id: 'contact', targetRef: headerRef, badge: 'Contact',
       title: 'Three ways to reach us',
-      description: 'Email, phone, or WhatsApp — pick whichever suits you. Each card opens the right app.',
+      description: 'Email, phone, or WhatsApp — pick whichever suits you. Each card opens the right app so you can reach us in one tap.',
     },
     {
       id: 'hours', targetRef: hoursRef,
       title: 'Response times',
-      description: 'Expect a reply within one business day; urgent submission issues are prioritized.',
+      description: 'Expect a reply within one business day. Urgent LHDN submission issues jump the queue — mention “submission blocked” in your message.',
     },
   ]
   return (

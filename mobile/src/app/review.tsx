@@ -45,12 +45,12 @@ export default function ReviewScreen() {
     {
       id: 'review', targetRef: headerRef, badge: 'Review',
       title: 'Check the extracted draft',
-      description: 'The model filled these fields from your photo. Scroll through seller, buyer, items, and totals — confirm they’re right.',
+      description: 'This is step 2. The model filled these fields from your photo — seller, buyer, items, and totals. Scroll through and confirm they’re right before submitting.',
     },
     {
       id: 'actions', targetRef: actionsRef,
       title: 'Edit, delete, or submit',
-      description: 'Tap Edit to fix a field, Delete to discard the draft (you’ll get a confirm popup), or Submit to send it to LHDN.',
+      description: 'Tap Edit to fix any field, Delete to discard the draft (you’ll get a confirm popup), or Submit to move to step 3 and send it to LHDN.',
     },
   ]
 

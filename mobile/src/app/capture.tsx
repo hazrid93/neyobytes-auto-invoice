@@ -29,17 +29,18 @@ export default function CaptureScreen() {
     {
       id: 'intro', targetRef: headerRef, badge: 'Capture',
       title: 'Turn a photo into a draft',
-      description: 'Photograph a paper receipt or invoice. The model OCRs it into a draft e-invoice you can review.',
+      description: 'This is step 1 of the pipeline. Photograph a paper receipt or invoice and the model reads it into a draft e-invoice — no manual typing.',
     },
     {
       id: 'camera', targetRef: cameraRef,
+      badge: 'Tip',
       title: 'Take a photo',
-      description: 'Open the camera and snap the invoice in good light — fill the frame with the document.',
+      description: 'Open the camera and snap the invoice in good light — fill the frame with the document for the most accurate OCR.',
     },
     {
       id: 'library', targetRef: libraryRef,
       title: 'Or pick an image',
-      description: 'Already have a photo? Choose it from your library instead.',
+      description: 'Already photographed it? Choose the photo from your library instead. Either way, you land on the Review screen next to check the draft.',
     },
   ]
 

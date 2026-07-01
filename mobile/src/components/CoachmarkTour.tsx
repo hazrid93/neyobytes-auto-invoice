@@ -48,6 +48,9 @@ interface Props {
   open: boolean
   onClose: () => void
   startIndex?: number
+  /** Fired once when the user reaches the last step's Done (or via Skip).
+   *  Use to mark a first-run tour as seen. */
+  onComplete?: () => void
 }
 
 type Placement = 'top' | 'bottom' | 'left' | 'right'
@@ -62,7 +65,7 @@ function clamp(v: number, lo: number, hi: number) {
   return Math.min(Math.max(v, lo), hi)
 }
 
-export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
+export function CoachmarkTour({ steps, open, onClose, startIndex = 0, onComplete }: Props) {
   const win = useWindowDimensions()
   const [index, setIndex] = useState(startIndex)
   const [spot, setSpot] = useState<Rect | null>(null)
@@ -201,6 +204,13 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
   }, [spot, bubbleH, win.width, win.height, step])
 
   const atEnd = index >= steps.length - 1
+  // Close + signal completion (so a first-run hook can mark the tour seen).
+  // Reaching Done OR pressing Skip both count — we never nag again; the
+  // `?` button on every screen always replays on demand.
+  const finish = useCallback(() => {
+    onComplete?.()
+    onClose()
+  }, [onComplete, onClose])
   const bubbleW = Math.min(320, win.width - VIEWPORT_PAD * 2)
   // Centered fallback when no measurable target.
   const centered = !spot && bubbleH > 0
@@ -224,27 +234,27 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
       transparent
       visible={open}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={finish}
       statusBarTranslucent
     >
       <View style={styles.layer}>
         {/* Spotlight overlay — 4 dark strips around the target + a border frame. */}
         {spot ? (
           <>
-            <Strip onPress={onClose} style={{ left: 0, top: 0, width: win.width, height: spot.y }} />
-            <Strip onPress={onClose} style={{ left: 0, top: spot.y, width: spot.x, height: spot.height }} />
+            <Strip onPress={finish} style={{ left: 0, top: 0, width: win.width, height: spot.y }} />
+            <Strip onPress={finish} style={{ left: 0, top: spot.y, width: spot.x, height: spot.height }} />
             <Strip
-              onPress={onClose}
+              onPress={finish}
               style={{ left: spot.x + spot.width, top: spot.y, width: win.width - (spot.x + spot.width), height: spot.height }}
             />
             <Strip
-              onPress={onClose}
+              onPress={finish}
               style={{ left: 0, top: spot.y + spot.height, width: win.width, height: win.height - (spot.y + spot.height) }}
             />
             <View style={[styles.frame, { left: spot.x, top: spot.y, width: spot.width, height: spot.height }]} />
           </>
         ) : (
-          <Strip onPress={onClose} style={{ left: 0, top: 0, width: win.width, height: win.height }} />
+          <Strip onPress={finish} style={{ left: 0, top: 0, width: win.width, height: win.height }} />
         )}
 
         {/* Bubble */}
@@ -260,13 +270,27 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
               {step?.badge ? <Text style={styles.badge}>{step.badge}</Text> : null}
               <Text style={styles.title}>{step?.title ?? ''}</Text>
               <Text style={styles.desc}>{step?.description ?? ''}</Text>
+              {/* On the last step, tell the user the tour is replayable so they
+                  don't feel rushed and know how to find it again. */}
+              {atEnd ? (
+                <Text style={styles.replayHint}>
+                  Tip: tap the ? on any screen to replay this tour.
+                </Text>
+              ) : null}
             </View>
-            <Pressable onPress={onClose} hitSlop={8} style={styles.xBtn}>
+            <Pressable onPress={finish} hitSlop={8} style={styles.xBtn}>
               <Ionicons name="close" size={16} color={colors.slate} />
             </Pressable>
           </View>
 
           <View style={styles.footer}>
+            <Pressable
+              onPress={finish}
+              hitSlop={6}
+              style={({ pressed }) => [styles.skipBtn, pressed && styles.pressed]}
+            >
+              <Text style={styles.skipText}>Skip tour</Text>
+            </Pressable>
             <Text style={styles.stepCount}>
               {Math.min(index + 1, steps.length)} / {steps.length}
             </Text>
@@ -282,7 +306,7 @@ export function CoachmarkTour({ steps, open, onClose, startIndex = 0 }: Props) {
               {atEnd ? (
                 <Pressable
                   style={({ pressed }) => [styles.nextBtn, styles.doneBtn, pressed && styles.pressed]}
-                  onPress={onClose}
+                  onPress={finish}
                 >
                   <Text style={styles.nextText}>Done</Text>
                   <Ionicons name="checkmark" size={15} color={colors.snow} style={{ marginLeft: 4 }} />
@@ -361,18 +385,26 @@ const styles = StyleSheet.create({
   },
   title: { fontFamily: font.displayBold, fontSize: 17, color: colors.ink, letterSpacing: -0.2 },
   desc: { fontFamily: font.body, fontSize: 13.5, color: colors.slate, lineHeight: 20, marginTop: 4 },
+  replayHint: {
+    fontFamily: font.body,
+    fontSize: 12,
+    color: colors.silver,
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
   xBtn: { padding: 4, marginTop: -2 },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginTop: space.lg,
     paddingTop: space.md,
     borderTopWidth: 1,
     borderTopColor: colors.silver + '55',
   },
-  stepCount: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate },
-  footBtns: { flexDirection: 'row', gap: space.sm },
+  skipBtn: { paddingVertical: 6, paddingRight: space.md },
+  skipText: { fontFamily: font.bodyMedium, fontSize: 13, color: colors.slate },
+  stepCount: { fontFamily: font.bodyMedium, fontSize: 12, color: colors.slate, marginHorizontal: 'auto' },
+  footBtns: { flexDirection: 'row', gap: space.sm, marginLeft: 'auto' },
   backBtn: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 10, borderRadius: radius.md },
   backText: { fontFamily: font.bodyMedium, fontSize: 14, color: colors.azure, marginLeft: 2 },
   backTextDisabled: { color: colors.silver },

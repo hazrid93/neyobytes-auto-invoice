@@ -50,12 +50,12 @@ export default function FaqScreen() {
     {
       id: 'faq', targetRef: headerRef, badge: 'FAQ',
       title: 'Common questions',
-      description: 'Tap any question to expand its answer. Everything here is about e-invoicing with auto-invoice.',
+      description: 'Tap any question to expand its answer. These cover e-invoicing with auto-invoice — how captures, drafts, and LHDN submission work.',
     },
     {
       id: 'tip', targetRef: tipRef,
       title: 'Still stuck?',
-      description: 'If your question isn’t here, the Contact tab has email, phone, and WhatsApp.',
+      description: 'If your question isn’t answered here, the Contact tab has email, phone, and WhatsApp — we prioritise urgent submission issues.',
     },
   ]
   return (
