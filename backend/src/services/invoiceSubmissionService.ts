@@ -25,11 +25,14 @@ import {
   isMock,
   submitDocument,
   getDocumentDetails,
+  getSubmission,
+  buildValidationLink,
   validateTin,
   type SubmitDocumentResult,
   type TinValidationResult,
 } from '../lib/myinvois'
 import { buildUblJson } from '../lib/ublJson'
+import { log } from '../lib/logger'
 import {
   transformDocument,
   documentDigest,
@@ -76,15 +79,55 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
   const documentJson = buildUblJson({
     invoiceNumber,
     issueDate,
+    issueTime: inv.issueTime ?? null,
     dueDate: inv.dueDate,
     currency: inv.currency,
-    supplier: { tin: supplier.tin, brn: supplier.brn ?? null, name: supplierName, email: supplier.email ?? null },
+    invoiceType: inv.invoiceType ?? '01',
+    supplier: {
+      tin: supplier.tin,
+      brn: supplier.brn ?? null,
+      sstNumber: supplier.sstNumber ?? null,
+      ttxNumber: supplier.ttxNumber ?? null,
+      msicCode: supplier.msicCode ?? null,
+      msicDescription: supplier.msicDescription ?? null,
+      name: supplierName,
+      email: supplier.email ?? null,
+      phone: supplier.contactNumber ?? null,
+      address:
+        supplier.addressLine1 || supplier.city
+          ? {
+              line1: supplier.addressLine1 ?? null,
+              line2: supplier.addressLine2 ?? null,
+              line3: supplier.addressLine3 ?? null,
+              city: supplier.city ?? null,
+              postalZone: supplier.postalZone ?? null,
+              stateCode: supplier.stateCode ?? null,
+              country: 'MYS',
+            }
+          : null,
+    },
     customer: {
       tin: customer.tin,
       brn: customer.brn ?? null,
+      brnScheme: customer.brnScheme ?? 'BRN',
+      sstNumber: customer.sstNumber ?? null,
       name: customerName,
       email: customer.email ?? null,
-      address: customer.address ?? null,
+      phone: customer.phone ?? customer.contactNumber ?? null,
+      address:
+        customer.addressLine1 || customer.city || customer.address
+          ? customer.addressLine1 || customer.city
+            ? {
+                line1: customer.addressLine1 ?? null,
+                line2: customer.addressLine2 ?? null,
+                line3: customer.addressLine3 ?? null,
+                city: customer.city ?? null,
+                postalZone: customer.postalZone ?? null,
+                stateCode: customer.stateCode ?? null,
+                country: 'MYS',
+              }
+            : customer.address ?? null
+          : null,
     },
     items: items.map((it) => ({
       description: it.description,
@@ -92,6 +135,9 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
       unitPrice: Number(it.unitPrice),
       taxRate: Number(it.taxRate),
     })),
+    paymentMeansCode: inv.paymentMeansCode ?? null,
+    paymentAccount: inv.paymentAccount ?? null,
+    paymentTerms: inv.dueDate ? `Due ${inv.dueDate}` : null,
     subtotal: Number(inv.subtotal),
     taxTotal: Number(inv.taxTotal),
     total: Number(inv.total),
@@ -180,9 +226,33 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
     status: accepted ? 'accepted' : 'rejected',
   })
 
-  // ── 6. Update invoice status + LHDN doc id on acceptance ──
+  // ── 6. On acceptance, fetch the longId via Get Submission (06) and persist
+  // the audit-repository fields the flow requires: validation UUID (the doc
+  // uuid), longId (the human-readable Document ID), and the QR validation
+  // link ({envbaseurl}/{uuid}/share/{longId}). The submit response itself does
+  // NOT contain the longId — it only comes back from Get Submission for valid
+  // documents. Best-effort: a Get-Submission failure must not undo a successful
+  // submit; we log + still mark submitted with whatever ids we have.
   if (accepted) {
-    await markInvoiceSubmitted(invoiceId, docUuid)
+    let longId: string | null = null
+    let qrUrl: string | null = null
+    try {
+      const sub = await getSubmission(result.submissionUid, userId)
+      const doc = sub.documents.find((d) => d.uuid === docUuid) ?? sub.documents[0]
+      longId = doc?.longId ?? null
+      qrUrl = buildValidationLink(docUuid, longId)
+    } catch (e) {
+      log.warn('submit', 'get-submission failed (submit still accepted)', {
+        invoiceId, submissionUid: result.submissionUid, err: String((e as Error)?.message ?? e).slice(0, 200),
+      })
+      // QR/longId stay null; the audit row + submit result are still correct.
+    }
+    await markInvoiceSubmitted({
+      invoiceId,
+      validationUuid: docUuid,
+      longId,
+      qrUrl,
+    })
   }
 
   return {

@@ -23,6 +23,20 @@ export const profiles = pgTable('profiles', {
   fullName: text('full_name'),
   companyName: text('company_name'),
   tin: text('tin'),
+  // Supplier identity fields required by the MyInvois Core Fields Validator
+  // (mirrors migration 0004_einvoice_fields.sql). 'NA' convention where absent.
+  brn: text('brn'), // Business Registration Number (SSM) — UBL PartyIdentification schemeID=BRN
+  sstNumber: text('sst_number'), // 'NA' if not SST-registered
+  ttxNumber: text('ttx_number'), // 'NA' if not tourism-tax-registered
+  msicCode: text('msic_code'), // 5-digit Malaysia Standard Industrial Classification
+  msicDescription: text('msic_description'), // business activity (IndustryClassificationCode/@name)
+  contactNumber: text('contact_number'), // E.164 telephone
+  addressLine1: text('address_line1'), // PostalAddress AddressLine[0]
+  addressLine2: text('address_line2'),
+  addressLine3: text('address_line3'),
+  city: text('city'), // PostalAddress CityName
+  postalZone: text('postal_zone'),
+  stateCode: text('state_code'), // 01-17 (17 = Not Applicable)
   // Per-user LHDN MyInvois ERP credentials (Login as Taxpayer System). The
   // taxpayer generates this pair on the MyInvois portal; the secret half is
   // AES-256-GCM encrypted at rest (see lib/crypto.ts). Mirrors migration
@@ -46,6 +60,17 @@ export const customers = pgTable(
     email: text('email'),
     phone: text('phone'),
     address: text('address'),
+    // Buyer identity fields required by the MyInvois Core Fields Validator
+    // (mirrors migration 0004_einvoice_fields.sql).
+    brn: text('brn'), // BRN/NRIC/PASSPORT/ARMY
+    sstNumber: text('sst_number'), // 'NA' if not SST-registered
+    contactNumber: text('contact_number'), // E.164; 'NA' for consolidated
+    addressLine1: text('address_line1'),
+    addressLine2: text('address_line2'),
+    addressLine3: text('address_line3'),
+    city: text('city'),
+    postalZone: text('postal_zone'),
+    stateCode: text('state_code'), // 01-17
     tinValidatedAt: timestamp('tin_validated_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -71,6 +96,13 @@ export const invoices = pgTable(
     kind: text('kind').notNull().default('sales'),
     rawImagePath: text('raw_image_path'),
     extractedData: jsonb('extracted_data'),
+    // Submission metadata (mirrors migration 0004). longId is the human-readable
+    // Document ID from the Get Submission API; uuid is the validation UUID.
+    longId: text('long_id'),
+    invoiceType: text('invoice_type').notNull().default('01'), // 01-04, 11-14
+    issueTime: text('issue_time'), // UTC HH:MM:SSZ
+    paymentMeansCode: text('payment_means_code'), // 01-08
+    paymentAccount: text('payment_account'), // supplier bank account no
     myinvoisDocId: text('myinvois_doc_id'),
     validationUuid: uuid('validation_uuid'),
     qrUrl: text('qr_url'),

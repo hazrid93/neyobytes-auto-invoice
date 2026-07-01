@@ -28,6 +28,18 @@ export async function getProfile(userId: string): Promise<SafeProfile | undefine
         fullName: profilesTable.fullName,
         companyName: profilesTable.companyName,
         tin: profilesTable.tin,
+        brn: profilesTable.brn,
+        sstNumber: profilesTable.sstNumber,
+        ttxNumber: profilesTable.ttxNumber,
+        msicCode: profilesTable.msicCode,
+        msicDescription: profilesTable.msicDescription,
+        contactNumber: profilesTable.contactNumber,
+        addressLine1: profilesTable.addressLine1,
+        addressLine2: profilesTable.addressLine2,
+        addressLine3: profilesTable.addressLine3,
+        city: profilesTable.city,
+        postalZone: profilesTable.postalZone,
+        stateCode: profilesTable.stateCode,
         myinvoisClientId: profilesTable.myinvoisClientId,
         myinvoisConnectedAt: profilesTable.myinvoisConnectedAt,
         createdAt: profilesTable.createdAt,
@@ -79,6 +91,18 @@ export type ProfilePatch = {
   fullName?: string
   companyName?: string | null
   tin?: string | null
+  brn?: string | null
+  sstNumber?: string | null
+  ttxNumber?: string | null
+  msicCode?: string | null
+  msicDescription?: string | null
+  contactNumber?: string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  addressLine3?: string | null
+  city?: string | null
+  postalZone?: string | null
+  stateCode?: string | null
 }
 
 export async function updateProfile(
@@ -90,6 +114,18 @@ export async function updateProfile(
   if (patch.fullName !== undefined) set.fullName = patch.fullName
   if (patch.companyName !== undefined) set.companyName = patch.companyName
   if (patch.tin !== undefined) set.tin = patch.tin
+  if (patch.brn !== undefined) set.brn = patch.brn
+  if (patch.sstNumber !== undefined) set.sstNumber = patch.sstNumber
+  if (patch.ttxNumber !== undefined) set.ttxNumber = patch.ttxNumber
+  if (patch.msicCode !== undefined) set.msicCode = patch.msicCode
+  if (patch.msicDescription !== undefined) set.msicDescription = patch.msicDescription
+  if (patch.contactNumber !== undefined) set.contactNumber = patch.contactNumber
+  if (patch.addressLine1 !== undefined) set.addressLine1 = patch.addressLine1
+  if (patch.addressLine2 !== undefined) set.addressLine2 = patch.addressLine2
+  if (patch.addressLine3 !== undefined) set.addressLine3 = patch.addressLine3
+  if (patch.city !== undefined) set.city = patch.city
+  if (patch.postalZone !== undefined) set.postalZone = patch.postalZone
+  if (patch.stateCode !== undefined) set.stateCode = patch.stateCode
   try {
     const [row] = await q
       .update(profilesTable)
@@ -101,6 +137,18 @@ export async function updateProfile(
         fullName: profilesTable.fullName,
         companyName: profilesTable.companyName,
         tin: profilesTable.tin,
+        brn: profilesTable.brn,
+        sstNumber: profilesTable.sstNumber,
+        ttxNumber: profilesTable.ttxNumber,
+        msicCode: profilesTable.msicCode,
+        msicDescription: profilesTable.msicDescription,
+        contactNumber: profilesTable.contactNumber,
+        addressLine1: profilesTable.addressLine1,
+        addressLine2: profilesTable.addressLine2,
+        addressLine3: profilesTable.addressLine3,
+        city: profilesTable.city,
+        postalZone: profilesTable.postalZone,
+        stateCode: profilesTable.stateCode,
         myinvoisClientId: profilesTable.myinvoisClientId,
         myinvoisConnectedAt: profilesTable.myinvoisConnectedAt,
         createdAt: profilesTable.createdAt,

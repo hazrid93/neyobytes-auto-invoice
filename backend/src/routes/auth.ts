@@ -58,8 +58,23 @@ auth.patch('/me', requireAuth, async (c) => {
   const parsed = z
     .object({
       fullName: z.string().min(1).max(200).optional(),
-      companyName: z.string().min(1).max(200).nullable().optional(),
-      tin: z.string().min(1).max(20).nullable().optional(),
+      companyName: z.string().min(1).max(300).nullable().optional(),
+      tin: z.string().min(1).max(14).nullable().optional(),
+      // Supplier identity fields for the MyInvois Core Fields Validator.
+      // Length limits follow the LHDN FAQ field-validation table
+      // (docs/myinvois/SDK-ANALYSIS.md §5).
+      brn: z.string().max(20).nullable().optional(),
+      sstNumber: z.string().max(35).nullable().optional(),
+      ttxNumber: z.string().max(17).nullable().optional(),
+      msicCode: z.string().max(5).nullable().optional(),
+      msicDescription: z.string().max(300).nullable().optional(),
+      contactNumber: z.string().max(20).nullable().optional(),
+      addressLine1: z.string().max(150).nullable().optional(),
+      addressLine2: z.string().max(150).nullable().optional(),
+      addressLine3: z.string().max(150).nullable().optional(),
+      city: z.string().max(50).nullable().optional(),
+      postalZone: z.string().max(50).nullable().optional(),
+      stateCode: z.string().max(2).nullable().optional(),
     })
     .safeParse(await c.req.json().catch(() => ({})))
   if (!parsed.success) {

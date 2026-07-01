@@ -239,9 +239,20 @@ export async function deleteInvoice(invoiceId: string, userId: string): Promise<
 export interface SubmissionCustomer {
   tin: string | null
   brn: string | null // Business Registration Number (from extractedData.buyer.brn when no customers row)
+  brnScheme: string | null // schemeID for brn: BRN|NRIC|PASSPORT|ARMY
+  sstNumber: string | null
+  ttxNumber: string | null // buyer TTX defaults to 'NA'
   name: string | null
   email: string | null
-  address: string | null
+  phone: string | null // legacy customers.phone (single-line)
+  contactNumber: string | null // Contact/Telephone ('NA' for consolidated)
+  address: string | null // legacy single-line
+  addressLine1: string | null
+  addressLine2: string | null
+  addressLine3: string | null
+  city: string | null
+  postalZone: string | null
+  stateCode: string | null
 }
 
 export type InvoiceAggregate = {
@@ -250,10 +261,21 @@ export type InvoiceAggregate = {
   customer: SubmissionCustomer | null
   supplier: {
     tin: string | null
-    brn: string | null // profiles has no brn column yet → null (supplier emits 'NA'); follow-up: add profiles.brn + settings UI
+    brn: string | null
+    sstNumber: string | null
+    ttxNumber: string | null
+    msicCode: string | null
+    msicDescription: string | null
     companyName: string | null
     fullName: string | null
     email: string | null
+    contactNumber: string | null
+    addressLine1: string | null
+    addressLine2: string | null
+    addressLine3: string | null
+    city: string | null
+    postalZone: string | null
+    stateCode: string | null
   }
 }
 
@@ -281,16 +303,27 @@ export async function loadInvoiceForSubmission(
       const [cust] = await q
         .select({
           tin: customersTable.tin,
+          brn: customersTable.brn,
+          sstNumber: customersTable.sstNumber,
           name: customersTable.name,
           email: customersTable.email,
+          phone: customersTable.phone,
           address: customersTable.address,
+          contactNumber: customersTable.contactNumber,
+          addressLine1: customersTable.addressLine1,
+          addressLine2: customersTable.addressLine2,
+          addressLine3: customersTable.addressLine3,
+          city: customersTable.city,
+          postalZone: customersTable.postalZone,
+          stateCode: customersTable.stateCode,
         })
         .from(customersTable)
         .where(and(eq(customersTable.id, invoice.customerId), eq(customersTable.userId, userId)))
         .limit(1)
-      // customersTable has no brn column → null here (BRN only flows from
-      // extractedData.buyer.brn via customerFromExtracted for captured invoices).
-      customer = cust != null ? { ...cust, brn: null } : null
+      customer =
+        cust != null
+          ? { ...cust, brnScheme: 'BRN', ttxNumber: null }
+          : null
     }
     // Fallback: if no linked customer (or it has no TIN), use the buyer the
     // OCR stage extracted into extractedData.buyer. This is the common path —
@@ -303,21 +336,35 @@ export async function loadInvoiceForSubmission(
     const [supplierRow] = await q
       .select({
         tin: profilesTable.tin,
+        brn: profilesTable.brn,
+        sstNumber: profilesTable.sstNumber,
+        ttxNumber: profilesTable.ttxNumber,
+        msicCode: profilesTable.msicCode,
+        msicDescription: profilesTable.msicDescription,
         companyName: profilesTable.companyName,
         fullName: profilesTable.fullName,
         email: profilesTable.email,
+        contactNumber: profilesTable.contactNumber,
+        addressLine1: profilesTable.addressLine1,
+        addressLine2: profilesTable.addressLine2,
+        addressLine3: profilesTable.addressLine3,
+        city: profilesTable.city,
+        postalZone: profilesTable.postalZone,
+        stateCode: profilesTable.stateCode,
       })
       .from(profilesTable)
       .where(eq(profilesTable.id, userId))
       .limit(1)
-    // profiles currently has no brn column — the supplier's own Business
-    // Registration Number isn't stored. Pass null; ublJson falls back to 'NA'
-    // (the canonical sample's convention for absent IDs). Follow-up: add
-    // profiles.brn + a settings UI to populate it.
     const supplier =
       supplierRow != null
-        ? { ...supplierRow, brn: null as string | null }
-        : { tin: null, companyName: null, fullName: null, email: null, brn: null as string | null }
+        ? supplierRow
+        : {
+            tin: null, brn: null, sstNumber: null, ttxNumber: null,
+            msicCode: null, msicDescription: null,
+            companyName: null, fullName: null, email: null, contactNumber: null,
+            addressLine1: null, addressLine2: null, addressLine3: null,
+            city: null, postalZone: null, stateCode: null,
+          }
 
     return {
       invoice,
@@ -330,14 +377,28 @@ export async function loadInvoiceForSubmission(
   }
 }
 
-// After a successful submit, mark the invoice submitted + store the LHDN doc id.
-export async function markInvoiceSubmitted(invoiceId: string, myinvoisDocId: string | null): Promise<void> {
+// After a successful submit, mark the invoice submitted + store the LHDN doc id
+// (uuid), the human-readable longId (Document ID), the validation UUID, and
+// the QR validation link. The longId + qr_url come from the Get Submission
+// API (documentSummary[].longId); qr_url = {envbaseurl}/{uuid}/share/{longId}.
+export async function markInvoiceSubmitted(input: {
+  invoiceId: string
+  validationUuid: string | null
+  longId: string | null
+  qrUrl: string | null
+}): Promise<void> {
   const q = requireDb()
   try {
     await q
       .update(invoicesTable)
-      .set({ status: 'submitted', myinvoisDocId, updatedAt: new Date() })
-      .where(eq(invoicesTable.id, invoiceId))
+      .set({
+        status: 'submitted',
+        myinvoisDocId: input.longId,
+        validationUuid: input.validationUuid,
+        qrUrl: input.qrUrl,
+        updatedAt: new Date(),
+      })
+      .where(eq(invoicesTable.id, input.invoiceId))
   } catch (e) {
     throw classifyDbError(e, 'markInvoiceSubmitted')
   }
@@ -358,8 +419,17 @@ function customerFromExtracted(data: unknown): SubmissionCustomer | null {
     name?: unknown
     tin?: unknown
     brn?: unknown
+    brnScheme?: unknown
+    sstNumber?: unknown
     email?: unknown
+    phone?: unknown
     address?: unknown
+    addressLine1?: unknown
+    addressLine2?: unknown
+    addressLine3?: unknown
+    city?: unknown
+    postalZone?: unknown
+    stateCode?: unknown
   }
   const str = (v: unknown): string | null =>
     typeof v === 'string' && v.trim() ? v.trim() : null
@@ -369,8 +439,19 @@ function customerFromExtracted(data: unknown): SubmissionCustomer | null {
   return {
     tin,
     brn: str(b.brn),
+    brnScheme: str(b.brnScheme) ?? 'BRN',
+    sstNumber: str(b.sstNumber),
+    ttxNumber: null,
     name,
     email: str(b.email),
+    phone: str(b.phone),
+    contactNumber: str(b.phone),
     address: str(b.address),
+    addressLine1: str(b.addressLine1),
+    addressLine2: str(b.addressLine2),
+    addressLine3: str(b.addressLine3),
+    city: str(b.city),
+    postalZone: str(b.postalZone),
+    stateCode: str(b.stateCode),
   }
 }

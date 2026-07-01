@@ -330,6 +330,76 @@ export async function submitDocument(
   }
 }
 
+// ─── Get Submission (06) — fetches documentSummary incl. the longId ──────
+// The submit response (02) returns submissionUid + acceptedDocuments[{uuid,
+// invoiceCodeNumber}] but NOT the longId. The longId ("unique long temporary
+// Id that can be used to query document data anonymously, returned only for
+// valid documents") comes from Get Submission (06) in documentSummary[].longId.
+// We use it to build the validation link + QR. See docs/myinvois/SDK-ANALYSIS.md §3.
+export interface SubmissionDocumentSummary {
+  uuid: string
+  longId?: string
+  status?: string
+  internalId?: string
+  totalPayableAmount?: number
+}
+export interface SubmissionResult {
+  submissionUid: string
+  overallStatus?: string
+  documents: SubmissionDocumentSummary[]
+  raw: Record<string, unknown>
+}
+
+export async function getSubmission(
+  submissionUid: string,
+  userId: string,
+): Promise<SubmissionResult> {
+  if (isMock) {
+    const docUuid = submissionUid.replace(/^mock-submission-/, '')
+    return {
+      submissionUid,
+      overallStatus: 'valid',
+      documents: [
+        { uuid: docUuid, longId: `mock-long-id-${docUuid.slice(0, 12)}`, status: 'valid' },
+      ],
+      raw: { source: 'mock', submissionUid, overallStatus: 'valid' },
+    }
+  }
+  const token = await getToken(userId)
+  const res = await fetch(
+    `https://${host()}/api/v1.0/documentsubmissions/${encodeURIComponent(submissionUid)}`,
+    { method: 'GET', headers: { Authorization: `Bearer ${token}` } },
+  )
+  const raw = (await res.json().catch(() => ({}))) as Record<string, unknown>
+  const docs = Array.isArray(raw.documentSummary) ? raw.documentSummary : []
+  const documents: SubmissionDocumentSummary[] = docs.map((d: Record<string, unknown>) => ({
+    uuid: String(d.uuid ?? ''),
+    longId: typeof d.longId === 'string' ? d.longId : undefined,
+    status: typeof d.status === 'string' ? d.status : undefined,
+    internalId: typeof d.internalId === 'string' ? d.internalId : undefined,
+    totalPayableAmount: typeof d.totalPayableAmount === 'number' ? d.totalPayableAmount : undefined,
+  }))
+  return {
+    submissionUid: typeof raw.submissionUid === 'string' ? raw.submissionUid : submissionUid,
+    overallStatus: typeof raw.overallStatus === 'string' ? raw.overallStatus : undefined,
+    documents,
+    raw,
+  }
+}
+
+/** Build the MyInvois validation link + QR target.
+ *  Format (FAQ + Get Document): `{envbaseurl}/{uuid}/share/{longId}` where
+ *  envbaseurl is the portal base URL (prod myinvois.hasil.gov.my, sandbox
+ *  preprod.myinvois.hasil.gov.my). Returns null if either id is missing. */
+export function buildValidationLink(uuid: string | null, longId: string | null): string | null {
+  if (!uuid || !longId) return null
+  const portalBase =
+    env.MYINVOIS_ENV === 'prod'
+      ? 'https://myinvois.hasil.gov.my'
+      : 'https://preprod.myinvois.hasil.gov.my'
+  return `${portalBase}/${uuid}/share/${longId}`
+}
+
 // ─── Document details (status lookup) ────────────────────────────────────
 export interface DocumentDetailsResult {
   uuid: string
@@ -365,29 +435,62 @@ export async function getDocumentDetails(
   }
 }
 
-// ─── UBL 2.1 XML builder (simplified, schema-aligned) ────────────────────
+// ─── UBL 2.1 builder inputs (JSON variant is the live submit path) ────────
+// Field shapes mirror the MyInvois v1.1 structure (sdk.myinvois.hasil.gov.my/
+// types/invoice-v1-1) so buildUblJson emits a document that passes the Core
+// Fields Validator. See docs/myinvois/SDK-ANALYSIS.md §4. Fields absent on the
+// source data fall back to the MyInvois 'NA' convention inside buildUblJson.
+export interface PartyAddress {
+  line1?: string | null // AddressLine[0]
+  line2?: string | null // AddressLine[1]
+  line3?: string | null // AddressLine[2]
+  city?: string | null // CityName (mandatory)
+  postalZone?: string | null
+  stateCode?: string | null // 01-17 (17 = Not Applicable)
+  country?: string | null // ISO-3166-1, default MYS
+}
+
 export interface InvoiceParty {
   tin: string
-  brn?: string | null // Business Registration Number (SSM) — LHDN identifies a party by TIN AND BRN as peers
-  name: string
-  email?: string | null
-  phone?: string | null
-  address?: string | null
+  brn?: string | null // Business Registration Number (SSM/NRIC/PASSPORT/ARMY)
+  brnScheme?: string | null // schemeID for brn: BRN|NRIC|PASSPORT|ARMY (default BRN)
+  sstNumber?: string | null // 'NA' if not SST-registered
+  ttxNumber?: string | null // 'NA' if not tourism-tax-registered (supplier only)
+  name: string // PartyLegalEntity/RegistrationName
+  email?: string | null // Contact/ElectronicMail (optional)
+  phone?: string | null // Contact/Telephone (mandatory; 'NA' for consolidated buyer)
+  address?: PartyAddress | string | null // structured (preferred) or legacy single string
+  msicCode?: string | null // supplier only: IndustryClassificationCode value (5-digit)
+  msicDescription?: string | null // supplier only: IndustryClassificationCode/@name
+}
+
+export interface UblLineItem {
+  description: string
+  quantity: number
+  unitPrice: number
+  taxRate: number // percentage, e.g. 6 for 6% SST
+  taxTypeCode?: string | null // tax-type code 01-06|E; default '06' (Not Applicable)
+  unitCode?: string | null // UN/ECE Rec 20 unit code; default 'C62' (unit)
+  classification?: string | null // Item.CommodityClassification[CLASS] (3-char); default '000'
 }
 
 export interface BuildUblInput {
   invoiceNumber: string
   issueDate: string // YYYY-MM-DD
+  issueTime?: string | null // UTC HH:MM:SSZ; defaults to now at build time
   dueDate?: string | null
   currency: string // e.g. MYR
+  taxCurrency?: string | null // defaults to currency (or MYR for foreign)
+  invoiceType?: string | null // e-Invoice type code 01-04|11-14; default '01'
   supplier: InvoiceParty
   customer: InvoiceParty
-  items: Array<{
-    description: string
-    quantity: number
-    unitPrice: number
-    taxRate: number // percentage, e.g. 6 for 6% SST
-  }>
+  items: UblLineItem[]
+  // Payment means (optional; closes the bank-detail gap from flow 2).
+  paymentMeansCode?: string | null // PaymentMeansCode 01-08
+  paymentAccount?: string | null // PayeeFinancialAccount/ID (supplier bank account no)
+  paymentTerms?: string | null // PaymentTerms/Note
+  // Billing reference for credit/debit/refund notes (original invoice UUID).
+  billingReferenceUuid?: string | null
   // Computed totals; recomputed here to avoid caller math drift.
   subtotal?: number
   taxTotal?: number
@@ -453,7 +556,7 @@ export function buildUbl(input: BuildUblInput): string {
       </cac:PartyIdentification>
       <cac:PartyName><cbc:Name>${esc(input.supplier.name)}</cbc:Name></cac:PartyName>
       <cac:PostalAddress>
-        <cbc:StreetName>${esc(input.supplier.address ?? 'Malaysia')}</cbc:StreetName>
+        <cbc:StreetName>${esc(typeof input.supplier.address === 'string' ? input.supplier.address : (input.supplier.address?.line1 ?? 'Malaysia'))}</cbc:StreetName>
         <cac:Country><cbc:IdentificationCode>MYS</cbc:IdentificationCode></cac:Country>
       </cac:PostalAddress>
       <cac:PartyTaxScheme>
@@ -469,7 +572,7 @@ export function buildUbl(input: BuildUblInput): string {
       </cac:PartyIdentification>
       <cac:PartyName><cbc:Name>${esc(input.customer.name)}</cbc:Name></cac:PartyName>
       <cac:PostalAddress>
-        <cbc:StreetName>${esc(input.customer.address ?? 'Malaysia')}</cbc:StreetName>
+        <cbc:StreetName>${esc(typeof input.customer.address === 'string' ? input.customer.address : (input.customer.address?.line1 ?? 'Malaysia'))}</cbc:StreetName>
         <cac:Country><cbc:IdentificationCode>MYS</cbc:IdentificationCode></cac:Country>
       </cac:PostalAddress>
     </cac:Party>
