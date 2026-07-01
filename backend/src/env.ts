@@ -93,9 +93,15 @@ const schema = z.object({
   // a real round-trip (see docs/myinvois/RESEARCH.md §6 + TESTING-FLOWS.md §4b):
   //   docdigest  → Sign(SHA256(transformed document))  [prose-literal]
   //   signedinfo → Sign(c14n(SignedInfo))              [standard XAdES]
-  // If unset, the submit service throws SigningTargetUnverifiedError rather
+  // If unset/empty, the submit service throws SigningTargetUnverifiedError rather
   // than ship a guessed signature. Set it ONLY after a round-trip confirms.
-  MYINVOIS_SIGN_TARGET: z.enum(['docdigest', 'signedinfo']).optional(),
+  // The preprocess coerces the empty string (dotenv emits `KEY=  # comment` →
+  // "") to undefined so the `.optional()` enum accepts it — otherwise zod
+  // rejects "" as an invalid enum value and the whole app fails to boot.
+  MYINVOIS_SIGN_TARGET: z.preprocess(
+    (v) => (v === '' ? undefined : v),
+    z.enum(['docdigest', 'signedinfo']).optional(),
+  ),
   // Key used to AES-256-GCM-encrypt each user's stored LHDN client_secret at
   // rest (lib/crypto.ts). MUST be stable across restarts or stored secrets
   // become undecryptable. Required for sandbox/prod (where per-user creds live

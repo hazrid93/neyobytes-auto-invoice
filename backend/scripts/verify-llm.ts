@@ -1,11 +1,17 @@
 // Verifies the LLM client end-to-end against the live litellm gateway:
 //   1. a plain text completion (proves auth + endpoint + retry wrapper)
-//   2. a TRUE OCR extraction: invoice text rendered into PNG pixels only,
-//      the prompt carries NO field data — the model must read the image.
+//   2. the REAL two-stage OCR pipeline production uses:
+//        Stage A (vision): image pixels  → plain-text field transcription
+//        Stage B (text):   transcription  → strict JSON (zod-validated)
+//      The invoice data lives ONLY in the rendered pixels — the prompt carries
+//      NO field data — so the model must read the image. Driving both stages
+//      verifies the actual `messagesForTranscription` → `messagesForStructuring`
+//      path the invoiceService runs on every upload.
 // Run:  npm run llm:verify   (uses .env.local/.env.stg/.env.prod via load-env; APP_ENV picks which)
 import '../src/load-env'
 import { chat } from '../src/lib/llm'
-import { ExtractedInvoiceSchema, EXTRACTION_SYSTEM_PROMPT } from '../src/lib/extraction'
+import { messagesForTranscription, messagesForStructuring } from '../src/lib/extraction'
+import { parseExtracted } from '../src/lib/extract-parse'
 import { env } from '../src/env'
 import { buildInvoiceImage } from './text-png'
 import { join } from 'node:path'
@@ -42,11 +48,13 @@ async function main() {
     bad('text completion', e)
   }
 
-  console.log('\n2) OCR extraction (must read fields from image pixels, not prompt):')
+  console.log('\n2) Two-stage OCR extraction (must read fields from image pixels, not prompt):')
   // The invoice data lives ONLY in the rendered pixels. The user message contains
-  // no invoice fields — just the extraction instruction — so this is a true test
-  // of the vision path. If kimi-k2.7's image handling is broken, extraction
-  // returns garbage/missing fields and the schema/key-field checks fail.
+  // no invoice fields — just the transcription instruction — so this is a true test
+  // of the vision path. If kimi-k2.7's image handling is broken, Stage A returns
+  // garbage/missing fields and the structuring checks fail. This drives the SAME
+  // two-stage pipeline production uses (messagesForTranscription →
+  // messagesForStructuring), not a single-shot image→JSON path.
   const pngPath = join(process.cwd(), 'scripts', 'verify-invoice.png')
   const pngDataUrl = buildInvoiceImage(pngPath, [
     'ABC SDN BHD',
@@ -62,30 +70,45 @@ async function main() {
   ])
   ok(`invoice image rendered to PNG pixels (${Math.round(pngDataUrl.length * 0.75)} bytes)`)
 
+  const deadline = AbortSignal.timeout(60_000)
+
+  // Stage A — vision transcription (image → plain-text field lines).
+  let ocrText = ''
   try {
-    const r = await chat({
-      messages: [
-        { role: 'system', content: EXTRACTION_SYSTEM_PROMPT },
-        {
-          role: 'user',
-          // Deliberately NO invoice text here — the model must read the image.
-          content: [
-            { type: 'text', text: 'Extract this invoice into the JSON schema.' },
-            { type: 'image_url', image_url: { url: pngDataUrl } },
-          ],
-        },
-      ],
-      model: env.LLM_VISION_MODEL,
+    const a = await chat({
+      messages: messagesForTranscription(pngDataUrl),
       requireVision: true,
-      structured: true, // disables reasoning (chain-of-thought would break JSON.parse)
+      reasoningEffort: 'low', // transcription is a literal copy task, not reasoning
+      temperature: 0,
+      maxTokens: 2048,
+      signal: deadline,
+    })
+    ocrText = a.content
+    ok(`stage A vision transcription (${a.model}, ${ocrText.length} chars)`)
+    console.log(`     ocr preview: ${ocrText.slice(0, 120).replace(/\n/g, ' | ')}`)
+  } catch (e) {
+    bad('stage A vision transcription', e)
+    console.log(`\n────────────────────────────────────────\n  PASS=${passed}  FAIL=${failed}\n────────────────────────────────────────`)
+    process.exit(1)
+  }
+
+  // Stage B — text structuring (OCR text → strict JSON).
+  try {
+    const b = await chat({
+      messages: messagesForStructuring(ocrText),
+      model: env.LLM_TEXT_MODEL,
+      fallbackModel: env.LLM_VISION_MODEL, // kimi-k2.7 handles text fine as a fallback
+      requireVision: false,
+      reasoningEffort: 'high', // currency/date normalization + total reconciliation benefit from CoT
+      structured: true, // disables reasoning_content fallback (would break JSON.parse)
       temperature: 0,
       maxTokens: 4096,
+      signal: deadline,
     })
-    ok(`vision model responded (${r.model}, ${r.content.length} chars)`)
+    ok(`stage B text structuring (${b.model}, ${b.content.length} chars)`)
 
     // The route's parse helper — same code path production uses.
-    const { parseExtracted } = await import('../src/lib/extract-parse')
-    const ext = parseExtracted(r.content)
+    const ext = parseExtracted(b.content)
     ok(`parsed + zod-validated (items=${ext.items.length})`)
 
     console.log(
@@ -99,6 +122,7 @@ async function main() {
     const hasTin = /C1234567890/.test(String(ext.seller?.tin ?? ''))
     const hasItem = /consulting/i.test(ext.items[0]?.description ?? '')
     const hasTotal = Number(ext.total ?? 0) === 1080 || Number(ext.total ?? 0) === 1080.0
+
     const ocrFields = [hasNum, hasSeller, hasTin, hasItem, hasTotal].filter(Boolean).length
     if (ocrFields >= 4) {
       ok(`OCR read ${ocrFields}/5 fields from pixels (num,seller,tin,item,total)`)
@@ -109,7 +133,7 @@ async function main() {
       )
     }
   } catch (e) {
-    bad('OCR extraction', e)
+    bad('stage B structuring', e)
   }
 
   console.log(`\n────────────────────────────────────────`)
