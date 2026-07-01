@@ -44,8 +44,24 @@ export type InvoiceItem = z.infer<typeof InvoiceItemSchema>
  * the submit service reads the blob through, so a field-name drift (or a
  * missing code) coerces to a safe default instead of silently dropping the
  * code or breaking the build. Mirrors UblLineItem's optional code fields.
+ *
+ * Numeric fields use z.coerce.number() (NOT z.number()) because the blob is
+ * untyped JSONB — an older draft or a manual edit could carry a stringified
+ * value ("2"). A plain z.number() would make safeParse FAIL and the submit
+ * service's filter(success) would DROP the whole line (nuking its codes and
+ * risking a flip to the empty tableItems fallback). Coercion degrades ONE
+ * field instead: "2"→2, ""→0, and a non-numeric "abc"→NaN, which the submit
+ * service's Number() map then turns into a safe default (0 / 1 for qty).
  */
-export const PersistedItemSchema = InvoiceItemSchema.extend({
+const numOrZero = z.coerce.number().catch(0)
+export const PersistedItemSchema = z.object({
+  description: z.string().default(''),
+  quantity: numOrZero.default(1),
+  unit_price: numOrZero.default(0),
+  discount: z.coerce.number().nullable().optional(),
+  tax_rate: numOrZero.default(0),
+  payment_method: z.string().nullable().optional(),
+  bank_detail: z.string().nullable().optional(),
   tax_type_code: z.string().nullable().optional(), // 01-06|E; default '06'
   unit_code: z.string().nullable().optional(), // UN/ECE Rec 20; default 'C62'
   classification: z.string().nullable().optional(), // CLASS list (3-char); default '000'
