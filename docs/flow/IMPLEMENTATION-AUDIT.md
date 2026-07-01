@@ -73,7 +73,7 @@ You receive a supplier invoice → photograph → AI extracts → store → fina
 | P4 | Process info into data JSON/XML (AI model 2) | ✅ | Stage B — text structuring (`STRUCTURING_SYSTEM_PROMPT`). |
 | P5 | APP store data output | ✅ | `createDraftFromExtraction` → `invoices` row (`kind: 'purchase'`). |
 | P6 | → Financial Account | ❌ | No accounting/ERP integration. (Likely out of scope, but the diagram draws the arrow.) |
-| P7 | OUTPUT JSON — seller Document ID / UUID / QR verification | ⚠️ | `extractedData.qr_verification` is now populated by Stage B (explicit extraction guidance for the printed verification reference near the "Scan to Verify" QR) and surfaced + editable on the Review screen (commit `c693dba`). A true QR-**image** decode (camera → QR reader → link) is a separate native-module step, not the LLM pipeline. |
+| P7 | OUTPUT JSON — seller Document ID / UUID / QR verification | ✅ | `extractedData.qr_verification` is now populated end-to-end. **Primary source:** `lib/qrDecode.ts` — a pure-JS QR-image decoder (jsQR + pngjs + jpeg-js, no native modules) wired into `extractInvoice` step 3, decodes the captured photo's QR matrix to the LHDN validation link and overrides `qr_verification` (commit `b7483b0`, 6/6 unit tests in `verify-qr-decode.ts`). **Fallback:** Stage B's text rule captures a printed verification reference near the "Scan to Verify" QR when no scannable graphic is in frame (commit `c693dba`). Surfaced + editable on the Review screen. |
 | P8 | OUTPUT JSON — items include Payment method + Bank detail | ✅ | `payment_method` (PaymentMeansCode) + `payment_account` (PayeeFinancialAccount) both in the review form + UBL builder (`6a9534a`). |
 
 ---
@@ -108,43 +108,45 @@ The **core submission pipeline** is real and end-to-end on sandbox:
 
 ## What's MISSING (the real gaps, excluding signing + prod send)
 
+> **Superseded — see "Update log (post-audit)" below + the flow status tables
+> above.** The original Tier 1–3 gap list below was written at audit time; every
+> Tier 1–3 item (1–9) has since been implemented and verified (persist
+> longId/uuid/qr_url, Fix & resubmit, profiles.brn, QR display, PDF/receipt
+> render, payment account, document types, customer retrieval/public route,
+> line-item codes, QR-image decode). Do NOT re-do them — check the flow tables
+> + the Update log for the current status before starting. Only the Tier 4
+> items below remain genuinely open (and they are product/out-of-scope, not
+> implementation gaps).
+
 Grouped by how much they cost to close:
 
-### Tier 1 — small, mostly-persist-the-data-we-already-have
-1. **Persist `longId` as the Document ID** — it's in the LHDN response, just discarded. Fix `markInvoiceSubmitted` to take `longId` too and store it in `myinvois_doc_id`; store the doc `uuid` in `validation_uuid`.
-2. **Populate `qr_url`** — construct the LHDN validation QR URL from the uuid/longId (format to confirm from SDK) and store it on acceptance.
-3. **Submit screen: "Fix & resubmit"** — on reject, route back to `/review?id=…` instead of just "Back to home".
-4. **`profiles.brn` column + profile/settings field** — already a documented follow-up; needed for SSM in the rendered invoice and the UBL `PartyIdentification` BRN.
+### Tier 1 — ~~small, mostly-persist-the-data-we-already-have~~ ✅ DONE
+1. **Persist `longId` as the Document ID** — ✅ `markInvoiceSubmitted` stores `longId`→`myinvois_doc_id`, `uuid`→`validation_uuid` (`6a9534a`).
+2. **Populate `qr_url`** — ✅ `buildValidationLink` persists `{base}/{uuid}/share/{longId}` on acceptance (`6a9534a`).
+3. **Submit screen: "Fix & resubmit"** — ✅ `submit.tsx` routes rejects → `/review` (`ccaead6` era).
+4. **`profiles.brn` column** — ✅ schema + UBL `PartyIdentification` BRN (`6a9534a`).
 
-### Tier 2 — feature work, clearly in the diagrams
-5. **QR code display** — render the stored `qr_url` as a scannable QR on the submit result + invoice list (flow 1 OUTPUT, flow 3).
-6. **PDF / hard-copy render** — generate a PDF of the invoice showing company/TIN/SSM, items, total, Document ID, Validation UUID, QR (flow 1 OUTPUT, flow 3).
-7. **Payment account/bank detail** — add a `bank_account`/`payment_account` field to capture (review screen + schema + UBL `PaymentMeans`/`PayeeFinancialAccount`).
-8. **Document types** — support Credit Note / Debit Note / Refund Note (`InvoiceTypeCode` 02/03/04) via an `invoiceType` selector; `buildUblJson` is currently hardcoded to `'01'`.
+### Tier 2 — ~~feature work, clearly in the diagrams~~ ✅ DONE
+5. **QR code display** — ✅ submit result + home list card (`6a9534a`, `663d28d`).
+6. **PDF / hard-copy render** — ✅ `receipt.ts` HTML + `receipt.tsx` WebView + "View receipt / PDF" (`6a9534a`).
+7. **Payment account/bank detail** — ✅ `payment_account` + UBL `PayeeFinancialAccount` (`6a9534a`).
+8. **Document types** — ✅ configurable 01-04/11-14 via Review CodePicker + `isValidEinvoiceType` (`6a9534a`).
 
-### Tier 3 — customer-side (the flow-1 right-hand loop), biggest gap
-9. **Customer retrieval** — a public/unauthenticated endpoint to look up an invoice by **Document ID** or **QR code** that reads the audit repository and renders the invoice (PDF / doc-ID / QR). No screen, no endpoint, no public route today.
+### Tier 3 — ~~customer-side (the flow-1 right-hand loop)~~ ✅ DONE
+9. **Customer retrieval** — ✅ `GET /public/invoices/:ref` + `POST /public/invoices/qr` + `findPublicInvoice` + `PublicInvoiceView` (`6a9534a`, 9/9 e2e).
 
-### Tier 4 — arguably out of scope, but drawn
-10. **B2C public-TIN mode** — flow 1 draws "Public TIN (B2C)" as a distinct input. No code distinguishes a consumer (EI/IG general TIN) from a company. May be a UI/UX distinction only; needs a product decision.
-11. **Financial Account integration** — flow 2 draws an arrow to "Financial Account". No accounting/ERP integration exists.
-
----
-
-## Recommended order to close the gaps
-
-If you want the diagrams "implemented" (minus signing + prod send) in the
-fewest changes:
-
-1. Tier 1 #1–#3 (persist longId/uuid/qr_url + resubmit routing) — 1 short session.
-2. Tier 2 #5–#6 (QR display + PDF render) — makes flow 1 OUTPUT + flow 3 real.
-3. Tier 2 #7–#8 (bank detail + doc types) — completes the data model.
-4. Tier 3 #9 (customer retrieval) — the biggest single missing piece; a new
-   public route + screen.
-5. Tier 1 #4 (`profiles.brn`) — already documented; do alongside #7.
-6. Tier 4 — product decisions, defer.
+### Tier 4 — arguably out of scope, but drawn (STILL OPEN)
+10. **B2C public-TIN mode** — flow 1 draws "Public TIN (B2C)" as a distinct input. No code distinguishes a consumer (EI/IG general TIN) from a company. May be a UI/UX distinction only; **needs a product decision**.
+11. **Financial Account integration** — flow 2 draws an arrow to "Financial Account". No accounting/ERP integration exists. **Out of scope.**
 
 ---
+
+## ~~Recommended order to close the gaps~~ (Superseded)
+
+All Tier 1–3 items above are closed (see the Update log). The only remaining
+work is the Tier 4 product decisions (B2C public TIN, ERP integration) and the
+**cert-gated** items documented in "Blocked — invoice-level AllowanceCharge /
+monetary fields" + signing below.
 
 ## Update log (post-audit)
 
@@ -160,6 +162,34 @@ fewest changes:
 - **QR verification capture** (`c693dba`): Stage B now captures the printed
   verification reference near the e-invoice QR into `qr_verification`; the
   field is surfaced + editable on the Review screen (was hard-null on save).
+- **QR-image decoder** (`b7483b0`): `lib/qrDecode.ts` — a pure-JS QR decoder
+  (jsQR + pngjs + jpeg-js, no native modules) wired into `extractInvoice` as the
+  PRIMARY source for `qr_verification`, decoding the captured photo's QR to the
+  LHDN validation link. Stage B's text rule (above) is the fallback when no
+  scannable graphic is in frame. 6/6 unit tests (`qr:verify`).
+- **Type-safe blob item parsing** (`0e6d224`, `975ebb9`): the submit service
+  validates each blob line item via `PersistedItemSchema.safeParse` with
+  `z.coerce.number().catch(0)` — a field-name drift or stringified numeric
+  degrades ONE field instead of dropping the whole line (and its codes).
+- **Per-line discount preserved** (`bde0d09`): Stage B captures a per-line
+  discount, but the mobile round-trip had no `discount` field and silently
+  stripped it. Added to DTO + `EditItem` + `toForm`/`fromForm` (read-only for
+  now; editing is part of the blocked per-line AllowanceCharge work).
+- **`buildSubmitItems` pure + unit-tested** (`4c57b52`): extracted the blob→
+  UblLineItem mapping into a pure helper with 17 no-DB unit tests
+  (`items:verify`) guarding the exact code that previously dropped the line-
+  item codes — the builder-level `ubl:verify` could not catch that regression.
+- **Extract-path regression test** (`416e423`): `verify-mock-submit` now
+  exercises the REAL capture path (`createDraftFromExtraction` → blob items,
+  zero `invoice_items` rows) in addition to the manual path, so a blob-sourcing
+  regression can't hide behind a green manual-path test.
+- **UBL aggregate consistency** (`db5d20d`, `261f2d5`): the builder always
+  derives the monetary aggregates from line items (ignoring stored overrides)
+  using round-each-line-then-sum, so `LineExtensionAmount`/`TaxTotal.TaxAmount`
+  always equal `Σ` of the per-line/per-type values MyInvois validates against.
+- **Home audit chip gated on validation** (`ccaead6`): the home card's Document-
+  ID chip + QR gate on `myinvoisDocId != null` (proof of LHDN acceptance), not
+  `status` (a rejected submit keeps status but null docId).
 
 ### Blocked — invoice-level AllowanceCharge / monetary fields
 
