@@ -29,7 +29,7 @@ You issue an invoice → submit to LHDN → customer retrieves/verifies.
 ### C. Output / display
 | # | Flow step | Status | Where / note |
 |---|-----------|--------|--------------|
-| C1 | APP display invoice — PDF / hard copy / list with doc ID + QR | ⚠️ | Invoice list (`home.tsx`) now shows the LHDN Document ID chip + a small validation QR for submitted invoices (commit `663d28d`). **PDF / hard-copy render still missing** (no PDF generation). |
+| C1 | APP display invoice — PDF / hard copy / list with doc ID + QR | ✅ | Invoice list (`home.tsx`) shows the LHDN Document ID chip + a small validation QR for submitted invoices (commit `663d28d`). PDF / hard-copy render: `lib/receipt.ts` self-contained HTML receipt + `receipt.tsx` WebView with “View receipt / PDF” (browser print-to-PDF) — see F3-9 (`6a9534a`). |
 
 ### D. Submission to MyInvois
 | # | Flow step | Status | Where / note |
