@@ -15,7 +15,8 @@
     "mock-submit:verify": "tsx scripts/verify-mock-submit.ts",
     "public:verify": "tsx scripts/verify-public-retrieval.ts",
     "items:verify": "node --import tsx --test scripts/verify-submit-items.ts",
-    "qr:verify": "node --import tsx --test scripts/verify-qr-decode.ts"
+    "qr:verify": "node --import tsx --test scripts/verify-qr-decode.ts",
+    "totals:verify": "node --import tsx --test scripts/verify-totals.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

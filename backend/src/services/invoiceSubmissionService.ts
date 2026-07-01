@@ -232,9 +232,6 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
     paymentMeansCode: inv.paymentMeansCode ?? null,
     paymentAccount: inv.paymentAccount ?? null,
     paymentTerms: inv.dueDate ? `Due ${inv.dueDate}` : null,
-    subtotal: Number(inv.subtotal),
-    taxTotal: Number(inv.taxTotal),
-    total: Number(inv.total),
   })
 
   // ── 3. (sandbox/prod) sign the document + compute documentHash ──

@@ -145,7 +145,6 @@ export function buildUblJson(input: BuildUblInput): string {
   const taxCurrency = input.taxCurrency || currency || 'MYR'
   const invoiceType = input.invoiceType || '01'
   const items = input.items
-  const lineExt = items.reduce((s, it) => s + it.quantity * it.unitPrice, 0)
   // ROUND-EACH-LINE-THEN-SUM (NOT round-the-sum). MyInvois validates that
   // TaxTotal.TaxAmount == Σ TaxSubtotal.TaxAmount and LegalMonetaryTotal.
   // LineExtensionAmount == Σ InvoiceLine.LineExtensionAmount. The per-line

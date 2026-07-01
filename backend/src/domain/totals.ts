@@ -1,27 +1,19 @@
 /**
  * Pure money/totals computation — no I/O, no Hono, no Drizzle.
  *
- * IMPORTANT: there are TWO intentionally divergent rounding conventions in
- * this codebase, and both are correct for their context. Do NOT collapse them:
+ * ROUND-EACH-LINE-THEN-SUM — the single convention for this codebase. Each
+ * line's net + tax is rounded to 2dp FIRST (round2(qty×price), then round2 of
+ * that × taxRate/100), and EVERY aggregate is the SUM of those rounded line
+ * values (subtotal = Σ rnet, taxTotal = Σ rtax, total = round2(subtotal+tax)).
  *
- *   1. round-each-step (for DB storage): each aggregate is `.toFixed(2)`
- *      before the next is computed. This matches what money columns store and
- *      avoids downstream drift from a stored 162.0049. Used by the
- *      invoice-creation path (computeInvoiceTotals).
+ * This is the same math the UBL builder (lib/ublJson.ts) uses, so the totals
+ * the user sees on the dashboard / review screen EQUAL exactly the totals
+ * MyInvois accepts — no cent-level drift from Σ round2(xᵢ) ≠ round2(Σ xᵢ).
+ * (The dashboard previously used round-the-sum on raw nets, which diverged
+ * from the UBL's round-each-line totals by 1¢ on fractional-cent prices.)
  *
- *   2. render-at-end (for UBL XML): sums at full JS precision, `.toFixed(2)`
- *      only at XML serialization. buildUbl keeps this guarantee for line
- *      elements (line NetExtensionAmount/TaxAmount are recomputed from raw
- *      items and rounded only at XML serialization — NEVER fed from the stored
- *      gross `amount`, which would put a tax-inclusive number in a net slot),
- *      while sourcing the *monetary aggregates* (TaxTotal, LegalMonetaryTotal)
- *      from the caller's stored round-each-step totals when provided. Used by the
- *      MyInvois submission path (buildUbl).
- *
- * A single shared helper therefore returns BOTH conventions + the per-line
- * net/tax/gross trio (named, never collapsed — `net` is tax-exclusive for
- * UBL `LineExtensionAmount`, `gross` is tax-inclusive for DB `amount`) and
- * lets each call site pick.
+ * `net` is tax-exclusive (UBL LineExtensionAmount); the per-line `amount`
+ * (DB invoice_items.amount) is net+tax on the ROUNDED net, not the raw net.
  */
 
 export interface LineItemInput {
@@ -30,68 +22,33 @@ export interface LineItemInput {
   taxRate: number // percentage, e.g. 6 for 6% SST
 }
 
-export interface LineComputation extends LineItemInput {
-  net: number // quantity * unitPrice (full precision)
-  tax: number // net * taxRate/100 (full precision)
-  gross: number // net + tax (full precision)
-}
-
-/** Per-line net/tax/gross at full precision. Never rounded. */
-export function computeLines<T extends LineItemInput>(items: T[]): LineComputation[] {
-  return items.map((it) => {
-    const net = it.quantity * it.unitPrice
-    const tax = net * (it.taxRate / 100)
-    return { ...it, net, tax, gross: net + tax }
-  })
-}
-
-const r2 = (n: number) => Number(n.toFixed(2))
+const r2 = (n: number) => (Number.isFinite(n) ? Math.round((n + Number.EPSILON) * 100) / 100 : 0)
 
 export interface RoundEachStepTotals {
-  /** Per-line amount = round2(net + tax) — matches DB invoice_items.amount. */
+  /** Per-line amount = round2(round2(qty×price) + round2(net×taxRate/100)) — matches DB invoice_items.amount. */
   lineAmounts: number[]
-  subtotal: number // round2(sum of net)
-  taxTotal: number // round2(sum of tax)
-  total: number // round2(subtotal + taxTotal)
+  /** Per-line rounded net (tax-exclusive) — UBL InvoiceLine.LineExtensionAmount. */
+  lineNets: number[]
+  /** Per-line rounded tax — UBL InvoiceLine per-line TaxSubtotal.TaxAmount. */
+  lineTaxes: number[]
+  subtotal: number // Σ lineNets (== UBL LineExtensionAmount / TaxExclusiveAmount)
+  taxTotal: number // Σ lineTaxes (== UBL TaxTotal.TaxAmount)
+  total: number // round2(subtotal + taxTotal) (== UBL TaxInclusiveAmount / PayableAmount)
 }
 
 /**
- * Round-each-step totals (convention 1). Use for DB-stored invoice totals so
- * the stored cents agree with what the dashboard and the per-line amounts show.
+ * Round-each-line-then-sum totals. Used by BOTH the DB-stored invoice path
+ * (createDraftInvoice → what the dashboard shows) AND the UBL submission
+ * path, so the two can never disagree. Pure + deterministic.
  */
 export function computeInvoiceTotals<T extends LineItemInput>(items: T[]): RoundEachStepTotals {
-  const lines = computeLines(items)
-  const lineAmounts = lines.map((l) => r2(l.gross))
-  const subtotal = r2(lines.reduce((s, l) => s + l.net, 0))
-  const taxTotal = r2(lines.reduce((s, l) => s + l.tax, 0))
+  const lineNets = items.map((it) => r2(it.quantity * it.unitPrice))
+  const lineTaxes = lineNets.map((net, i) => r2(net * (items[i].taxRate / 100)))
+  const lineAmounts = lineNets.map((net, i) => r2(net + lineTaxes[i]))
+  const subtotal = lineNets.reduce((s, n) => s + n, 0)
+  const taxTotal = lineTaxes.reduce((s, t) => s + t, 0)
   const total = r2(subtotal + taxTotal)
-  return { lineAmounts, subtotal, taxTotal, total }
-}
-
-export interface FullPrecisionTotals {
-  lineExt: number // full precision
-  taxTotal: number // full precision
-  grandTotal: number // full precision
-}
-
-/**
- * Full-precision totals (convention 2). UBL renders these with `.toFixed(2)`
- * only at serialization time.
- *
- * NOTE: this helper returns RAW full-precision values only. The precedence
- * `stored ?? computed` (caller's stored round-each-step totals overriding the
- * computed ones for the monetary aggregates) is applied separately in
- * `buildUbl` itself — do NOT wire buildUbl through this helper in a way that
- * drops that override, or the UBL's TaxTotal/LegalMonetaryTotal would regress
- * to full-precision aggregates and stop matching the stored DB totals.
- */
-export function computeFullPrecisionTotals<T extends LineItemInput>(
-  items: T[],
-): FullPrecisionTotals {
-  const lines = computeLines(items)
-  const lineExt = lines.reduce((s, l) => s + l.net, 0)
-  const taxTotal = lines.reduce((s, l) => s + l.tax, 0)
-  return { lineExt, taxTotal, grandTotal: lineExt + taxTotal }
+  return { lineAmounts, lineNets, lineTaxes, subtotal, taxTotal, total }
 }
 
 /** Format a money value as a fixed 2-decimal string (UBL serialization). */
