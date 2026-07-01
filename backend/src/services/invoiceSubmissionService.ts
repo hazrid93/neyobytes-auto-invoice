@@ -33,6 +33,9 @@ import {
 } from '../lib/myinvois'
 import { buildUblJson } from '../lib/ublJson'
 import { PersistedItemSchema } from '../lib/extraction'
+import type { UblLineItem } from '../lib/myinvois'
+import type { PersistedItem } from '../lib/extraction'
+import type { InvoiceItemRow } from '../repositories/invoiceRepo'
 import { z } from 'zod'
 import { normalizeTin } from '../lib/tin'
 import {
@@ -60,37 +63,30 @@ export interface SubmitResult {
   httpStatus: number
 }
 
-export async function submitInvoice(invoiceId: string, userId: string): Promise<SubmitResult> {
-  // ── 1. Load the full aggregate (invoice + items + customer + supplier) ──
-  const agg = await loadInvoiceForSubmission(invoiceId, userId)
-  if (!agg) throw new NotFoundError('invoice_not_found')
-
-  const { invoice: inv, items: tableItems, customer, supplier } = agg
-
-  // ── Source the UBL line items (with LHDN codes) ────────────────────
-  // Captured invoices store their items ONLY in the extractedData JSONB
-  // blob (createDraftFromExtraction writes no invoice_items rows); the
-  // review screen edits that blob, including the user-picked codes via the
-  // CodePickers (tax_type_code / unit_code / classification /
-  // origin_country). So the blob is the authoritative source — table rows
-  // exist only for invoices created manually via POST /invoices (which carry
-  // no codes). Prefer the blob; fall back to the table only when the blob has
-  // no items, so BOTH paths submit a real InvoiceLine[] (LHDN rejects an
-  // empty one). This also closes the audit gap where the four line-item codes
-  // were captured in the form but dropped at submission (UBL fell back to
-  // '06'/'C62'/'000'/'MYS').
-  //
-  // The blob is untyped JSONB (mobile writes snake_case codes; `updateInvoice`
-  // stores `z.record(unknown)` wholesale), so validate each item against
-  // PersistedItemSchema rather than loose-casting. A field-name drift or a
-  // stringified number then coerces to a safe default (with the code falling
-  // back to its UBL default in the builder) instead of silently dropping the
-  // code or throwing.
-  const rawExItems =
-    (inv.extractedData as { items?: unknown[] } | null)?.items ?? []
+/**
+ * Pure helper: resolve the UBL line items for submission from the two item
+ * sources a submitted invoice can have — the `extractedData` JSONB blob
+ * (captured invoices; carries the user-picked LHDN codes) and the
+ * `invoice_items` table rows (manual invoices; no codes).
+ *
+ * The blob is the authoritative source when present (createDraftFromExtraction
+ * writes items ONLY to the blob, never to the table). Falls back to the table
+ * only when the blob has no items, so BOTH paths submit a real InvoiceLine[]
+ * (LHDN rejects an empty one). Throws ValidationError if neither yields an item.
+ *
+ * Extracted + unit-tested in isolation because this is the exact code path
+ * that previously DROPPED the four line-item codes (the builder was never
+ * broken; the service mapping was). The unit test guards against a regression
+ * that the builder-level verify-ubl tests cannot catch.
+ */
+export function buildSubmitItems(
+  extractedData: { items?: unknown[] } | null,
+  tableItems: InvoiceItemRow[],
+): UblLineItem[] {
+  const rawExItems = extractedData?.items ?? []
   const exItems = rawExItems
     .map((it) => PersistedItemSchema.safeParse(it))
-    .filter((r): r is z.SafeParseSuccess<import('../lib/extraction').PersistedItem> => r.success)
+    .filter((r): r is z.SafeParseSuccess<PersistedItem> => r.success)
     .map((r) => r.data)
   const ublItems = exItems.length > 0
     ? exItems.map((it) => ({
@@ -114,6 +110,26 @@ export async function submitInvoice(invoiceId: string, userId: string): Promise<
       'This invoice has no line items. Capture or add at least one item before submitting.',
     )
   }
+  return ublItems
+}
+
+export async function submitInvoice(invoiceId: string, userId: string): Promise<SubmitResult> {
+  // ── 1. Load the full aggregate (invoice + items + customer + supplier) ──
+  const agg = await loadInvoiceForSubmission(invoiceId, userId)
+  if (!agg) throw new NotFoundError('invoice_not_found')
+
+  const { invoice: inv, items: tableItems, customer, supplier } = agg
+
+  // ── Source the UBL line items (with LHDN codes) ────────────────────
+  // Captured invoices store items ONLY in the extractedData blob; the review
+  // screen edits that blob incl. the user-picked codes. buildSubmitItems
+  // prefers the blob (validated via PersistedItemSchema), falls back to the
+  // table for manual invoices, and throws if empty. See the helper's doc for
+  // why this is unit-tested in isolation.
+  const ublItems = buildSubmitItems(
+    inv.extractedData as { items?: unknown[] } | null,
+    tableItems,
+  )
 
   // ── Supplier & customer TINs are mandatory for LHDN submission ──
   if (!supplier.tin) {
