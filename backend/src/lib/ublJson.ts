@@ -146,21 +146,23 @@ export function buildUblJson(input: BuildUblInput): string {
   const invoiceType = input.invoiceType || '01'
   const items = input.items
   const lineExt = items.reduce((s, it) => s + it.quantity * it.unitPrice, 0)
-  const taxTotal = items.reduce(
-    (s, it) => s + it.quantity * it.unitPrice * (it.taxRate / 100),
-    0,
-  )
-  // Always derive the monetary aggregates from the line items — never accept
-  // a caller-supplied subtotal/taxTotal/total override. MyInvois rejects a
-  // document where TaxTotal.TaxAmount ≠ Σ TaxSubtotal.TaxAmount or where
-  // LegalMonetaryTotal.LineExtensionAmount ≠ Σ InvoiceLine.LineExtensionAmount,
-  // and the per-line amounts are ALWAYS computed from raw items below (in
-  // buildLine), so the invoice-level aggregates must come from the same raw
-  // computation to stay consistent. (The BuildUblInput.subtotal/taxTotal/total
-  // fields remain on the type for source-compat but are intentionally ignored.)
-  const subtotal = lineExt
-  const tax = taxTotal
-  const total = lineExt + taxTotal
+  // ROUND-EACH-LINE-THEN-SUM (NOT round-the-sum). MyInvois validates that
+  // TaxTotal.TaxAmount == Σ TaxSubtotal.TaxAmount and LegalMonetaryTotal.
+  // LineExtensionAmount == Σ InvoiceLine.LineExtensionAmount. The per-line
+  // amounts below are each money()-rounded individually (round2), so the
+  // invoice-level aggregates MUST be the sum of those rounded line values —
+  // NOT a full-precision sum rounded at the end — or Σ round2(xᵢ) ≠
+  // round2(Σ xᵢ) and the validator rejects. Precompute the rounded per-line
+  // net/tax once and build every aggregate from them: lineExt = Σ rnet,
+  // taxTotal = Σ rtax (== Σ type_tax), total = round2(lineExt + taxTotal).
+  const lineRounded = items.map((it) => {
+    const lnet = round2(it.quantity * it.unitPrice)
+    const ltax = round2(lnet * (it.taxRate / 100))
+    return { lnet, ltax, rate: round2(it.taxRate), code: it.taxTypeCode || '06' }
+  })
+  const subtotal = lineRounded.reduce((s, l) => s + l.lnet, 0)
+  const tax = lineRounded.reduce((s, l) => s + l.ltax, 0)
+  const total = round2(subtotal + tax)
 
   // IssueTime: UTC HH:MM:SSZ. Default to now (LHDN requires issuance within 72h
   // of submission; IssueTime "must be the current time").
@@ -174,9 +176,10 @@ export function buildUblJson(input: BuildUblInput): string {
 
   // Per-line TaxSubtotal + ItemPriceExtension (both mandatory).
   const buildLine = (it: UblLineItem, i: number) => {
-    const lineNet = it.quantity * it.unitPrice
-    const lineTax = lineNet * (it.taxRate / 100)
-    const taxTypeCode = it.taxTypeCode || '06' // 06 = Not Applicable
+    const r = lineRounded[i]
+    const lineNet = r.lnet
+    const lineTax = r.ltax
+    const taxTypeCode = r.code
     const unitCode = it.unitCode || 'C62'
     const classification = it.classification || '000'
     const originCountry = it.originCountry || 'MYS'
@@ -220,18 +223,17 @@ export function buildUblJson(input: BuildUblInput): string {
     }
   }
 
-  // Aggregate invoice-level TaxSubtotal by tax type (Code Validator wants the
-  // breakdown; the sample has one TaxSubtotal per tax type).
+  // Aggregate invoice-level TaxSubtotal by tax type from the ROUNDED per-line
+  // values (Code Validator wants the breakdown; the sample has one TaxSubtotal
+  // per tax type). Summing rounded line nets/taxes keeps Σ type_tax == taxTotal
+  // == Σ line tax exactly.
   const taxByType = new Map<string, { taxable: number; tax: number; percent: number }>()
-  for (const it of items) {
-    const code = it.taxTypeCode || '06'
-    const lineNet = it.quantity * it.unitPrice
-    const lineTax = lineNet * (it.taxRate / 100)
-    const cur = taxByType.get(code) ?? { taxable: 0, tax: 0, percent: round2(it.taxRate) }
-    cur.taxable += lineNet
-    cur.tax += lineTax
-    cur.percent = round2(it.taxRate)
-    taxByType.set(code, cur)
+  for (const r of lineRounded) {
+    const cur = taxByType.get(r.code) ?? { taxable: 0, tax: 0, percent: r.rate }
+    cur.taxable += r.lnet
+    cur.tax += r.ltax
+    cur.percent = r.rate
+    taxByType.set(r.code, cur)
   }
   const invoiceTaxSubtotals = [...taxByType.entries()].map(([code, x]) => ({
     TaxableAmount: money(x.taxable, currency),

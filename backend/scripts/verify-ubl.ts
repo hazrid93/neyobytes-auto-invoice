@@ -317,6 +317,49 @@ test('monetary aggregates always derive from line items (caller overrides ignore
   assert.equal(get('LegalMonetaryTotal.0.PayableAmount.0._', inv), get('LegalMonetaryTotal.0.TaxInclusiveAmount.0._', inv))
 })
 
+test('round-each-line-then-sum: sums match exactly even with fractional-cent lines', () => {
+  // Values chosen so per-line net has >2dp before rounding (round2 truncates
+  // each line), so round2(Σ) ≠ Σ round2() under the OLD full-precision-sum
+  // approach. The builder must round each line first, then sum.
+  const inv = JSON.parse(buildUblJson({
+    ...baseInput,
+    items: [
+      { description: 'A', quantity: 3, unitPrice: 33.333, taxRate: 6 }, // net 99.999→100.00, tax 6.00
+      { description: 'B', quantity: 7, unitPrice: 14.2857, taxRate: 6 }, // net 99.9999→100.00, tax 6.00
+    ],
+  })).Invoice[0]
+  const lineExt = Number(get('LegalMonetaryTotal.0.LineExtensionAmount.0._', inv))
+  const sumLine = (inv.InvoiceLine as Array<{ LineExtensionAmount: Array<{ _: number }> }>)
+    .reduce((s, l) => s + Number(l.LineExtensionAmount[0]._), 0)
+  assert.equal(lineExt, sumLine, 'document LineExtension == Σ rounded line nets (200.00)')
+  assert.equal(lineExt, 200, 'each line net rounded to 100.00, sum = 200.00')
+  // tax: each line 100×6%=6.00, sum 12.00
+  const taxAmt = Number(get('TaxTotal.0.TaxAmount.0._', inv))
+  const sumSub = (inv.TaxTotal[0].TaxSubtotal as Array<{ TaxAmount: Array<{ _: number }> }>)
+    .reduce((s, t) => s + Number(t.TaxAmount[0]._), 0)
+  assert.equal(taxAmt, sumSub, 'document TaxAmount == Σ rounded line taxes')
+  assert.equal(taxAmt, 12, 'each line tax rounded to 6.00, sum = 12.00')
+  assert.equal(Number(get('LegalMonetaryTotal.0.TaxInclusiveAmount.0._', inv)), 212)
+  assert.equal(Number(get('LegalMonetaryTotal.0.PayableAmount.0._', inv)), 212)
+})
+
+test('multiple tax types: Σ TaxSubtotal.TaxAmount == TaxTotal.TaxAmount across types', () => {
+  const inv = JSON.parse(buildUblJson({
+    ...baseInput,
+    items: [
+      { description: 'sales', quantity: 1, unitPrice: 500, taxRate: 10, taxTypeCode: '01' },
+      { description: 'service', quantity: 2, unitPrice: 250, taxRate: 8, taxTypeCode: '02' },
+      { description: 'na', quantity: 1, unitPrice: 100, taxRate: 0, taxTypeCode: '06' },
+    ],
+  })).Invoice[0]
+  const taxAmt = Number(get('TaxTotal.0.TaxAmount.0._', inv))
+  const sumSub = (inv.TaxTotal[0].TaxSubtotal as Array<{ TaxAmount: Array<{ _: number }> }>)
+    .reduce((s, t) => s + Number(t.TaxAmount[0]._), 0)
+  assert.equal(taxAmt, sumSub, 'Σ TaxSubtotal.TaxAmount across types == invoice TaxAmount')
+  // 50 (01) + 40 (02) + 0 (06) = 90
+  assert.equal(taxAmt, 90)
+})
+
 test('document is JSON-stringifiable + minifiable (stable for digest)', () => {
   const a = buildUblJson(baseInput)
   const b = buildUblJson(baseInput)
